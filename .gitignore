@@ -1,7 +1,7 @@
 # commonly ignored files
-*/src/**/bin
-*/src/**/obj
-*/src/**/nupkg
+*/**/**/bin
+*/**/**/obj
+*/**/**/nupkg
 
 # tested text files
 *.txt
