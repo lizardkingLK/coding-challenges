@@ -6,10 +6,12 @@ class Program
 {
     private static readonly Dictionary<string, Delegate> commands = new()
     {
-        {"-c", (string filePath) => WordCount.GetFileNameAndBytes(filePath)},
-        {"--count", (string filePath) => WordCount.GetFileNameAndBytes(filePath)},
-        {"-l", (string filePath) => WordCount.GetFileNameAndLineCount(filePath)},
-        {"--lines", (string filePath) => WordCount.GetFileNameAndLineCount(filePath)},
+        {"-c", (string filePath) => WordCount.CountBytes(filePath)},
+        {"--count", (string filePath) => WordCount.CountBytes(filePath)},
+        {"-l", (string filePath) => WordCount.CountLineCount(filePath)},
+        {"--lines", (string filePath) => WordCount.CountLineCount(filePath)},
+        {"-w", (string filePath) => WordCount.CountWordCount(filePath)},
+        {"--words", (string filePath) => WordCount.CountWordCount(filePath)},
     };
 
     static void Main(string[] args)
