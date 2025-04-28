@@ -6,8 +6,10 @@ class Program
 {
     private static readonly Dictionary<string, Delegate> commands = new()
     {
-        {"-c", (string value) => WordCount.GetFileNameAndBytes(value)},
-        {"--count", (string value) => WordCount.GetFileNameAndBytes(value)},
+        {"-c", (string filePath) => WordCount.GetFileNameAndBytes(filePath)},
+        {"--count", (string filePath) => WordCount.GetFileNameAndBytes(filePath)},
+        {"-l", (string filePath) => WordCount.GetFileNameAndLineCount(filePath)},
+        {"--lines", (string filePath) => WordCount.GetFileNameAndLineCount(filePath)},
     };
 
     static void Main(string[] args)
@@ -33,7 +35,7 @@ class Program
 
             if (!commands.TryGetValue(commandKey, out Delegate? commandFunction))
             {
-                Errors.WriteError(Errors.INVALID_ARGUMENTS);
+                Errors.WriteError(Errors.INVALID_COMMANDS);
                 break;
             }
 

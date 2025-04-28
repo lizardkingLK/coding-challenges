@@ -1,8 +1,9 @@
-﻿namespace wcTool.Core;
+﻿
+namespace wcTool.Core;
 
 public class WordCount
 {
-    private const string FormatGetFileNameAndBytes = "{0} {1}";
+    private const string ResponseFormat = " {0} {1}";
 
     public static Result<string> GetFileNameAndBytes(string filePath)
     {
@@ -18,7 +19,25 @@ public class WordCount
         string fileName = Path.GetFileName(filePath);
 
         return new Result<string>(
-            string.Format(FormatGetFileNameAndBytes, byteCount, fileName),
+            string.Format(ResponseFormat, byteCount, fileName),
+            null);
+    }
+
+    public static Result<string> GetFileNameAndLineCount(string filePath)
+    {
+        Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
+        if (processedPathResult.Error != null)
+        {
+            return processedPathResult;
+        }
+
+        filePath = processedPathResult.Data!;
+        string[] lines = File.ReadAllLines(filePath);
+        long lineCount = lines.LongLength;
+        string fileName = Path.GetFileName(filePath);
+
+        return new Result<string>(
+            string.Format(ResponseFormat, lineCount, fileName),
             null);
     }
 }
