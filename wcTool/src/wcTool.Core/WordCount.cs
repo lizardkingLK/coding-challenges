@@ -1,11 +1,12 @@
-﻿
+﻿using System.Text.RegularExpressions;
+
 namespace wcTool.Core;
 
 public class WordCount
 {
     private const string ResponseFormat = " {0} {1}";
 
-    public static Result<string> GetFileNameAndBytes(string filePath)
+    public static Result<string> CountBytes(string filePath)
     {
         Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
         if (processedPathResult.Error != null)
@@ -23,7 +24,7 @@ public class WordCount
             null);
     }
 
-    public static Result<string> GetFileNameAndLineCount(string filePath)
+    public static Result<string> CountLineCount(string filePath)
     {
         Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
         if (processedPathResult.Error != null)
@@ -38,6 +39,75 @@ public class WordCount
 
         return new Result<string>(
             string.Format(ResponseFormat, lineCount, fileName),
+            null);
+    }
+
+    // public static Result<string> CountWordCount(string filePath)
+    // {
+    //     Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
+    //     if (processedPathResult.Error != null)
+    //     {
+    //         return processedPathResult;
+    //     }
+
+    //     filePath = processedPathResult.Data!;
+
+    //     long wordCount = 0;
+    //     bool isWord = false;
+    //     using (StreamReader streamReader = new(File.OpenRead(filePath)))
+    //     {
+    //         if (!streamReader.BaseStream.CanRead)
+    //         {
+    //             return new Result<string>(null, Errors.FILE_IN_USE);
+    //         }
+
+    //         int current;
+    //         while (streamReader.Peek() >= 0)
+    //         {
+    //             current = streamReader.Read();
+    //             if (isWord && (current == 32 || current == 9 || current == 10 || current == 13))
+    //             {
+    //                 isWord = false;
+    //                 wordCount++;
+    //                 continue;
+    //             }
+
+    //             isWord = true;
+    //         }
+    //     }
+
+    //     string fileName = Path.GetFileName(filePath);
+
+    //     return new Result<string>(
+    //         string.Format(ResponseFormat, isWord ? wordCount + 1 : wordCount, fileName),
+    //         null);
+    // }
+
+    public static Result<string> CountWordCount(string filePath)
+    {
+        Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
+        if (processedPathResult.Error != null)
+        {
+            return processedPathResult;
+        }
+
+        filePath = processedPathResult.Data!;
+
+        long wordCount = 0;
+        using (StreamReader streamReader = new(File.OpenRead(filePath)))
+        {
+            if (!streamReader.BaseStream.CanRead)
+            {
+                return new Result<string>(null, Errors.FILE_IN_USE);
+            }
+
+            wordCount = streamReader.ReadToEnd().Split(' ').LongLength;
+        }
+
+        string fileName = Path.GetFileName(filePath);
+
+        return new Result<string>(
+            string.Format(ResponseFormat, wordCount, fileName),
             null);
     }
 }
