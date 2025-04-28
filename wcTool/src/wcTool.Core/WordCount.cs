@@ -23,7 +23,7 @@ public class WordCount
             null);
     }
 
-    public static Result<string> CountLineCount(string filePath)
+    public static Result<string> CountLines(string filePath)
     {
         Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
         if (processedPathResult.Error != null)
@@ -41,7 +41,7 @@ public class WordCount
             null);
     }
 
-    public static Result<string> CountWordCount(string filePath)
+    public static Result<string> CountWords(string filePath)
     {
         Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
         if (processedPathResult.Error != null)
@@ -68,6 +68,37 @@ public class WordCount
 
         return new Result<string>(
             string.Format(ResponseFormat, wordCount, fileName),
+            null);
+    }
+
+    public static Result<string> CountCharacters(string filePath)
+    {
+        Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
+        if (processedPathResult.Error != null)
+        {
+            return processedPathResult;
+        }
+
+        filePath = processedPathResult.Data!;
+
+        long charCount = 0;
+        using (StreamReader streamReader = new(File.OpenRead(filePath)))
+        {
+            if (!streamReader.BaseStream.CanRead)
+            {
+                return new Result<string>(null, Errors.FILE_IN_USE);
+            }
+
+            while (streamReader.Read() != -1)
+            {
+                charCount++;
+            }
+        }
+
+        string fileName = Path.GetFileName(filePath);
+
+        return new Result<string>(
+            string.Format(ResponseFormat, charCount, fileName),
             null);
     }
 }

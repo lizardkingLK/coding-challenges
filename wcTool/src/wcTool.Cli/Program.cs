@@ -8,10 +8,12 @@ class Program
     {
         {"-c", (string filePath) => WordCount.CountBytes(filePath)},
         {"--count", (string filePath) => WordCount.CountBytes(filePath)},
-        {"-l", (string filePath) => WordCount.CountLineCount(filePath)},
-        {"--lines", (string filePath) => WordCount.CountLineCount(filePath)},
-        {"-w", (string filePath) => WordCount.CountWordCount(filePath)},
-        {"--words", (string filePath) => WordCount.CountWordCount(filePath)},
+        {"-l", (string filePath) => WordCount.CountLines(filePath)},
+        {"--lines", (string filePath) => WordCount.CountLines(filePath)},
+        {"-w", (string filePath) => WordCount.CountWords(filePath)},
+        {"--words", (string filePath) => WordCount.CountWords(filePath)},
+        {"-m", (string filePath) => WordCount.CountCharacters(filePath)},
+        {"--characters", (string filePath) => WordCount.CountCharacters(filePath)},
     };
 
     static void Main(string[] args)
