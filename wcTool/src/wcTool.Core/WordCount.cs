@@ -1,4 +1,6 @@
-﻿namespace wcTool.Core;
+﻿using System.Threading.Tasks;
+
+namespace wcTool.Core;
 
 public class WordCount
 {
@@ -32,8 +34,20 @@ public class WordCount
         }
 
         filePath = processedPathResult.Data!;
-        string[] lines = File.ReadAllLines(filePath);
-        long lineCount = lines.LongLength;
+
+        long lineCount;
+        using (StreamReader streamReader = new(File.OpenRead(filePath)))
+        {
+            if (!streamReader.BaseStream.CanRead)
+            {
+                return new Result<string>(null, Errors.FILE_IN_USE);
+            }
+
+            lineCount = streamReader.ReadToEnd()
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .LongLength;
+        }
+
         string fileName = Path.GetFileName(filePath);
 
         return new Result<string>(
@@ -59,7 +73,8 @@ public class WordCount
                 return new Result<string>(null, Errors.FILE_IN_USE);
             }
 
-            var content = streamReader.ReadToEnd().Split(wordSeparator, StringSplitOptions.RemoveEmptyEntries);
+            string[] content = streamReader.ReadToEnd()
+            .Split(wordSeparator, StringSplitOptions.RemoveEmptyEntries);
 
             wordCount = content.LongLength;
         }
@@ -99,6 +114,43 @@ public class WordCount
 
         return new Result<string>(
             string.Format(ResponseFormat, charCount, fileName),
+            null);
+    }
+
+    public static Result<string> CountSummary(string filePath)
+    {
+        Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
+        if (processedPathResult.Error != null)
+        {
+            return processedPathResult;
+        }
+
+        filePath = processedPathResult.Data!;
+
+        long lineCount = 0;
+        long wordCount = 0;
+        long byteCount = 0;
+        using (StreamReader streamReader = new(File.OpenRead(filePath)))
+        {
+            if (!streamReader.BaseStream.CanRead)
+            {
+                return new Result<string>(null, Errors.FILE_IN_USE);
+            }
+
+            string content = streamReader.ReadToEnd();
+
+            byteCount = File.ReadAllBytes(filePath).LongLength;
+            lineCount = content.Split('\n', StringSplitOptions.RemoveEmptyEntries).LongLength;
+            wordCount = content.Split(wordSeparator, StringSplitOptions.RemoveEmptyEntries).LongLength;
+        }
+
+        string fileName = Path.GetFileName(filePath);
+
+        return new Result<string>(
+            string.Format(
+                ResponseFormat,
+                string.Format("{0} {1} {2}", lineCount, wordCount, byteCount),
+                fileName),
             null);
     }
 }

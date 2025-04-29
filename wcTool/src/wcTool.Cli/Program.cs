@@ -18,13 +18,21 @@ class Program
 
     static void Main(string[] args)
     {
-        if (args.Length < 2)
+        Result<string> response;
+        int argsLength = args.Length;
+        if (argsLength == 1)
+        {
+            response = WordCount.CountSummary(args[0]);
+            Console.WriteLine(response.Data!);
+            return;
+        }
+
+        if (argsLength > 0 && argsLength < 2)
         {
             Errors.WriteError(Errors.INCOMPLETE_ARGUMENTS);
             return;
         }
 
-        Result<string> response;
         string commandKey;
         string commandValue;
         foreach (string[] keyValue in args.Chunk(2))
