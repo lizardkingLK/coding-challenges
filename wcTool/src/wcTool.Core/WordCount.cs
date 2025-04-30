@@ -1,4 +1,4 @@
-﻿namespace wcTool.Core;
+namespace wcTool.Core;
 
 public class WordCount
 {
