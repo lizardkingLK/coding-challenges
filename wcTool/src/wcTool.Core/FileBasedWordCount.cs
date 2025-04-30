@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace wcTool.Core
 {
     internal class FileBasedWordCount
@@ -14,25 +16,22 @@ namespace wcTool.Core
             {"characters", CountCharacters},
         };
 
-        internal static Result<string> CountBytes(string filePath)
+        internal static Result<long?> CountBytes(string filePath)
         {
             byte[] bytes = File.ReadAllBytes(filePath);
             long byteCount = bytes.LongLength;
-            string fileName = Path.GetFileName(filePath);
 
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, byteCount, fileName),
-                null);
+            return new Result<long?>(byteCount, null);
         }
 
-        internal static Result<string> CountLines(string filePath)
+        internal static Result<long?> CountLines(string filePath)
         {
             long lineCount;
             using (StreamReader streamReader = new(File.OpenRead(filePath)))
             {
                 if (!streamReader.BaseStream.CanRead)
                 {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
+                    return new Result<long?>(null, Errors.FILE_IN_USE);
                 }
 
                 lineCount = streamReader.ReadToEnd()
@@ -40,21 +39,17 @@ namespace wcTool.Core
                 .LongLength;
             }
 
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, lineCount, fileName),
-                null);
+            return new Result<long?>(lineCount, null);
         }
 
-        internal static Result<string> CountWords(string filePath)
+        internal static Result<long?> CountWords(string filePath)
         {
             long wordCount = 0;
             using (StreamReader streamReader = new(File.OpenRead(filePath)))
             {
                 if (!streamReader.BaseStream.CanRead)
                 {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
+                    return new Result<long?>(null, Errors.FILE_IN_USE);
                 }
 
                 string[] content = streamReader.ReadToEnd()
@@ -63,21 +58,17 @@ namespace wcTool.Core
                 wordCount = content.LongLength;
             }
 
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, wordCount, fileName),
-                null);
+            return new Result<long?>(wordCount, null);
         }
 
-        internal static Result<string> CountCharacters(string filePath)
+        internal static Result<long?> CountCharacters(string filePath)
         {
             long charCount = 0;
             using (StreamReader streamReader = new(File.OpenRead(filePath)))
             {
                 if (!streamReader.BaseStream.CanRead)
                 {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
+                    return new Result<long?>(null, Errors.FILE_IN_USE);
                 }
 
                 while (streamReader.Read() != -1)
@@ -86,102 +77,151 @@ namespace wcTool.Core
                 }
             }
 
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, charCount, fileName),
-                null);
-        }
-
-        internal static Result<string> CountSummary(string filePath)
-        {
-            long lineCount = 0;
-            long wordCount = 0;
-            long byteCount = 0;
-            using (StreamReader streamReader = new(File.OpenRead(filePath)))
-            {
-                if (!streamReader.BaseStream.CanRead)
-                {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
-                }
-
-                string content = streamReader.ReadToEnd();
-
-                byteCount = File.ReadAllBytes(filePath).LongLength;
-                lineCount = content.Split('\n', StringSplitOptions.RemoveEmptyEntries).LongLength;
-                wordCount = content.Split(Constants.WordSeparator, StringSplitOptions.RemoveEmptyEntries).LongLength;
-            }
-
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(
-                    Constants.ResponseFormat,
-                    string.Format("{0} {1} {2}", lineCount, wordCount, byteCount),
-                    fileName),
-                null);
+            return new Result<long?>(charCount, null);
         }
 
         internal static void GetResponse(string[] arguments)
         {
             HashSet<Delegate> actions = new();
             List<string> paths = new();
-            List<Result<string>> results = new();
+            List<Result<List<long?>>> errors = new();
+            List<Result<(List<long?>, string)>> results = new();
 
-            HandleArguments(arguments, actions, paths, results);
-            HandleResponses(actions, paths, results);
-            HandleResults(results);
+            HandleArguments(arguments, actions, paths, errors);
+            HandleResponses(actions, paths, errors, results);
+            HandleResults(results.Where(result => result.Data.Item1 != null), actions);
+            HandleErrors(errors.Where(error => error.Error != null));
         }
 
-        private static void HandleResults(List<Result<string>> results)
+        private static void HandleErrors(IEnumerable<Result<List<long?>>> errors)
         {
-            foreach (Result<string> result in results.Where(result => result.Data != null))
-            {
-                Console.WriteLine(result.Data);
-            }
-
-            foreach (Result<string> result in results.Where(result => result.Error != null))
+            foreach (Result<List<long?>> result in errors)
             {
                 Errors.WriteError(result.Error!);
             }
         }
 
+        private static void HandleResults(IEnumerable<Result<(List<long?>, string)>> results, HashSet<Delegate> actions)
+        {
+            if (!results.Any())
+            {
+                return;
+            }
+
+            int totalWidth;
+            bool hasMultiple = results.Count() > 1;
+            char space = ' ';
+            StringBuilder resultBuilder = new();
+            List<long?> currentPathValues;
+            string currentPath;
+            if (hasMultiple)
+            {
+                long[] aggregate = new long[actions.Count];
+                foreach (Result<(List<long?>, string)> result in results)
+                {
+                    (currentPathValues, currentPath) = result.Data;
+                    aggregate = aggregate.Select((item, index) => item + currentPathValues[index] ?? 0).ToArray();
+                }
+
+                totalWidth = (int)(1 + Math.Log10(aggregate.Max()));
+                foreach (Result<(List<long?>, string)> result in results)
+                {
+                    (currentPathValues, currentPath) = result.Data;
+                    resultBuilder.AppendLine(string.Format(
+                        "{0} {1}",
+                        string.Join(
+                        space,
+                        currentPathValues.Select(value => $"{value ?? 0}".PadLeft(totalWidth, space))), currentPath));
+                }
+
+                resultBuilder.AppendLine(string.Format(
+                    "{0} Total",
+                    string.Join(
+                    space,
+                    aggregate.Select(value => $"{value}".PadLeft(totalWidth, space)))));
+            }
+            else
+            {
+                (currentPathValues, currentPath) = results.First().Data;
+                long maxValue = results.SelectMany(result => result.Data!.Item1).MaxBy(result => result ?? 0) ?? 0;
+                totalWidth = (int)(1 + Math.Log10(maxValue));
+                resultBuilder.AppendLine(string.Format(
+                    "{0} {1}",
+                    string.Join(
+                    space,
+                    currentPathValues.Select(value => $"{value ?? 0}".PadLeft(totalWidth, space))),
+                    currentPath));
+            }
+
+            resultBuilder.AppendLine(string.Join(space, actions.Select(action =>
+                $"{action.Method.Name.Replace("Count", string.Empty)[0]}".PadLeft(totalWidth, space))));
+
+            Console.WriteLine(resultBuilder.ToString());
+        }
+
         private static void HandleResponses(
             HashSet<Delegate> actions,
             List<string> paths,
-            List<Result<string>> results)
+            List<Result<List<long?>>> errors,
+            List<Result<(List<long?>, string)>> results)
         {
+            Result<List<long?>> result;
             foreach (string path in paths)
             {
-                HandleResponseForPath(path, actions, results);
+                result = HandleResponseForPath(path, actions);
+                if (result == null || result.Data == null)
+                {
+                    errors.Add(new(null, result?.Error ?? Errors.FILE_IN_USE));
+                    continue;
+                }
+
+                results.Add(new Result<(List<long?>, string)>((result.Data, path), result.Error));
             }
         }
 
-        private static void HandleResponseForPath(
+        private static Result<List<long?>> HandleResponseForPath(
             string path,
-            HashSet<Delegate> actions,
-            List<Result<string>> results)
+            HashSet<Delegate> actions)
         {
             Result<string> processedPathResult = Utility.GetProcessedFilePath(path);
             if (processedPathResult.Error != null)
             {
-                results.Add(new Result<string>(null, string.Format(Errors.INVALID_FILE_PATH, path)));
-                return;
+                return new Result<List<long?>>(null, string.Format(Errors.INVALID_FILE_PATH, path));
             }
 
             path = processedPathResult.Data!;
 
+            Dictionary<string, long?> resultMap = new();
             foreach (Delegate action in actions)
             {
-                results.Add((Result<string>)action.DynamicInvoke(path)!);
+                resultMap.Add(action.Method.Name, null);
             }
+
+            Result<long?>? result;
+            foreach (Delegate action in actions)
+            {
+                result = (Result<long?>?)action.DynamicInvoke(path);
+                if (result == null)
+                {
+                    return new Result<List<long?>>(null, Errors.FILE_IN_USE);
+                }
+
+                if (result.Error != null)
+                {
+                    return new Result<List<long?>>(null, result.Error);
+                }
+
+                resultMap[action.Method.Name] = result.Data;
+            }
+
+            return new Result<List<long?>>(resultMap.Values.ToList(), null);
         }
 
         private static void HandleArguments(
             string[] arguments,
             HashSet<Delegate> actions,
             List<string> paths,
-            List<Result<string>> results)
+            List<Result<List<long?>>> errors)
         {
             string commandKey;
 
@@ -195,7 +235,7 @@ namespace wcTool.Core
                     continue;
                 }
 
-                results.Add(new Result<string>(null, string.Format(Errors.INVALID_COMMANDS, commandKey)));
+                errors.Add(new Result<List<long?>>(null, string.Format(Errors.INVALID_COMMANDS, commandKey)));
             }
 
             arguments = arguments.Except(inputs).ToArray();
@@ -208,10 +248,18 @@ namespace wcTool.Core
                     continue;
                 }
 
-                results.Add(new Result<string>(null, string.Format(Errors.INVALID_COMMANDS, commandCharKey)));
+                errors.Add(new Result<List<long?>>(null, string.Format(Errors.INVALID_COMMANDS, commandCharKey)));
             }
 
             paths.AddRange(arguments.Except(inputs).ToArray());
+
+            if (paths.Count > 0 && actions.Count == 0)
+            {
+                foreach (KeyValuePair<string, Delegate> command in commands)
+                {
+                    actions.Add(command.Value);
+                }
+            }
         }
     }
 }
