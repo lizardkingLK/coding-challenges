@@ -80,11 +80,11 @@ namespace wcTool.Core
             return new Result<long?>(charCount, null);
         }
 
-        internal static void GetResponse(string[] arguments)
+        internal static void SetResponse(string[] arguments)
         {
             HashSet<Delegate> actions = new();
             List<string> paths = new();
-            List<Result<List<long?>>> errors = new();
+            List<Result<List<string>>> errors = new();
             List<Result<(List<long?>, string)>> results = new();
 
             HandleArguments(arguments, actions, paths, errors);
@@ -93,9 +93,9 @@ namespace wcTool.Core
             HandleErrors(errors.Where(error => error.Error != null));
         }
 
-        private static void HandleErrors(IEnumerable<Result<List<long?>>> errors)
+        private static void HandleErrors(IEnumerable<Result<List<string>>> errors)
         {
-            foreach (Result<List<long?>> result in errors)
+            foreach (Result<List<string>> result in errors)
             {
                 Errors.WriteError(result.Error!);
             }
@@ -162,7 +162,7 @@ namespace wcTool.Core
         private static void HandleResponses(
             HashSet<Delegate> actions,
             List<string> paths,
-            List<Result<List<long?>>> errors,
+            List<Result<List<string>>> errors,
             List<Result<(List<long?>, string)>> results)
         {
             Result<List<long?>> result;
@@ -221,7 +221,7 @@ namespace wcTool.Core
             string[] arguments,
             HashSet<Delegate> actions,
             List<string> paths,
-            List<Result<List<long?>>> errors)
+            List<Result<List<string>>> errors)
         {
             string commandKey;
 
@@ -235,7 +235,7 @@ namespace wcTool.Core
                     continue;
                 }
 
-                errors.Add(new Result<List<long?>>(null, string.Format(Errors.INVALID_COMMANDS, commandKey)));
+                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandKey)));
             }
 
             arguments = arguments.Except(inputs).ToArray();
@@ -248,7 +248,7 @@ namespace wcTool.Core
                     continue;
                 }
 
-                errors.Add(new Result<List<long?>>(null, string.Format(Errors.INVALID_COMMANDS, commandCharKey)));
+                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandCharKey)));
             }
 
             paths.AddRange(arguments.Except(inputs).ToArray());

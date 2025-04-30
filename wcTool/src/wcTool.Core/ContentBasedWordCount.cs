@@ -1,203 +1,228 @@
+using System.Text;
+
 namespace wcTool.Core
 {
     internal class ContentBasedWordCount
     {
-        # if !DEBUG
-        internal static Result<string> CountBytes()
+        private static readonly Dictionary<string, Delegate> commands = new()
         {
-            Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
-            if (processedPathResult.Error != null)
-            {
-                return processedPathResult;
-            }
+            {"c", CountBytes},
+            {"bytes", CountBytes},
+            {"l", CountLines},
+            {"lines", CountLines},
+            {"w", CountWords},
+            {"words", CountWords},
+            {"m", CountCharacters},
+            {"characters", CountCharacters},
+        };
 
-            filePath = processedPathResult.Data!;
-            byte[] bytes = File.ReadAllBytes(filePath);
-            long byteCount = bytes.LongLength;
-            string fileName = Path.GetFileName(filePath);
+        internal static Result<long?> CountBytes(string content)
+        {
+            long byteCount = content.Length;
 
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, byteCount, fileName),
-                null);
+            return new Result<long?>(byteCount, null);
         }
 
-        internal static Result<string> CountLines()
+        internal static Result<long?> CountLines(string content)
         {
-            Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
-            if (processedPathResult.Error != null)
-            {
-                return processedPathResult;
-            }
-
-            filePath = processedPathResult.Data!;
-
-            long lineCount;
-            using (StreamReader streamReader = new(File.OpenRead(filePath)))
-            {
-                if (!streamReader.BaseStream.CanRead)
-                {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
-                }
-
-                lineCount = streamReader.ReadToEnd()
+            long lineCount = content
                 .Split('\n', StringSplitOptions.RemoveEmptyEntries)
                 .LongLength;
-            }
 
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, lineCount, fileName),
-                null);
+            return new Result<long?>(lineCount, null);
         }
 
-        internal static Result<string> CountWords()
+        internal static Result<long?> CountWords(string content)
         {
-            Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
-            if (processedPathResult.Error != null)
+            long wordCount = content
+            .Split(Constants.WordSeparator, StringSplitOptions.RemoveEmptyEntries)
+            .LongLength;
+
+            return new Result<long?>(wordCount, null);
+        }
+
+        internal static Result<long?> CountCharacters(string content)
+        {
+            long charCount = content.Length;
+
+            return new Result<long?>(charCount, null);
+        }
+
+        internal static void SetResponse(string[] arguments)
+        {
+            HashSet<Delegate> actions = new();
+            List<Result<List<string>>> errors = new();
+            List<Result<List<long?>>> results = new();
+
+            string content = GetContent();
+            if (string.IsNullOrEmpty(content))
             {
-                return processedPathResult;
+                Errors.WriteError(Errors.INVALID_CONTENT);
+                return;
             }
 
-            filePath = processedPathResult.Data!;
+            HandleArguments(arguments, actions, errors);
+            HandleResponses(content, actions, errors, results);
+            HandleResults(results.Where(result => result.Data != null), actions);
+            HandleErrors(errors.Where(error => error.Error != null));
+        }
 
-            long wordCount = 0;
-            using (StreamReader streamReader = new(File.OpenRead(filePath)))
+        private static string GetContent()
+        {
+            TextReader textReader = Console.In;
+            string content = string.Empty;
+            while (textReader.Peek() != -1)
             {
-                if (!streamReader.BaseStream.CanRead)
+                content = textReader.ReadToEnd();
+            }
+
+            return content;
+        }
+
+        private static void HandleErrors(IEnumerable<Result<List<string>>> errors)
+        {
+            foreach (Result<List<string>> result in errors)
+            {
+                Errors.WriteError(result.Error!);
+            }
+        }
+
+        private static void HandleResults(IEnumerable<Result<List<long?>>> results, HashSet<Delegate> actions)
+        {
+            if (!results.Any())
+            {
+                return;
+            }
+
+            int totalWidth;
+            bool hasMultiple = results.Count() > 1;
+            char space = ' ';
+            StringBuilder resultBuilder = new();
+            List<long?> currentPathValues;
+            if (hasMultiple)
+            {
+                long[] aggregate = new long[actions.Count];
+                foreach (Result<List<long?>> result in results)
                 {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
+                    currentPathValues = result.Data!;
+                    aggregate = aggregate.Select((item, index) => item + currentPathValues[index] ?? 0).ToArray();
                 }
 
-                string[] content = streamReader.ReadToEnd()
-                .Split(Constants.WordSeparator, StringSplitOptions.RemoveEmptyEntries);
-
-                wordCount = content.LongLength;
-            }
-
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, wordCount, fileName),
-                null);
-        }
-
-        internal static Result<string> CountCharacters()
-        {
-            Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
-            if (processedPathResult.Error != null)
-            {
-                return processedPathResult;
-            }
-
-            filePath = processedPathResult.Data!;
-
-            long charCount = 0;
-            using (StreamReader streamReader = new(File.OpenRead(filePath)))
-            {
-                if (!streamReader.BaseStream.CanRead)
+                totalWidth = (int)(1 + Math.Log10(aggregate.Max()));
+                foreach (Result<List<long?>> result in results)
                 {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
+                    currentPathValues = result.Data!;
+                    resultBuilder.AppendLine(string.Join(
+                        space,
+                        currentPathValues.Select(value => $"{value ?? 0}".PadLeft(totalWidth, space))));
                 }
 
-                while (streamReader.Read() != -1)
+                resultBuilder.AppendLine(string.Join(
+                    space,
+                    aggregate.Select(value => $"{value}".PadLeft(totalWidth, space))));
+            }
+            else
+            {
+                currentPathValues = results.First().Data!;
+                long maxValue = results.SelectMany(result => result.Data!).MaxBy(result => result ?? 0) ?? 0;
+                totalWidth = (int)(1 + Math.Log10(maxValue));
+                resultBuilder.AppendLine(string.Join(
+                    space,
+                    currentPathValues.Select(value => $"{value ?? 0}".PadLeft(totalWidth, space))));
+            }
+
+            resultBuilder.AppendLine(string.Join(space, actions.Select(action =>
+                $"{action.Method.Name.Replace("Count", string.Empty)[0]}".PadLeft(totalWidth, space))));
+
+            Console.WriteLine(resultBuilder.ToString());
+        }
+
+        private static void HandleResponses(
+            string content,
+            HashSet<Delegate> actions,
+            List<Result<List<string>>> errors,
+            List<Result<List<long?>>> results)
+        {
+            Result<List<long?>> result = HandleResponseForContent(content, actions);
+            if (result == null || result.Data == null)
+            {
+                errors.Add(new(null, result?.Error ?? Errors.FILE_IN_USE));
+                return;
+            }
+
+            results.Add(new Result<List<long?>>(result.Data, result.Error));
+        }
+
+        private static Result<List<long?>> HandleResponseForContent(
+            string content,
+            HashSet<Delegate> actions)
+        {
+            Dictionary<string, long?> resultMap = new();
+            foreach (Delegate action in actions)
+            {
+                resultMap.Add(action.Method.Name, null);
+            }
+
+            Result<long?>? result;
+            foreach (Delegate action in actions)
+            {
+                result = (Result<long?>?)action.DynamicInvoke(content);
+                if (result == null)
                 {
-                    charCount++;
+                    return new Result<List<long?>>(null, Errors.FILE_IN_USE);
+                }
+
+                if (result.Error != null)
+                {
+                    return new Result<List<long?>>(null, result.Error);
+                }
+
+                resultMap[action.Method.Name] = result.Data;
+            }
+
+            return new Result<List<long?>>(resultMap.Values.ToList(), null);
+        }
+
+        private static void HandleArguments(
+            string[] arguments,
+            HashSet<Delegate> actions,
+            List<Result<List<string>>> errors)
+        {
+            string commandKey;
+
+            IEnumerable<string> inputs = arguments.Where(argument => argument.StartsWith("--"));
+            foreach (string input in inputs)
+            {
+                commandKey = input.Replace("--", string.Empty);
+                if (commands.TryGetValue(commandKey, out Delegate? command))
+                {
+                    actions.Add(command);
+                    continue;
+                }
+
+                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandKey)));
+            }
+
+            arguments = arguments.Except(inputs).ToArray();
+            inputs = arguments.Where(argument => argument.StartsWith("-"));
+            foreach (char commandCharKey in inputs.SelectMany(argument => argument.Replace("-", string.Empty).ToCharArray()))
+            {
+                if (commands.TryGetValue(commandCharKey.ToString(), out Delegate? command))
+                {
+                    actions.Add(command);
+                    continue;
+                }
+
+                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandCharKey)));
+            }
+
+            if (actions.Count == 0)
+            {
+                foreach (KeyValuePair<string, Delegate> command in commands)
+                {
+                    actions.Add(command.Value);
                 }
             }
-
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(Constants.ResponseFormat, charCount, fileName),
-                null);
         }
-
-        internal static Result<string> CountSummary()
-        {
-            Result<string> processedPathResult = Utility.GetProcessedFilePath(filePath);
-            if (processedPathResult.Error != null)
-            {
-                return processedPathResult;
-            }
-
-            filePath = processedPathResult.Data!;
-
-            long lineCount = 0;
-            long wordCount = 0;
-            long byteCount = 0;
-            using (StreamReader streamReader = new(File.OpenRead(filePath)))
-            {
-                if (!streamReader.BaseStream.CanRead)
-                {
-                    return new Result<string>(null, Errors.FILE_IN_USE);
-                }
-
-                string content = streamReader.ReadToEnd();
-
-                byteCount = File.ReadAllBytes(filePath).LongLength;
-                lineCount = content.Split('\n', StringSplitOptions.RemoveEmptyEntries).LongLength;
-                wordCount = content.Split(Constants.WordSeparator, StringSplitOptions.RemoveEmptyEntries).LongLength;
-            }
-
-            string fileName = Path.GetFileName(filePath);
-
-            return new Result<string>(
-                string.Format(
-                    Constants.ResponseFormat,
-                    string.Format("{0} {1} {2}", lineCount, wordCount, byteCount),
-                    fileName),
-                null);
-        }
-
-        internal static void HandleArguments(string[] args)
-        {
-            Result<string> response;
-            int argsLength = args.Length;
-            if (argsLength == 0 && string.IsNullOrEmpty(content))
-            {
-                response = CountSummary();
-                Console.WriteLine(response.Data!);
-                return;
-            }
-
-            if (argsLength == 1)
-            {
-                filePath = args[0];
-                response = CountSummary();
-                Console.WriteLine(response.Data!);
-                return;
-            }
-
-            if (argsLength > 0 && argsLength < 2)
-            {
-                Errors.WriteError(Errors.INCOMPLETE_ARGUMENTS);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(args[0]) || string.IsNullOrEmpty(args[1]))
-            {
-                Errors.WriteError(Errors.INCOMPLETE_ARGUMENTS);
-                return;
-            }
-
-            command = args[0];
-            filePath = args[1];
-            if (!commands.TryGetValue(command, out Delegate? commandFunction))
-            {
-                Errors.WriteError(Errors.INVALID_COMMANDS);
-                return;
-            }
-
-            response = ((Func<string, Result<string>>)commandFunction)!(filePath);
-            if (response.Data != null)
-            {
-                Console.WriteLine(response.Data);
-                return;
-            }
-
-            Errors.WriteError(response.Error!);
-        }
-        # endif
     }
 }

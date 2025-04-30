@@ -1,5 +1,3 @@
-﻿using System.Threading.Tasks;
-
 namespace wcTool.Core;
 
 public class WordCount
@@ -8,11 +6,10 @@ public class WordCount
     {
         if (!Console.IsInputRedirected || args.Any(arg => !arg.StartsWith('-')))
         {
-            FileBasedWordCount.GetResponse(args);
+            FileBasedWordCount.SetResponse(args);
             return;
         }
 
-        // Console.WriteLine("Has no Paths");
-        // ContentBasedWordCount.HandleArguments(args);
+        ContentBasedWordCount.SetResponse(args);
     }
 }
