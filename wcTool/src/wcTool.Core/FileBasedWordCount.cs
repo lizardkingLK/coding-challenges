@@ -2,7 +2,7 @@ using System.Text;
 
 namespace wcTool.Core
 {
-    internal class FileBasedWordCount
+    public class FileBasedWordCount
     {
         private static readonly Dictionary<string, Delegate> commands = new()
         {
@@ -16,7 +16,7 @@ namespace wcTool.Core
             {"characters", CountCharacters},
         };
 
-        internal static Result<long?> CountBytes(string filePath)
+        public static Result<long?> CountBytes(string filePath)
         {
             byte[] bytes = File.ReadAllBytes(filePath);
             long byteCount = bytes.LongLength;
@@ -24,14 +24,14 @@ namespace wcTool.Core
             return new Result<long?>(byteCount, null);
         }
 
-        internal static Result<long?> CountLines(string filePath)
+        public static Result<long?> CountLines(string filePath)
         {
             long lineCount;
             using (StreamReader streamReader = new(File.OpenRead(filePath)))
             {
                 if (!streamReader.BaseStream.CanRead)
                 {
-                    return new Result<long?>(null, Errors.FILE_IN_USE);
+                    return new Result<long?>(null, Constants.ERROR_FILE_IN_USE);
                 }
 
                 lineCount = streamReader.ReadToEnd()
@@ -49,7 +49,7 @@ namespace wcTool.Core
             {
                 if (!streamReader.BaseStream.CanRead)
                 {
-                    return new Result<long?>(null, Errors.FILE_IN_USE);
+                    return new Result<long?>(null, Constants.ERROR_FILE_IN_USE);
                 }
 
                 string[] content = streamReader.ReadToEnd()
@@ -68,7 +68,7 @@ namespace wcTool.Core
             {
                 if (!streamReader.BaseStream.CanRead)
                 {
-                    return new Result<long?>(null, Errors.FILE_IN_USE);
+                    return new Result<long?>(null, Constants.ERROR_FILE_IN_USE);
                 }
 
                 while (streamReader.Read() != -1)
@@ -90,14 +90,14 @@ namespace wcTool.Core
             HandleArguments(arguments, actions, paths, errors);
             HandleResponses(actions, paths, errors, results);
             HandleResults(results.Where(result => result.Data.Item1 != null), actions);
-            HandleErrors(errors.Where(error => error.Error != null));
+            HandleConstants(errors.Where(error => error.Error != null));
         }
 
-        private static void HandleErrors(IEnumerable<Result<List<string>>> errors)
+        private static void HandleConstants(IEnumerable<Result<List<string>>> errors)
         {
             foreach (Result<List<string>> result in errors)
             {
-                Errors.WriteError(result.Error!);
+                Utility.WriteError(result.Error!);
             }
         }
 
@@ -171,7 +171,7 @@ namespace wcTool.Core
                 result = HandleResponseForPath(path, actions);
                 if (result == null || result.Data == null)
                 {
-                    errors.Add(new(null, result?.Error ?? Errors.FILE_IN_USE));
+                    errors.Add(new(null, result?.Error ?? Constants.ERROR_FILE_IN_USE));
                     continue;
                 }
 
@@ -186,7 +186,7 @@ namespace wcTool.Core
             Result<string> processedPathResult = Utility.GetProcessedFilePath(path);
             if (processedPathResult.Error != null)
             {
-                return new Result<List<long?>>(null, string.Format(Errors.INVALID_FILE_PATH, path));
+                return new Result<List<long?>>(null, string.Format(Constants.ERROR_INVALID_FILE_PATH, path));
             }
 
             path = processedPathResult.Data!;
@@ -203,7 +203,7 @@ namespace wcTool.Core
                 result = (Result<long?>?)action.DynamicInvoke(path);
                 if (result == null)
                 {
-                    return new Result<List<long?>>(null, Errors.FILE_IN_USE);
+                    return new Result<List<long?>>(null, Constants.ERROR_FILE_IN_USE);
                 }
 
                 if (result.Error != null)
@@ -235,7 +235,7 @@ namespace wcTool.Core
                     continue;
                 }
 
-                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandKey)));
+                errors.Add(new Result<List<string>>(null, string.Format(Constants.ERROR_INVALID_COMMANDS, commandKey)));
             }
 
             arguments = arguments.Except(inputs).ToArray();
@@ -248,7 +248,7 @@ namespace wcTool.Core
                     continue;
                 }
 
-                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandCharKey)));
+                errors.Add(new Result<List<string>>(null, string.Format(Constants.ERROR_INVALID_COMMANDS, commandCharKey)));
             }
 
             paths.AddRange(arguments.Except(inputs).ToArray());
