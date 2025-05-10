@@ -57,7 +57,7 @@ namespace wcTool.Core
             string content = GetContent();
             if (string.IsNullOrEmpty(content))
             {
-                Errors.WriteError(Errors.INVALID_CONTENT);
+                Utility.WriteError(Constants.ERROR_INVALID_CONTENT);
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace wcTool.Core
         {
             foreach (Result<List<string>> result in errors)
             {
-                Errors.WriteError(result.Error!);
+                Utility.WriteError(result.Error!);
             }
         }
 
@@ -146,7 +146,7 @@ namespace wcTool.Core
             Result<List<long?>> result = HandleResponseForContent(content, actions);
             if (result == null || result.Data == null)
             {
-                errors.Add(new(null, result?.Error ?? Errors.FILE_IN_USE));
+                errors.Add(new(null, result?.Error ?? Constants.ERROR_FILE_IN_USE));
                 return;
             }
 
@@ -169,7 +169,7 @@ namespace wcTool.Core
                 result = (Result<long?>?)action.DynamicInvoke(content);
                 if (result == null)
                 {
-                    return new Result<List<long?>>(null, Errors.FILE_IN_USE);
+                    return new Result<List<long?>>(null, Constants.ERROR_FILE_IN_USE);
                 }
 
                 if (result.Error != null)
@@ -200,7 +200,7 @@ namespace wcTool.Core
                     continue;
                 }
 
-                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandKey)));
+                errors.Add(new Result<List<string>>(null, string.Format(Constants.ERROR_INVALID_COMMANDS, commandKey)));
             }
 
             arguments = arguments.Except(inputs).ToArray();
@@ -213,7 +213,7 @@ namespace wcTool.Core
                     continue;
                 }
 
-                errors.Add(new Result<List<string>>(null, string.Format(Errors.INVALID_COMMANDS, commandCharKey)));
+                errors.Add(new Result<List<string>>(null, string.Format(Constants.ERROR_INVALID_COMMANDS, commandCharKey)));
             }
 
             if (actions.Count == 0)

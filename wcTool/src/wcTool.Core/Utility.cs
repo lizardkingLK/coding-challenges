@@ -1,7 +1,14 @@
 namespace wcTool.Core
 {
-    internal class Utility
+    internal static class Utility
     {
+        internal static void WriteError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         internal static Result<string> GetProcessedFilePath(string filePath)
         {
             try
@@ -30,7 +37,7 @@ namespace wcTool.Core
 
                 if (!File.Exists(filePath))
                 {
-                    return new Result<string>(null, Errors.INVALID_FILE_PATH);
+                    return new Result<string>(null, Constants.ERROR_INVALID_FILE_PATH);
                 }
 
                 return new Result<string>(filePath, null);

@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\src\wcTool.Core\wcTool.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="*.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
