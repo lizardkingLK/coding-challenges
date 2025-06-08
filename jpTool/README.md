@@ -20,23 +20,23 @@ dotnet tool install --global --add-source .\nupkg jpTool.cli
 
 ### Requirements
 
-- dotnet sdk version 6.0 or 9.0
+- dotnet sdk version 8.0 or 9.0
 - text editor
 
 ### Inside Dev Environment
 
 ```
-dotnet run -f <your_current_dotnet_version> -- "-c" <path_to_a_text_file>
+dotnet run -f <your_current_dotnet_version> -- <path_to_a_json_file>
 ```
 
 ### Using Installed Binary
 
 ```
-ccwc -c <path_to_a_text_file>
+jp <path_to_a_json_file>
 ```
 
 ## Uninstall
 
 ```
-dotnet tool uninstall -g wctool.cli
+dotnet tool uninstall -g jptool.cli
 ```
