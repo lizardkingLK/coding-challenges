@@ -1,15 +1,8 @@
-namespace jpTool.Core
+namespace jpTool.Core;
+
+public class Result<T>(T? data, string? errors)
 {
-    public class Result<T>
-    {
-        public Result(T? data, string? errors)
-        {
-            Data = data;
-            Errors = errors;
-        }
+    public T? Data { get; } = data;
 
-        public T? Data { get; }
-
-        public string? Errors { get; }
-    }
+    public string? Errors { get; } = errors;
 }

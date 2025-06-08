@@ -24,7 +24,7 @@ public class JsonParser
             return;
         }
 
-        Result<bool> jsonValidateResult = ValidateJson(filePathResult.Data!);
+        Result<bool> jsonValidateResult = ValidateJsonFile(filePathResult.Data!);
         if (jsonValidateResult.Errors != null)
         {
             Environment.ExitCode = 1;
