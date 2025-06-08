@@ -1,5 +1,7 @@
 ﻿namespace jpTool.Core.Tests;
 
+using static Utility;
+
 public class TestsCustomJson
 {
     #region Array
@@ -16,7 +18,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\array\boolean\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -27,7 +36,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\array\braces\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -37,7 +53,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\array\empty\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -51,7 +74,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\array\nested\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -63,7 +93,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\array\null\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -77,19 +114,33 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\array\quotes\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
     #endregion
 
     #region Json
     [Theory]
-    [InlineData(@"false.invalid.json", true)]
-    [InlineData(@"true.invalid.json", true)]
+    [InlineData(@"false.invalid.json", false)]
+    [InlineData(@"true.invalid.json", false)]
     public void Should_Test_For_Boolean_Json(string filePath, bool expectedResult)
     {
         filePath = @$"data\custom\json\boolean\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -98,7 +149,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\json\comments\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -108,41 +166,69 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\json\empty\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
-    [InlineData(@"null.valid.json", true)]
+    [InlineData(@"null.valid.json", false)]
     public void Should_Test_For_Null_Json(string filePath, bool expectedResult)
     {
         filePath = @$"data\custom\json\null\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
     [InlineData(@"number.invalid.json", false)]
     [InlineData(@"number.invalid.variant.a.json", false)]
     [InlineData(@"number.invalid.variant.b.json", false)]
-    [InlineData(@"number.valid.json", true)]
-    [InlineData(@"number.valid.variant.a.json", true)]
-    [InlineData(@"number.valid.variant.b.json", true)]
+    [InlineData(@"number.valid.json", false)]
+    [InlineData(@"number.valid.variant.a.json", false)]
+    [InlineData(@"number.valid.variant.b.json", false)]
     public void Should_Test_For_Number_Json(string filePath, bool expectedResult)
     {
         filePath = @$"data\custom\json\number\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
     [InlineData(@"text.invalid.json", false)]
-    [InlineData(@"text.valid.json", true)]
-    [InlineData(@"text.valid.variant.a.json", true)]
+    [InlineData(@"text.valid.json", false)]
+    [InlineData(@"text.valid.variant.a.json", false)]
     public void Should_Test_For_Text_Json(string filePath, bool expectedResult)
     {
         filePath = @$"data\custom\json\text\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
     #endregion
 
@@ -160,7 +246,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\object\boolean\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -170,7 +263,35 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\object\empty\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
+    }
+
+    [Theory]
+    [InlineData(@"nested.invalid.json", false)]
+    [InlineData(@"nested.valid.json", true)]
+    [InlineData(@"nested.valid.variant.a.json", true)]
+    [InlineData(@"nested.valid.variant.b.json", true)]
+    [InlineData(@"nested.valid.variant.c.json", true)]
+    [InlineData(@"nested.valid.variant.d.json", true)]
+    public void Should_Test_For_Nested_Object_Literal(string filePath, bool expectedResult)
+    {
+        filePath = @$"data\custom\object\nested\{filePath}";
+
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -186,7 +307,14 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\object\null\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
+        // Arrange
+        string absoluteFilePath = GetAbsoluteFilePath(filePath);
+
+        // Act
+        var actualResult = Validator.ValidateJsonFile(absoluteFilePath);
+
+        // Assert
+        Assert.Equal(expectedResult, actualResult.Data);
     }
 
     [Theory]
@@ -199,12 +327,6 @@ public class TestsCustomJson
     {
         filePath = @$"data\custom\object\quotes\{filePath}";
 
-        CommonTestWrapper(filePath, expectedResult);
-    }
-    #endregion
-
-    private static void CommonTestWrapper(string filePath, bool expectedResult)
-    {
         // Arrange
         string absoluteFilePath = GetAbsoluteFilePath(filePath);
 
@@ -214,9 +336,5 @@ public class TestsCustomJson
         // Assert
         Assert.Equal(expectedResult, actualResult.Data);
     }
-
-    private static string GetAbsoluteFilePath(string filePath)
-    {
-        return Path.Combine(Directory.GetCurrentDirectory(), filePath);
-    }
+    #endregion
 }

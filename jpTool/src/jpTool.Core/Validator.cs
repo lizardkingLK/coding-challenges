@@ -18,16 +18,6 @@ public static class Validator
 
     public static Result<bool> ValidateJsonElement(string content)
     {
-        long length = content.Length;
-        if (IsValidNullLiteral(content, length)
-        || IsValidTrueLiteral(content, length)
-        || IsValidFalseLiteral(content, length)
-        || IsValidScientificNumber(content)
-        || IsValidQuotedLine(content))
-        {
-            return new(true, null);
-        }
-
         string jsonString = ProcessRawJsonContent(content);
         if (string.IsNullOrEmpty(jsonString))
         {
@@ -94,13 +84,17 @@ public static class Validator
 
     private static Result<(bool, int, char)> ValidateJsonValue(string jsonString, int startIndex, int endIndex)
     {
-        if (jsonString[startIndex] == Quotes)
+        if (jsonString[startIndex] == Negative || (jsonString[startIndex] >= 48 && jsonString[startIndex] <= 57))
+        {
+            return ValidateJsonValueForNumber(jsonString, startIndex, endIndex);
+        }
+        else if (jsonString[startIndex] == Quotes)
         {
             return ValidateJsonValueForString(jsonString, startIndex, endIndex);
         }
         else if (jsonString[startIndex] == OpenCurlyBrace)
         {
-            // return ValidateJsonValueForObject(jsonString, startIndex, endIndex);
+            return ValidateJsonValueForObject(jsonString, startIndex, endIndex);
         }
         else if (jsonString[startIndex] == OpenSquareBrace)
         {
@@ -126,6 +120,30 @@ public static class Validator
         }
 
         return result;
+    }
+
+    private static Result<(bool, int, char)> ValidateJsonValueForNumber(string jsonString, int startIndex, int endIndex)
+    {
+        int i;
+        char next;
+        bool isValid = false;
+        char[] valueEndings = [Comma, CloseCurlyBrace, CloseSquareBrace];
+        for (i = startIndex + 1; i < endIndex; i++)
+        {
+            next = jsonString[i + 1];
+            if (valueEndings.Contains(next))
+            {
+                isValid = IsValidNumber(jsonString[startIndex..(i + 1)]);
+                break;
+            }
+        }
+
+        if (isValid)
+        {
+            return new Result<(bool, int, char)>((true, i + 1, jsonString[i + 1]), null);
+        }
+
+        return new Result<(bool, int, char)>((false, -1, default), ERROR_INVALID_JSON_FOUND);
     }
 
     private static Result<(bool, int, char)> ValidateJsonValueForString(string jsonString, int startIndex, int endIndex)
@@ -184,6 +202,53 @@ public static class Validator
             }
 
             if (arrayValueValidationResult.Data.Item3 == CloseSquareBrace)
+            {
+                isValid = true;
+                break;
+            }
+        }
+
+        if (!isValid)
+        {
+            return new Result<(bool, int, char)>((false, -1, default), ERROR_INVALID_JSON_FOUND);
+        }
+
+        if (i == endIndex)
+        {
+            return new Result<(bool, int, char)>((true, endIndex, jsonString[endIndex]), null);
+        }
+
+        return new Result<(bool, int, char)>((true, i + 1, jsonString[i + 1]), null);
+    }
+
+    private static Result<(bool, int, char)> ValidateJsonValueForObject(string jsonString, int startIndex, int endIndex)
+    {
+        int i;
+        char current;
+        char next;
+        bool isValid = false;
+        char[] valueEndings = [Comma, CloseCurlyBrace];
+        Result<(bool, int, char)> objectValueValidationResult;
+        for (i = startIndex + 1; i < endIndex; i++)
+        {
+            current = jsonString[i];
+            next = jsonString[i + 1];
+            if (current == CloseCurlyBrace)
+            {
+                isValid = valueEndings.Contains(next);
+                break;
+            }
+
+            objectValueValidationResult = ValidateJsonKeyValue(jsonString, i, endIndex);
+            i = objectValueValidationResult.Data.Item2;
+
+            if (!objectValueValidationResult.Data.Item1)
+            {
+                isValid = false;
+                break;
+            }
+
+            if (objectValueValidationResult.Data.Item3 == CloseCurlyBrace)
             {
                 isValid = true;
                 break;

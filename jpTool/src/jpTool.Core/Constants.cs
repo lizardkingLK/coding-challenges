@@ -10,6 +10,7 @@ public static class Constants
     public const char Quotes = '"';
     public const char Colon = ':';
     public const char ReverseSolidus = '\\';
+    public const char Negative = '-';
     public const string Null = "null";
     public const string True = "true";
     public const string False = "false";

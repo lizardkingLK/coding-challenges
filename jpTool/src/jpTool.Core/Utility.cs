@@ -70,28 +70,8 @@ internal static class Utility
         Console.ForegroundColor = ConsoleColor.White;
     }
 
-    internal static bool IsValidNullLiteral(string content, long length)
+    internal static bool IsValidNumber(string content)
     {
-        return content == Null && length == 4;
-    }
-
-    internal static bool IsValidTrueLiteral(string content, long length)
-    {
-        return content == True && length == 4;
-    }
-
-    internal static bool IsValidFalseLiteral(string content, long length)
-    {
-        return content == False && length == 5;
-    }
-
-    internal static bool IsValidScientificNumber(string content)
-    {
-        return RegexForMatchScientificNumber().IsMatch(content);
-    }
-
-    internal static bool IsValidQuotedLine(string content)
-    {
-        return RegexForMatchQuotedLineOfText().IsMatch(content);
+        return RegexForValidNumericLiteral().IsMatch(content);
     }
 }
