@@ -1,5 +1,7 @@
 namespace jpTool.Core;
 
+using System.Text.RegularExpressions;
+
 internal static partial class RegularExpressions
 {
     [GeneratedRegex(@"(([\n\r\t\s\b\f])|(\\u+[0-9aA-fF]{4}))")]
