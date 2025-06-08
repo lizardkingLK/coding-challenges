@@ -26,13 +26,13 @@ dotnet tool install --global --add-source .\nupkg jpTool.cli
 ### Inside Dev Environment
 
 ```
-dotnet run -f <your_current_dotnet_version> -- "-c" <path_to_a_text_file>
+dotnet run -f <your_current_dotnet_version> -- <path_to_a_json_file>
 ```
 
 ### Using Installed Binary
 
 ```
-jp <path_to_a_text_file>
+jp <path_to_a_json_file>
 ```
 
 ## Uninstall
