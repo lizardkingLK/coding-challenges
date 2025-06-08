@@ -20,7 +20,7 @@ dotnet tool install --global --add-source .\nupkg jpTool.cli
 
 ### Requirements
 
-- dotnet sdk version 6.0 or 9.0
+- dotnet sdk version 8.0 or 9.0
 - text editor
 
 ### Inside Dev Environment
