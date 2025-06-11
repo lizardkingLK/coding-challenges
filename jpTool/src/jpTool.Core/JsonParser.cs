@@ -2,12 +2,13 @@
 
 using static Utility;
 using static Validator;
-using static Constants;
 
 public class JsonParser
 {
     public static void ProcessValidation(string[] args)
     {
+        DateTime startTime = DateTime.UtcNow;
+
         Result<bool> validArgumentsResult = IsValidArguments(args);
         if (validArgumentsResult.Errors != null)
         {
@@ -32,7 +33,8 @@ public class JsonParser
             return;
         }
 
-        WriteSuccess(SUCCESS_VALID_JSON_FOUND);
+        WriteSuccess(startTime, DateTime.UtcNow);
+
         Environment.Exit(0);
     }
 }
