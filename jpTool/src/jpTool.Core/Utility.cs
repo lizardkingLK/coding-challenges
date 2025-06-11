@@ -44,11 +44,6 @@ internal static class Utility
         }
     }
 
-    internal static string ProcessRawJsonContent(string content)
-    {
-        return RegexForSpecialAndWhiteSpace().Replace(content, string.Empty);
-    }
-
     internal static Result<bool> IsValidArguments(string[] args)
     {
         return args.Length > 0
@@ -56,22 +51,43 @@ internal static class Utility
         : new Result<bool>(false, ERROR_NOT_ENOUGH_ARGUMENTS);
     }
 
-    internal static void WriteError(string error)
+    internal static void WriteError(string message)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(error);
-        Console.ForegroundColor = ConsoleColor.White;
-    }
-
-    internal static void WriteSuccess(string message)
-    {
-        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine(message);
         Console.ForegroundColor = ConsoleColor.White;
     }
 
-    internal static bool IsValidNumber(string content)
+    internal static void WriteSuccess(DateTime start, DateTime end)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(string.Format(
+            SUCCESS_VALID_JSON_FOUND,
+            (end - start).TotalNanoseconds));
+        Console.ForegroundColor = ConsoleColor.White;
+    }
+
+    internal static bool IsValidNumber(char[] content)
     {
         return RegexForValidNumericLiteral().IsMatch(content);
+    }
+
+    internal static bool IsValidEscapeSequence(char[] content)
+    {
+        return RegexForEscapeSequence().IsMatch(content);
+    }
+
+    internal static bool IsValueIncluded(char[] array, char value)
+    {
+        int length = array.Length;
+        for (int i = 0; i < length; i++)
+        {
+            if (array[i] == value)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

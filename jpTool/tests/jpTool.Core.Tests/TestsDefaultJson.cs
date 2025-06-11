@@ -2,6 +2,7 @@
 
 using static Utility;
 
+[Collection("jpTool.Core.Tests")]
 public class TestsDefaultJson
 {
     [Theory]

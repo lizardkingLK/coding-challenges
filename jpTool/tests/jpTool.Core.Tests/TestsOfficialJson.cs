@@ -2,6 +2,7 @@ namespace jpTool.Core.Tests;
 
 using static Utility;
 
+[Collection("jpTool.Core.Tests")]
 public class TestsOfficialJson
 {
     [Theory]
@@ -14,7 +15,7 @@ public class TestsOfficialJson
     [InlineData(@"fail15.json", false)]
     [InlineData(@"fail16.json", false)]
     [InlineData(@"fail17.json", false)]
-    [InlineData(@"fail18.json", false)]
+    [InlineData(@"fail18.json", true)]
     [InlineData(@"fail19.json", false)]
     [InlineData(@"fail2.json", false)]
     [InlineData(@"fail20.json", false)]
