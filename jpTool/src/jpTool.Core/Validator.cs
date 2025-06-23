@@ -2,7 +2,7 @@ namespace jpTool.Core;
 
 using static Constants;
 using static Values;
-using static Error;
+using static Errors;
 using static Utility;
 
 public static class Validator
