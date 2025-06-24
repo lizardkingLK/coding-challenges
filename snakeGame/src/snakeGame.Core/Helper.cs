@@ -36,12 +36,14 @@ public static class Helper
             if (IncludesInCollection(currentArgument, heightFlags))
             {
                 height = currentValue;
+                Console.WriteLine("height = " + height);
                 continue;
             }
 
             if (IncludesInCollection(currentArgument, widthFlags))
             {
                 width = currentValue;
+                Console.WriteLine("width = " + width);
                 continue;
             }
 
