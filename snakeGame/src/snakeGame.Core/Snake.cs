@@ -7,7 +7,6 @@ public static class Snake
 {
     public static void Initialize(string[] args)
     {
-        Console.WriteLine("console\nheight is {0}\nwidth is {1}", Console.BufferHeight, Console.BufferWidth);
 
         Result<(bool, int, int)> argumentsValidationResult = ValidateArguments(args, Console.BufferHeight, Console.BufferWidth);
         if (argumentsValidationResult.Error != null)
@@ -16,7 +15,5 @@ public static class Snake
             WriteError(argumentsValidationResult.Error);
             return;
         }
-
-        Console.WriteLine("finished");
     }
 }

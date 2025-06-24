@@ -27,7 +27,7 @@ public static class Helper
         for (i = 0; i < length; i += 2)
         {
             currentArgument = args[i].Trim().ToLower();
-            currentValueString = args[i + 1].Trim().ToLower();
+            currentValueString = args[i + 1];
             if (!int.TryParse(currentValueString, out int currentValue))
             {
                 return new((false, -1, -1), ERROR_INVALID_ARGUMENTS);
@@ -36,14 +36,12 @@ public static class Helper
             if (IncludesInCollection(currentArgument, heightFlags))
             {
                 height = currentValue;
-                Console.WriteLine("height = " + height);
                 continue;
             }
 
             if (IncludesInCollection(currentArgument, widthFlags))
             {
                 width = currentValue;
-                Console.WriteLine("width = " + width);
                 continue;
             }
 

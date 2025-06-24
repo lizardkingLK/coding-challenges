@@ -1,11 +1,18 @@
-﻿using snakeGame.Core;
+﻿namespace snakeGame.Program;
 
-namespace snakeGame.Program;
+using snakeGame.Core;
 
 class Program
 {
     static void Main(string[] args)
     {
-        Snake.Initialize(args);
+        try
+        {
+            Snake.Initialize(args);
+        }
+        catch (IOException)
+        {
+            Utility.WriteError(Constants.ERROR_INVALID_TERMINAL);
+        }
     }
 }

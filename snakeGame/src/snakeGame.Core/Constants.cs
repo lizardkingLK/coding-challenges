@@ -7,4 +7,5 @@ public static class Constants
     public const string FlagWidth = "--width";
     public const string FlagWidthPrefixed = "-w";
     public const string ERROR_INVALID_ARGUMENTS = "error. invalid arguments given";
+    public const string ERROR_INVALID_TERMINAL = "error. invalid terminal environment";
 }

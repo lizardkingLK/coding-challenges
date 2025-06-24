@@ -19,7 +19,7 @@ public static class Utility
         return false;
     }
 
-    internal static void WriteError(string message)
+    public static void WriteError(string message)
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(message);
