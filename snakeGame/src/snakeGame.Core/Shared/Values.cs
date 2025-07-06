@@ -1,4 +1,4 @@
-namespace snakeGame.Core;
+namespace snakeGame.Core.Shared;
 
 using static Constants;
 
