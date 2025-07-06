@@ -2,7 +2,7 @@ namespace jpTool.Core;
 
 using static Constants;
 
-internal static class Error
+internal static class Errors
 {
     internal static Result<bool> ErrorFileIsEmpty = new(false, ERROR_FILE_IS_EMPTY);
     internal static Result<bool> ErrorInvalidJsonFound = new(false, ERROR_INVALID_JSON_FOUND);
