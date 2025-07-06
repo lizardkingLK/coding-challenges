@@ -2,7 +2,7 @@ namespace snakeGame.Core;
 
 using static Constants;
 
-public static class Values
+public readonly struct Values
 {
     public static readonly string[] widthFlags =
     [

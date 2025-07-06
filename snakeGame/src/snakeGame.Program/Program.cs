@@ -8,7 +8,7 @@ class Program
     {
         try
         {
-            Snake.Initialize(args);
+            Snake.Run(args);
         }
         catch (IOException)
         {

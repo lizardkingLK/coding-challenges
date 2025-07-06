@@ -3,6 +3,7 @@ namespace snakeGame.Core;
 using static Constants;
 using static Values;
 using static Utility;
+using static Board;
 
 public static class Helper
 {
@@ -48,16 +49,30 @@ public static class Helper
             return new((false, -1, -1), ERROR_INVALID_ARGUMENTS);
         }
 
-        if (height > maxHeight)
+        if (height < 10 || height > maxHeight)
         {
             height = maxHeight;
         }
 
-        if (width > maxWidth)
+        if (width < 10 || width > maxWidth)
         {
             width = maxWidth;
         }
 
         return new((true, height, width), null);
+    }
+
+    public static Result<char[][]> InitializeGame(int height, int width)
+    {
+        // initialize board
+        Result<Actor[]> gameBoardResult = InitializeBoard(height, width);
+
+        // initialize 
+        // Enemy.
+
+        // initialize player
+
+
+        return new([], null);
     }
 }

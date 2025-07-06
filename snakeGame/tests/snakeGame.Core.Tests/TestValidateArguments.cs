@@ -49,6 +49,10 @@ public class TestValidateArguments
     [InlineData("200", 200, "400", 400, 200, 400)]
     [InlineData("101", 100, "201", 200, 100, 200)]
     [InlineData("201", 200, "400", 400, 200, 400)]
+    [InlineData("-1", 100, "201", 200, 100, 200)]
+    [InlineData("5", 200, "400", 400, 200, 400)]
+    [InlineData("101", 100, "-1", 200, 100, 200)]
+    [InlineData("201", 200, "5", 400, 200, 400)]
     public void Should_Test_For_Arguments_Validation_Height(
         string heightValue,
         int maxHeight,

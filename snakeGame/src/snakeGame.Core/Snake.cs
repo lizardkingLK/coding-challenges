@@ -5,9 +5,8 @@ using static Utility;
 
 public static class Snake
 {
-    public static void Initialize(string[] args)
+    public static void Run(string[] args)
     {
-
         Result<(bool, int, int)> argumentsValidationResult = ValidateArguments(args, Console.BufferHeight, Console.BufferWidth);
         if (argumentsValidationResult.Error != null)
         {
@@ -15,5 +14,9 @@ public static class Snake
             WriteError(argumentsValidationResult.Error);
             return;
         }
+
+        _ = InitializeGame(argumentsValidationResult.Data.Item2, argumentsValidationResult.Data.Item3);
+
+        
     }
 }
