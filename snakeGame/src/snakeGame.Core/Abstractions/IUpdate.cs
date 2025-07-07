@@ -4,5 +4,5 @@ namespace snakeGame.Core.Abstractions;
 
 public interface IUpdate
 {
-    public void Update(Actor[][] actors, );
+    public void Update(int height, int width, Actor[][] actors);
 }

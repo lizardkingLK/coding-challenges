@@ -1,16 +1,21 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Actors;
-
-using static snakeGame.Core.Shared.Constants;
+using snakeGame.Core.Shared;
 
 namespace snakeGame.Core.Generators;
 
 public class PlayerGenerator : IGenerate
 {
-    public IGenerate? Next { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public IGenerate? Next { get; set; }
 
-    public Result<bool> Generate(int height, int width, Actor[][]? actors = null)
+    public Result<bool> Generate(Manager manager)
     {
-        throw new NotImplementedException();
+        manager.CreatePlayer();
+        if (Next != null)
+        {
+            return Next.Generate(manager);
+        }
+
+        return new(true, null);
     }
 }

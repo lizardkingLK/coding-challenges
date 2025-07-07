@@ -5,12 +5,14 @@ using snakeGame.Core.Shared;
 namespace snakeGame.Core;
 
 using static Helpers.ArgumentHelper;
-using static Helpers.GeneratorHelper;
+using static Helpers.ChainingHelper;
 using static Utility;
 
 public class SnakeGame
 {
     private readonly IGenerate generator = GetGenerator();
+
+    private readonly IDisplay display = GetDisplay();
 
     public void Run(string[] args)
     {
@@ -22,10 +24,14 @@ public class SnakeGame
             return;
         }
 
-        (_, int height, int width) = argumentsValidationResult.Data;
-        Actor[][] actors = new Actor[height][];
-        
-        Result<bool> generatedGameContext = generator.Generate(height, width, actors);
+        Manager manager = new()
+        {
+            Height = argumentsValidationResult.Data.Item2,
+            Width = argumentsValidationResult.Data.Item3,
+            Actors = new Actor[argumentsValidationResult.Data.Item2][],
+        };
+
+        Result<bool> generatedGameContext = generator.Generate(manager);
         if (generatedGameContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -33,6 +39,6 @@ public class SnakeGame
             return;
         }
 
-        _ = InitializeGame();
+        display.Display(manager);
     }
 }

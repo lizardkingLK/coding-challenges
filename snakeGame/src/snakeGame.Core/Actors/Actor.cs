@@ -2,7 +2,11 @@ using snakeGame.Core.Enums;
 
 namespace snakeGame.Core.Actors;
 
-public struct Actor(Tuple<int, int> position, DirectionEnum? direction, char state)
+public struct Actor(
+    Tuple<int, int> position,
+    DirectionEnum? direction,
+    char state,
+    ConsoleColor foregroundColor = ConsoleColor.White)
 {
     public Tuple<int, int> Position { get; } = position;
 
@@ -11,4 +15,6 @@ public struct Actor(Tuple<int, int> position, DirectionEnum? direction, char sta
     public DirectionEnum? Direction { get; set; } = direction;
 
     public char State { get; set; } = state;
+
+    public ConsoleColor ForegroundColor { get; set; } = foregroundColor;
 }

@@ -25,6 +25,6 @@ public static class Utility
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(message);
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.ResetColor();
     }
 }

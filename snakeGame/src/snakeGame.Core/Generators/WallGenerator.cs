@@ -1,5 +1,6 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Actors;
+using snakeGame.Core.Shared;
 
 using static snakeGame.Core.Shared.Constants;
 
@@ -9,22 +10,28 @@ public class WallGenerator : IGenerate
 {
     public IGenerate? Next { get; set; }
 
-    public Result<bool> Generate(int height, int width, Actor[][] actors)
+    public Result<bool> Generate(Manager manager)
     {
+        int height = manager.Height;
+        int width = manager.Width;
+        Actor[][] actors = manager.Actors;
+
         int i;
         int j;
+        Actor currentActor;
         for (i = 0; i < height; i++)
         {
             actors[i] = new Actor[width];
             for (j = 0; j < width; j++)
             {
-                actors[i][j] = new(new(i, j), null, CharWallBlock);
+                currentActor = new(new(i, j), null, CharWallBlock, WallColor);
+                actors[i][j] = currentActor;
             }
         }
 
         if (Next != null)
         {
-            return Next.Generate(height, width, actors);
+            return Next.Generate(manager);
         }
 
         return new(true, null);
