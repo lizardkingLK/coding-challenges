@@ -1,7 +1,5 @@
 namespace snakeGame.Core.Shared;
 
-using static Constants;
-
 public static class Utility
 {
     public static bool IncludesInCollection<T, V>(T value, V collection)

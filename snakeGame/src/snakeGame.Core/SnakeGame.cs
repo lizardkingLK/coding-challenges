@@ -12,7 +12,7 @@ public class SnakeGame
 {
     private readonly IGenerate generator = GetGenerator();
 
-    private readonly IDisplay display = GetDisplay();
+    private readonly IDisplay display = GetFileDisplay();
 
     public void Run(string[] args)
     {
@@ -39,6 +39,11 @@ public class SnakeGame
             return;
         }
 
-        display.Display(manager);
+        for (int i = 0; i < 10; i++)
+        {
+            Console.Clear();
+            display.Display(manager);
+            Thread.Sleep(100);
+        }
     }
 }

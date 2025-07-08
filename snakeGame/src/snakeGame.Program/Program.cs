@@ -17,6 +17,7 @@ class Program
         catch (IOException)
         {
             WriteError(ERROR_INVALID_TERMINAL);
+            throw;
         }
     }
 }

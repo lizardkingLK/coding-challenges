@@ -1,4 +1,4 @@
-namespace snakeGame.Core.Library; 
+namespace snakeGame.Core.Library;
 
 public class LinkedList<T>
 {

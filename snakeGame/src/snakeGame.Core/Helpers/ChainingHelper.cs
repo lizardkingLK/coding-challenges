@@ -6,9 +6,9 @@ namespace snakeGame.Core.Helpers;
 
 public static class ChainingHelper
 {
-    public static IDisplay GetDisplay()
+    public static IDisplay GetFileDisplay()
     {
-        return new ActorDisplay();
+        return new FileDisplay();
     }
 
     public static IGenerate GetGenerator()

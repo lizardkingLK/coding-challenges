@@ -15,22 +15,22 @@ public class SpaceGenerator : IGenerate
     {
         int height = manager.Height;
         int width = manager.Width;
-        Actor[][] actors = manager.Actors;
-        HashMap<string, Actor> spaceTracker = manager.SpaceTracker;
+        DynamicArray<Actor> actors = manager.Actors;
 
         int i;
         int j;
-        Actor currentActor;
         for (i = 1; i < height - 1; i++)
         {
             for (j = 1; j < width - 1; j++)
             {
-                currentActor = actors[i][j];
-                currentActor.State = CharSpaceBlock;
-                currentActor.ForegroundColor = ConsoleColor.White;
+                if (!actors.Search(
+                    actor => actor.Position.Item1 == i && actor.Position.Item2 == j,
+                    out Actor currentActor))
+                {
+                    throw new NullReferenceException(nameof(currentActor));
+                }
 
-                actors[i][j] = currentActor;
-                spaceTracker.Insert(currentActor.Id, currentActor);
+                currentActor.State = CharSpaceBlock;
             }
         }
 

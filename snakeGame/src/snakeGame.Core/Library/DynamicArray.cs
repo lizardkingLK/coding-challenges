@@ -149,6 +149,15 @@ public class DynamicArray<T>
         values = tempArray;
     }
 
+    public void Display(bool? shouldIncludeCapacity = false)
+    {
+        int length = shouldIncludeCapacity == true ? Capacity : Size;
+        for (int i = 0; i < length; i++)
+        {
+            Console.Write("{0} ", values[i]);
+        }
+    }
+
     public T? GetValue(int index)
     {
         if (index < 0 || index > Size - 1)
@@ -159,13 +168,80 @@ public class DynamicArray<T>
         return values[index];
     }
 
-    public void Display(bool? shouldIncludeCapacity = false)
+    public bool Search(Func<T, bool> searchFunction, out T? value)
     {
-        Console.WriteLine("\ninfo. elements of dynamic array below");
-        int length = shouldIncludeCapacity == true ? Capacity : Size;
-        for (int i = 0; i < length; i++)
+        value = default;
+
+        if (Size == 0)
         {
-            Console.Write("{0} ", values[i]);
+            return false;
         }
+
+        int i = 0;
+        value = values[i];
+        while (value != null)
+        {
+            if (searchFunction(value))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool GetRandom(Func<T, bool> searchFunction, out T? value)
+    {
+        value = default;
+
+        if (Size == 0)
+        {
+            return false;
+        }
+
+        int i = 0;
+        value = values[i];
+        DynamicArray<T> tempValues = new();
+        while (value != null)
+        {
+            if (searchFunction(value))
+            {
+                tempValues.Add(value);
+            }
+
+            i++;
+        }
+
+        Random random = new();
+        value = tempValues.GetValue(random.Next(0, tempValues.Size));
+
+        bool hasValueFound = true;
+
+        return hasValueFound;
+    }
+
+    public bool Replace(Func<T, bool> searchFunction, T value)
+    {
+        if (Size == 0)
+        {
+            return false;
+        }
+
+        int i = 0;
+        T? current = values[i];
+        while (current != null)
+        {
+            if (searchFunction(current))
+            {
+                values[i] = value;
+                break;
+            }
+
+            i++;
+        }
+
+        bool hasValueFound = true;
+
+        return hasValueFound;
     }
 }
