@@ -1,8 +1,8 @@
-﻿namespace snakeGame.Core.Tests;
+﻿using static snakeGame.Core.Shared.Values;
+using static snakeGame.Core.Shared.Constants;
+using static snakeGame.Core.Shared.Utility;
 
-using static snakeGame.Core.Constants;
-using static snakeGame.Core.Utility;
-using static snakeGame.Core.Values;
+namespace snakeGame.Core.Tests;
 
 [Collection("snakeGame.Core.Tests")]
 public class TestArguments

@@ -1,4 +1,4 @@
-namespace snakeGame.Core;
+namespace snakeGame.Core.Shared;
 
 public readonly struct Result<T>(T? data, string? error)
 {

@@ -1,6 +1,6 @@
 namespace snakeGame.Core.Tests;
 
-using static snakeGame.Core.Constants;
+using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Helper;
 
 [Collection("snakeGame.Core.Tests")]

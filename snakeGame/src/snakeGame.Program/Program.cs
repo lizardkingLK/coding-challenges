@@ -2,17 +2,22 @@
 
 using snakeGame.Core;
 
+using static snakeGame.Core.Shared.Constants;
+using static snakeGame.Core.Shared.Utility;
+
 class Program
 {
     static void Main(string[] args)
     {
         try
         {
-            Snake.Run(args);
+            SnakeGame snakeGame = new();
+            snakeGame.Run(args);
         }
         catch (IOException)
         {
-            Utility.WriteError(Constants.ERROR_INVALID_TERMINAL);
+            WriteError(ERROR_INVALID_TERMINAL);
+            throw;
         }
     }
 }

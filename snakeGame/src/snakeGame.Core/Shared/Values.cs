@@ -1,5 +1,6 @@
-namespace snakeGame.Core;
+namespace snakeGame.Core.Shared;
 
+using snakeGame.Core.Enums;
 using static Constants;
 
 public readonly struct Values
@@ -15,4 +16,6 @@ public readonly struct Values
         FlagHeight,
         FlagHeightPrefixed,
     ];
+
+    public static readonly DirectionEnum[] directions = Enum.GetValues<DirectionEnum>();
 }

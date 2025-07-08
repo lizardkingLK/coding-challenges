@@ -1,11 +1,11 @@
-namespace snakeGame.Core;
+namespace snakeGame.Core.Helpers;
 
-using static Constants;
-using static Values;
-using static Utility;
-using static Board;
+using snakeGame.Core.Shared;
+using static snakeGame.Core.Shared.Constants;
+using static snakeGame.Core.Shared.Utility;
+using static snakeGame.Core.Shared.Values;
 
-public static class Helper
+public static class ArgumentHelper
 {
     public static Result<(bool, int, int)> ValidateArguments(string[] args, int maxHeight, int maxWidth)
     {
@@ -60,19 +60,5 @@ public static class Helper
         }
 
         return new((true, height, width), null);
-    }
-
-    public static Result<char[][]> InitializeGame(int height, int width)
-    {
-        // initialize board
-        Result<Actor[]> gameBoardResult = InitializeBoard(height, width);
-
-        // initialize 
-        // Enemy.
-
-        // initialize player
-
-
-        return new([], null);
     }
 }
