@@ -6,7 +6,7 @@ public class DynamicArray<T>
 
     public int Size { get; private set; } = 0;
 
-    public T?[] values;
+    private T?[] values;
 
     public DynamicArray()
     {
@@ -168,29 +168,33 @@ public class DynamicArray<T>
         return values[index];
     }
 
-    public bool Search(Func<T, bool> searchFunction, out T? value)
+    public bool Search(Func<T?, bool> searchFunction, int startingIndex, out int index, out T? value)
     {
+        index = 0;
         value = default;
 
-        if (Size == 0)
+        if (Size == 0 || startingIndex > Size)
         {
             return false;
         }
 
-        int i = 0;
-        value = values[i];
-        while (value != null)
+        int i = startingIndex;
+        while (i < Size)
         {
-            if (searchFunction(value))
+            if (searchFunction(values[i]))
             {
+                index = i;
+                value = values[i];
                 return true;
             }
+
+            i++;
         }
 
         return false;
     }
 
-    public bool GetRandom(Func<T, bool> searchFunction, out T? value)
+    public bool GetRandom(Func<T?, bool> searchFunction, ref int index, out T? value)
     {
         value = default;
 
@@ -200,27 +204,26 @@ public class DynamicArray<T>
         }
 
         int i = 0;
-        value = values[i];
-        DynamicArray<T> tempValues = new();
-        while (value != null)
+        DynamicArray<T?> tempValues = new();
+        while (i < Size)
         {
-            if (searchFunction(value))
+            if (searchFunction(values[i]))
             {
+                value = values[i];
                 tempValues.Add(value);
             }
 
             i++;
         }
 
-        Random random = new();
-        value = tempValues.GetValue(random.Next(0, tempValues.Size));
+        i = new Random().Next(0, tempValues.Size);
+        index = i;
+        value = tempValues.GetValue(i);
 
-        bool hasValueFound = true;
-
-        return hasValueFound;
+        return true;
     }
 
-    public bool Replace(Func<T, bool> searchFunction, T value)
+    public bool Replace(Func<T?, bool> searchFunction, T? value)
     {
         if (Size == 0)
         {
@@ -228,20 +231,42 @@ public class DynamicArray<T>
         }
 
         int i = 0;
-        T? current = values[i];
-        while (current != null)
+        while (i < Size)
         {
-            if (searchFunction(current))
+            if (searchFunction(values[i]))
             {
                 values[i] = value;
-                break;
+                return true;
             }
 
             i++;
         }
 
-        bool hasValueFound = true;
+        return true;
+    }
 
-        return hasValueFound;
+    public bool Replace(int index, T value)
+    {
+        if (Size == 0)
+        {
+            return false;
+        }
+
+        if (index < 0 || index > Size - 1)
+        {
+            return false;
+        }
+
+        values[index] = value;
+
+        return true;
+    }
+
+    public IEnumerable<T?> GetValues()
+    {
+        for (int i = 0; i < Size; i++)
+        {
+            yield return values[i];
+        }
     }
 }

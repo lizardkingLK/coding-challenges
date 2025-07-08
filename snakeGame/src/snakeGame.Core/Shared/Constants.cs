@@ -2,6 +2,8 @@ namespace snakeGame.Core.Shared;
 
 public static class Constants
 {
+    public const int MaxWidth = 250;
+    public const int MaxHeight = 25;
     public const string FlagHeight = "--height";
     public const string FlagHeightPrefixed = "-h";
     public const string FlagWidth = "--width";

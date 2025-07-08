@@ -1,11 +1,13 @@
 ﻿using snakeGame.Core.Abstractions;
 using snakeGame.Core.Actors;
 using snakeGame.Core.Shared;
+using snakeGame.Core.Helpers;
 
 namespace snakeGame.Core;
 
-using static Helpers.ArgumentHelper;
-using static Helpers.ChainingHelper;
+using static Constants;
+using static ArgumentHelper;
+using static ChainingHelper;
 using static Utility;
 
 public class SnakeGame
@@ -16,7 +18,7 @@ public class SnakeGame
 
     public void Run(string[] args)
     {
-        Result<(bool, int, int)> argumentsValidationResult = ValidateArguments(args, Console.BufferHeight, Console.BufferWidth);
+        Result<(bool, int, int)> argumentsValidationResult = ValidateArguments(args, MaxHeight, MaxWidth);
         if (argumentsValidationResult.Error != null)
         {
             Environment.ExitCode = 1;

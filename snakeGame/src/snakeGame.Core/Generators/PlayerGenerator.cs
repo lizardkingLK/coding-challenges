@@ -26,7 +26,9 @@ public class PlayerGenerator : IGenerate
 
     private static void CreatePlayer(Manager manager)
     {
-        Actor? randomPlayerActor = manager.GetActor(actor => actor.State == CharSpaceBlock)
+        Actor? randomPlayerActor = manager.GetActor(
+            actor => actor.State == CharSpaceBlock,
+            out int index)
             ?? throw new Exception("error. actor value is null");
 
         Actor playerActor = randomPlayerActor.Value;
@@ -48,9 +50,9 @@ public class PlayerGenerator : IGenerate
         Actor currentHead,
         Library.LinkedList<Actor> playerActor)
     {
+        Console.WriteLine("HELLO DARKNESS MY OLD FRIEND");
         if (playerLength > PlayerInitialLength)
         {
-            Console.WriteLine("HELLO DARKNESS MY OLD FRIEND");
             return playerActor;
         }
 

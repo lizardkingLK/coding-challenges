@@ -25,12 +25,16 @@ public class SpaceGenerator : IGenerate
             {
                 if (!actors.Search(
                     actor => actor.Position.Item1 == i && actor.Position.Item2 == j,
+                    width * i + j,
+                    out int index,
                     out Actor currentActor))
                 {
                     throw new NullReferenceException(nameof(currentActor));
                 }
 
                 currentActor.State = CharSpaceBlock;
+                
+                actors.Replace(index, currentActor);
             }
         }
 

@@ -14,9 +14,11 @@ public class Manager
 
     public Library.LinkedList<Actor> PlayerActor { get; set; } = new();
 
-    public Actor? GetActor(Func<Actor, bool> predicate)
+    public Actor? GetActor(Func<Actor, bool> predicate, out int index)
     {
-        if (Actors.GetRandom(predicate, out Actor actor))
+        index = -1;
+
+        if (Actors.GetRandom(predicate, ref index, out Actor actor))
         {
             return actor;
         }
