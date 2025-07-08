@@ -1,5 +1,6 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Actors;
+using snakeGame.Core.Library;
 
 namespace snakeGame.Core.Display;
 
@@ -9,25 +10,25 @@ public class FileDisplay : IDisplay
     {
         int height = manager.Height;
         int width = manager.Width;
-        Actor[][]? actors = manager.Actors;
-        ArgumentNullException.ThrowIfNull(actors, nameof(actors));
+        DynamicArray<Actor> actors = manager.Actors;
+        int size = actors.Size;
 
         using FileStream fileStream = new("output.txt", FileMode.Create);
 
         Actor currentActor;
-        for (int i = 0; i < height; i++)
+        foreach (var item in actors.Get)
         {
-            for (int j = 0; j < width; j++)
-            {
-                currentActor = actors[i][j];
-                // Console.ForegroundColor = currentActor.ForegroundColor;
-                fileStream.WriteByte((byte)currentActor.State);
-                // Console.Write(currentActor.State);
-                // Console.ResetColor();
-            }
+            
+        }
+        for (int i = 0; i < size; i++)
+        {
+            currentActor = actors.Search();
 
-            // Console.WriteLine();
-            fileStream.WriteByte((byte)'\n');
+            fileStream.WriteByte((byte)currentActor.State);
+            if (i > 0 && i % width == 0)
+            {
+                fileStream.WriteByte((byte)'\n');
+            }
         }
 
         fileStream.Close();

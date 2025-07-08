@@ -28,7 +28,6 @@ public class SnakeGame
         {
             Height = argumentsValidationResult.Data.Item2,
             Width = argumentsValidationResult.Data.Item3,
-            Actors = new Actor[argumentsValidationResult.Data.Item2][],
         };
 
         Result<bool> generatedGameContext = generator.Generate(manager);
@@ -39,7 +38,7 @@ public class SnakeGame
             return;
         }
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 1; i++)
         {
             Console.Clear();
             display.Display(manager);
