@@ -40,11 +40,6 @@ public class SnakeGame
             return;
         }
 
-        for (int i = 0; i < 1; i++)
-        {
-            Console.Clear();
-            display.Display(manager);
-            Thread.Sleep(100);
-        }
+        display.Display(manager);
     }
 }

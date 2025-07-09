@@ -10,15 +10,15 @@ public class Manager
 
     public DynamicArray<Actor> Actors { get; } = new();
 
-    public Actor EnemyActor { get; set; }
+    public Actor? EnemyActor { get; set; }
 
     public Library.LinkedList<Actor> PlayerActor { get; set; } = new();
 
-    public Actor? GetActor(Func<Actor, bool> predicate, out int index)
+    public Actor? GetActor(Func<Actor?, bool> predicate, out int index)
     {
         index = -1;
 
-        if (Actors.GetRandom(predicate, ref index, out Actor actor))
+        if (Actors.GetRandom(predicate, ref index, out Actor? actor))
         {
             return actor;
         }

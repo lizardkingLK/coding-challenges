@@ -2,7 +2,7 @@ using snakeGame.Core.Enums;
 
 namespace snakeGame.Core.Actors;
 
-public struct Actor(
+public class Actor(
     Tuple<int, int> position,
     DirectionEnum? direction,
     char state)

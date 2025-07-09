@@ -26,21 +26,20 @@ public class PlayerGenerator : IGenerate
 
     private static void CreatePlayer(Manager manager)
     {
-        Actor? randomPlayerActor = manager.GetActor(
-            actor => actor.State == CharSpaceBlock,
+        Actor? chosenPlayerActor = manager.GetActor(
+            actor => actor?.State == CharSpaceBlock,
             out int index)
             ?? throw new Exception("error. actor value is null");
 
-        Actor playerActor = randomPlayerActor.Value;
-        playerActor.State = CharPlayerHead;
+        chosenPlayerActor.State = CharPlayerHead;
 
         manager.PlayerActor = CreatePlayerBody(
             new Tuple<int, int>(manager.Height, manager.Width),
-            0,
-            playerActor,
+            1,
+            chosenPlayerActor,
             new Library.LinkedList<Actor>()
             {
-                Head = new(playerActor, null),
+                Head = new(chosenPlayerActor, null),
             });
     }
 
@@ -50,7 +49,6 @@ public class PlayerGenerator : IGenerate
         Actor currentHead,
         Library.LinkedList<Actor> playerActor)
     {
-        Console.WriteLine("HELLO DARKNESS MY OLD FRIEND");
         if (playerLength > PlayerInitialLength)
         {
             return playerActor;
@@ -69,10 +67,10 @@ public class PlayerGenerator : IGenerate
             }
 
             newHead = new(new(nextCordinateY, nextCordinateX), null, CharPlayerBody);
-            playerActor.InsertToEnd(newHead.Value);
+            playerActor.InsertToEnd(newHead);
             break;
         }
 
-        return CreatePlayerBody(sizes, playerLength + 1, newHead!.Value, playerActor);
+        return CreatePlayerBody(sizes, playerLength + 1, newHead!, playerActor);
     }
 }

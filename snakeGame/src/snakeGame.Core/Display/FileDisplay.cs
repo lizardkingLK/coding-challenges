@@ -12,10 +12,15 @@ public class FileDisplay : IDisplay
         DynamicArray<Actor> actors = manager.Actors;
         int count = 0;
 
-        using FileStream fileStream = new("output.txt", FileMode.Create);
+        using FileStream fileStream = new(Path.Join(Directory.GetCurrentDirectory(), "../../../../../", "output.txt"), FileMode.Create);
 
-        foreach (Actor actor in actors.GetValues())
+        foreach (Actor? actor in actors.GetValues())
         {
+            if (actor == null)
+            {
+                ArgumentNullException.ThrowIfNull(actor, nameof(actor));
+            }
+
             fileStream.WriteByte((byte)actor.State);
             count++;
             if (count % width == 0)
