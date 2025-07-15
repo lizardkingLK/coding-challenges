@@ -1,21 +1,34 @@
 using snakeGame.Core.Abstractions;
-using snakeGame.Core.Actors;
-using snakeGame.Core.Enums;
+using snakeGame.Core.Library;
 using snakeGame.Core.Shared;
+using snakeGame.Core.State;
+using snakeGame.Core.Enums;
 
-using static snakeGame.Core.Helpers.DirectionHelper;
 using static snakeGame.Core.Shared.Constants;
-using static snakeGame.Core.Shared.Values;
+using static snakeGame.Core.Helpers.DirectionHelper;
 
 namespace snakeGame.Core.Generators;
 
 public class PlayerGenerator : IGenerate
 {
+    private readonly Random _random = new();
+
     public IGenerate? Next { get; set; }
 
     public Result<bool> Generate(Manager manager)
     {
-        CreatePlayer(manager);
+        DynamicArray<Block> spaces = manager.Spaces;
+        Block[,] map = manager.Map;
+
+        Block player = spaces.Remove(_random.Next(0, spaces.Size));
+        (int y, int x, _) = player;
+        map[y, x].Type = CharPlayerHead;
+
+        manager.Player = SelectPlayerBody(
+            player,
+            manager,
+            (manager.Height, manager.Width));
+
         if (Next != null)
         {
             return Next.Generate(manager);
@@ -24,53 +37,62 @@ public class PlayerGenerator : IGenerate
         return new(true, null);
     }
 
-    private static void CreatePlayer(Manager manager)
+    private static Deque<Block>? SelectPlayerBody(
+        Block player,
+        Manager manager,
+        (int, int) dimensions)
     {
-        Actor? chosenPlayerActor = manager.GetActor(
-            actor => actor?.State == CharSpaceBlock,
-            out int index)
-            ?? throw new Exception("error. actor value is null");
+        (int y, int x, _) = player;
+        DynamicArray<Block> spaces = manager.Spaces;
+        Block[,] map = manager.Map;
 
-        chosenPlayerActor.State = CharPlayerHead;
-
-        manager.PlayerActor = CreatePlayerBody(
-            new Tuple<int, int>(manager.Height, manager.Width),
-            1,
-            chosenPlayerActor,
-            new Library.LinkedList<Actor>()
-            {
-                Head = new(chosenPlayerActor, null),
-            });
-    }
-
-    private static Library.LinkedList<Actor> CreatePlayerBody(
-        Tuple<int, int> sizes,
-        int playerLength,
-        Actor currentHead,
-        Library.LinkedList<Actor> playerActor)
-    {
-        if (playerLength > PlayerInitialLength)
+        Deque<Block> playerBody = new(player);
+        Block selectedPlayerBodyBlock;
+        DirectionEnum direction = GetRandomDirection();
+        for (int i = 0; i < PlayerInitialLength; i++)
         {
-            return playerActor;
+            (y, x, direction) = SelectValidCordinate(
+                (y, x, direction),
+                dimensions,
+                map,
+                out int checkCordinateCount);
+
+            ArgumentOutOfRangeException.ThrowIfEqual(checkCordinateCount, directionsLength);
+
+            checkCordinateCount = 0;
+            selectedPlayerBodyBlock = spaces.Remove(SelectSearchFunction(y, x))!;
+            map[y, x].Type = CharPlayerBody;
+            map[y, x].Direction = direction;
         }
 
-        (int currentCordinateY, int currentCordinateX) = currentHead.Position;
-        int nextCordinateY;
-        int nextCordinateX;
-        Actor? newHead = null;
-        foreach (DirectionEnum direction in directions)
+        return playerBody;
+    }
+
+    private static (int, int, DirectionEnum) SelectValidCordinate(
+        (int, int, DirectionEnum) cordinates,
+        (int, int) dimensions,
+        Block[,] map,
+        out int checkCordinateCount)
+    {
+        checkCordinateCount = 0;
+        (int y, int x, DirectionEnum direction) = cordinates;
+        while (true)
         {
-            (nextCordinateY, nextCordinateX) = GetNextCordinate(currentCordinateY, currentCordinateX, direction);
-            if (!IsValidNonBlockingDirection(nextCordinateY, nextCordinateX, sizes.Item1, sizes.Item2))
+            GetNextCordinate((y, x), direction, out int cordinateY, out int cordinateX);
+            if (!IsValidCordinate(cordinateY, cordinateX, dimensions, map)
+            && checkCordinateCount < directionsLength)
             {
+                direction = GetNextDirection(direction);
+                checkCordinateCount++;
                 continue;
             }
 
-            newHead = new(new(nextCordinateY, nextCordinateX), null, CharPlayerBody);
-            playerActor.InsertToEnd(newHead);
-            break;
+            return (cordinateY, cordinateX, direction);
         }
+    }
 
-        return CreatePlayerBody(sizes, playerLength + 1, newHead!, playerActor);
+    private static Func<Block, bool> SelectSearchFunction(int y, int x)
+    {
+        return space => space.CordinateY == y && space.CordinateX == x;
     }
 }

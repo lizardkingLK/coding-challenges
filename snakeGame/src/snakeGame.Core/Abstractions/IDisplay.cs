@@ -1,4 +1,4 @@
-using snakeGame.Core.Actors;
+using snakeGame.Core.State;
 
 namespace snakeGame.Core.Abstractions;
 

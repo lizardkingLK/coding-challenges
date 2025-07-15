@@ -1,3 +1,5 @@
+using snakeGame.Core.State;
+
 namespace snakeGame.Core.Library;
 
 public class DynamicArray<T>
@@ -6,7 +8,7 @@ public class DynamicArray<T>
 
     public int Size { get; private set; } = 0;
 
-    private T?[] values;
+    public T?[] values;
 
     public DynamicArray()
     {
@@ -123,6 +125,34 @@ public class DynamicArray<T>
         return removed;
     }
 
+    public T? GetValue(int index)
+    {
+        if (Size == 0)
+        {
+            throw new Exception("error. array is empty");
+        }
+
+        if (index < 0 || index > Size - 1)
+        {
+            throw new Exception("error. index is invalid");
+        }
+
+        return values[index];
+    }
+
+    public T? Remove(Func<T, bool> searchFunction)
+    {
+        for (int i = 0; i < Size; i++)
+        {
+            if (searchFunction(values[i]!))
+            {
+                return Remove(i);
+            }
+        }
+
+        return default;
+    }
+
     private void GrowArray()
     {
         T?[] tempArray = new T[Capacity * 2];
@@ -147,126 +177,5 @@ public class DynamicArray<T>
         }
 
         values = tempArray;
-    }
-
-    public void Display(bool? shouldIncludeCapacity = false)
-    {
-        int length = shouldIncludeCapacity == true ? Capacity : Size;
-        for (int i = 0; i < length; i++)
-        {
-            Console.Write("{0} ", values[i]);
-        }
-    }
-
-    public T? GetValue(int index)
-    {
-        if (index < 0 || index > Size - 1)
-        {
-            throw new Exception("error. index is invalid");
-        }
-
-        return values[index];
-    }
-
-    public bool Search(Func<T?, bool> searchFunction, int startingIndex, out int index, out T? value)
-    {
-        index = 0;
-        value = default;
-
-        if (Size == 0 || startingIndex > Size)
-        {
-            return false;
-        }
-
-        int i = startingIndex;
-        while (i < Size)
-        {
-            if (searchFunction(values[i]))
-            {
-                index = i;
-                value = values[i];
-                return true;
-            }
-
-            i++;
-        }
-
-        return false;
-    }
-
-    public bool GetRandom(Func<T?, bool> searchFunction, ref int index, out T? value)
-    {
-        value = default;
-
-        if (Size == 0)
-        {
-            return false;
-        }
-
-        int i = 0;
-        DynamicArray<T?> tempValues = new();
-        while (i < Size)
-        {
-            if (searchFunction(values[i]))
-            {
-                value = values[i];
-                tempValues.Add(value);
-            }
-
-            i++;
-        }
-
-        i = new Random().Next(0, tempValues.Size);
-        index = i;
-        value = tempValues.GetValue(i);
-
-        return true;
-    }
-
-    public bool Replace(Func<T?, bool> searchFunction, T? value)
-    {
-        if (Size == 0)
-        {
-            return false;
-        }
-
-        int i = 0;
-        while (i < Size)
-        {
-            if (searchFunction(values[i]))
-            {
-                values[i] = value;
-                return true;
-            }
-
-            i++;
-        }
-
-        return true;
-    }
-
-    public bool Replace(int index, T value)
-    {
-        if (Size == 0)
-        {
-            return false;
-        }
-
-        if (index < 0 || index > Size - 1)
-        {
-            return false;
-        }
-
-        values[index] = value;
-
-        return true;
-    }
-
-    public IEnumerable<T?> GetValues()
-    {
-        for (int i = 0; i < Size; i++)
-        {
-            yield return values[i];
-        }
     }
 }

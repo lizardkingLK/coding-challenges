@@ -8,12 +8,12 @@ public static class Constants
     public const string FlagHeightPrefixed = "-h";
     public const string FlagWidth = "--width";
     public const string FlagWidthPrefixed = "-w";
-    public const char CharWallBlock = '#';
-    public const int PlayerInitialLength = 2;
+    public const int PlayerInitialLength = 3;
+    public const char CharWallBlock = '*';
     public const char CharSpaceBlock = ' ';
-    public const char CharPlayerHead = 'H';
-    public const char CharEnemy = 'E';
-    public const char CharPlayerBody = 'B';
+    public const char CharPlayerHead = '0';
+    public const char CharEnemy = '+';
+    public const char CharPlayerBody = 'O';
     public const string ERROR_INVALID_ARGUMENTS = "error. invalid arguments given";
     public const string ERROR_INVALID_TERMINAL = "error. invalid terminal environment";
 }

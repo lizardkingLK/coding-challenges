@@ -1,7 +1,9 @@
 namespace snakeGame.Core.Tests;
 
+using snakeGame.Core.Shared;
+
 using static snakeGame.Core.Shared.Constants;
-using static snakeGame.Core.Helper;
+using static snakeGame.Core.Helpers.ArgumentHelper;
 
 [Collection("snakeGame.Core.Tests")]
 public class TestValidateArguments

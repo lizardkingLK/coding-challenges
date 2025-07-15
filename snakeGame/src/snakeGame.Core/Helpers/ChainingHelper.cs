@@ -1,8 +1,8 @@
+namespace snakeGame.Core.Helpers;
+
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Display;
 using snakeGame.Core.Generators;
-
-namespace snakeGame.Core.Helpers;
 
 public static class ChainingHelper
 {
@@ -23,14 +23,9 @@ public static class ChainingHelper
             Next = playerGenerator,
         };
 
-        SpaceGenerator spaceGenerator = new()
-        {
-            Next = enemyGenerator,
-        };
-
         WallGenerator wallGenerator = new()
         {
-            Next = spaceGenerator,
+            Next = enemyGenerator,
         };
 
         return wallGenerator;

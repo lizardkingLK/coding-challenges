@@ -1,7 +1,7 @@
 ﻿using snakeGame.Core.Abstractions;
-using snakeGame.Core.Actors;
 using snakeGame.Core.Shared;
 using snakeGame.Core.Helpers;
+using snakeGame.Core.State;
 
 namespace snakeGame.Core;
 
@@ -12,9 +12,9 @@ using static Utility;
 
 public class SnakeGame
 {
-    private readonly IGenerate generator = GetGenerator();
+    private readonly IGenerate _generator = GetGenerator();
 
-    private readonly IDisplay display = GetFileDisplay();
+    private readonly IDisplay _display = GetFileDisplay();
 
     public void Run(string[] args)
     {
@@ -30,9 +30,11 @@ public class SnakeGame
         {
             Height = argumentsValidationResult.Data.Item2,
             Width = argumentsValidationResult.Data.Item3,
+            Map = new Block[argumentsValidationResult.Data.Item2, argumentsValidationResult.Data.Item3],
+            Spaces = new Library.DynamicArray<Block>(),
         };
 
-        Result<bool> generatedGameContext = generator.Generate(manager);
+        Result<bool> generatedGameContext = _generator.Generate(manager);
         if (generatedGameContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -40,6 +42,9 @@ public class SnakeGame
             return;
         }
 
-        display.Display(manager);
+        // INFO: Just testing
+        _display.Display(manager);
+
+        // TODO: run loop
     }
 }
