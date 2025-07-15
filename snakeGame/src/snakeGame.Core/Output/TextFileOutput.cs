@@ -1,11 +1,11 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.State;
 
-namespace snakeGame.Core.Display;
+namespace snakeGame.Core.Output;
 
-public class FileDisplay : IDisplay
+public class TextFileOutput : IOutput
 {
-    public void Display(Manager manager)
+    public void Output(Manager manager)
     {
         int height = manager.Height;
         int width = manager.Width;

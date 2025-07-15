@@ -1,4 +1,5 @@
 using snakeGame.Core.Abstractions;
+using snakeGame.Core.Library;
 using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 
@@ -15,7 +16,7 @@ public class WallGenerator : IGenerate
         int height = manager.Height;
         int width = manager.Width;
         Block[,] map = manager.Map;
-        Library.DynamicArray<Block> spaces = manager.Spaces;
+        DynamicArray<Block> spaces = manager.Spaces;
 
         int i;
         int j;

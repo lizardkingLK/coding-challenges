@@ -1,5 +1,3 @@
-using snakeGame.Core.State;
-
 namespace snakeGame.Core.Library;
 
 public class DynamicArray<T>

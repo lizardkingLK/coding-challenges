@@ -2,7 +2,7 @@ using snakeGame.Core.State;
 
 namespace snakeGame.Core.Abstractions;
 
-public interface IDisplay
+public interface IOutput
 {
-    public void Display(Manager manager);
+    public void Output(Manager manager);
 }

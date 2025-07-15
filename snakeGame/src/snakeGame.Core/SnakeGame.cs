@@ -2,23 +2,23 @@
 using snakeGame.Core.Shared;
 using snakeGame.Core.Helpers;
 using snakeGame.Core.State;
+using snakeGame.Core.Library;
+using snakeGame.Core.Enums;
 
 namespace snakeGame.Core;
 
 using static Constants;
 using static ArgumentHelper;
 using static ChainingHelper;
+using static OutputHelper;
 using static Utility;
 
 public class SnakeGame
 {
-    private readonly IGenerate _generator = GetGenerator();
-
-    private readonly IDisplay _display = GetFileDisplay();
-
-    public void Run(string[] args)
+    public static void Run(string[] args)
     {
-        Result<(bool, int, int)> argumentsValidationResult = ValidateArguments(args, MaxHeight, MaxWidth);
+        Result<(bool, int, int, OutputTypeEnum)> argumentsValidationResult
+        = ValidateArguments(args, MaxHeight, MaxWidth);
         if (argumentsValidationResult.Error != null)
         {
             Environment.ExitCode = 1;
@@ -31,10 +31,10 @@ public class SnakeGame
             Height = argumentsValidationResult.Data.Item2,
             Width = argumentsValidationResult.Data.Item3,
             Map = new Block[argumentsValidationResult.Data.Item2, argumentsValidationResult.Data.Item3],
-            Spaces = new Library.DynamicArray<Block>(),
+            Spaces = new DynamicArray<Block>(),
         };
 
-        Result<bool> generatedGameContext = _generator.Generate(manager);
+        Result<bool> generatedGameContext = GetGenerator().Generate(manager);
         if (generatedGameContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -43,7 +43,7 @@ public class SnakeGame
         }
 
         // INFO: Just testing
-        _display.Display(manager);
+        GetOutput(argumentsValidationResult.Data.Item4).Output(manager);
 
         // TODO: run loop
     }

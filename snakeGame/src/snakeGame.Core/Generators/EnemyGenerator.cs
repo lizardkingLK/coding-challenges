@@ -1,4 +1,5 @@
 using snakeGame.Core.Abstractions;
+using snakeGame.Core.Library;
 using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 
@@ -14,7 +15,7 @@ public class EnemyGenerator : IGenerate
 
     public Result<bool> Generate(Manager manager)
     {
-        Library.DynamicArray<Block> spaces = manager.Spaces;
+        DynamicArray<Block> spaces = manager.Spaces;
         Block[,] map = manager.Map;
 
         Block enemy = spaces.Remove(_random.Next(0, spaces.Size));

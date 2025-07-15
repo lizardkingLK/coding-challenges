@@ -31,19 +31,19 @@ public static class DirectionHelper
         (int y, int x) = cordinates;
         cordinateY = y;
         cordinateX = x;
-        if (directionEnum == DirectionEnum.RIGHT)
+        if (directionEnum == DirectionEnum.Right)
         {
             cordinateX++;
         }
-        else if (directionEnum == DirectionEnum.DOWN)
+        else if (directionEnum == DirectionEnum.Down)
         {
             cordinateY++;
         }
-        else if (directionEnum == DirectionEnum.LEFT)
+        else if (directionEnum == DirectionEnum.Left)
         {
             cordinateX--;
         }
-        else if (directionEnum == DirectionEnum.UP)
+        else if (directionEnum == DirectionEnum.Up)
         {
             cordinateY--;
         }
