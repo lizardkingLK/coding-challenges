@@ -1,18 +1,22 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
 using snakeGame.Core.Output;
+using snakeGame.Core.Shared;
 
 namespace snakeGame.Core.Helpers;
 
 public static class OutputHelper
 {
-    public static IOutput GetOutput(OutputTypeEnum outputType)
+    public static Result<bool> GetOutput(OutputTypeEnum outputType, out IOutput output)
     {
         if (outputType == OutputTypeEnum.Console)
         {
-            return new ConsoleOutput();
+            output = new ConsoleOutput();
+            return new(true, null);
         }
 
-        return new TextFileOutput();
+        output = new TextFileOutput();
+
+        return new(true, null);
     }
 }

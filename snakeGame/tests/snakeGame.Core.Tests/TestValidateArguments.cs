@@ -4,6 +4,7 @@ using snakeGame.Core.Shared;
 
 using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Helpers.ArgumentHelper;
+using snakeGame.Core.Enums;
 
 [Collection("snakeGame.Core.Tests")]
 public class TestValidateArguments
@@ -12,7 +13,7 @@ public class TestValidateArguments
     public void Should_Test_For_Arguments_Validation_No_Arguments()
     {
         // Act
-        Result<(bool, int, int)> validateArgumentResult = ValidateArguments([], default, default);
+        Result<(bool, int, int, OutputTypeEnum)> validateArgumentResult = ValidateArguments([], default, default);
 
         // Assert
         Assert.True(validateArgumentResult.Data.Item1);
@@ -26,7 +27,7 @@ public class TestValidateArguments
     public void Should_Test_For_Arguments_Validation_Invalid_Argument_Counts(params string[] arguments)
     {
         // Act
-        Result<(bool, int, int)> validateArgumentResult = ValidateArguments(arguments, default, default);
+        Result<(bool, int, int, OutputTypeEnum)> validateArgumentResult = ValidateArguments(arguments, default, default);
 
         // Assert
         Assert.False(validateArgumentResult.Data.Item1);
@@ -40,7 +41,7 @@ public class TestValidateArguments
     public void Should_Test_For_Arguments_Validation_Invalid_Arguments(string flagArgument, string flagValue, bool expectedResult)
     {
         // Act
-        Result<(bool, int, int)> validateArgumentResult = ValidateArguments([flagArgument, flagValue], default, default);
+        Result<(bool, int, int, OutputTypeEnum)> validateArgumentResult = ValidateArguments([flagArgument, flagValue], default, default);
 
         // Assert
         Assert.Equal(expectedResult, validateArgumentResult.Data.Item1);
@@ -67,7 +68,7 @@ public class TestValidateArguments
         string[] args = [FlagHeightPrefixed, heightValue, FlagWidthPrefixed, widthValue];
 
         // Act
-        Result<(bool, int, int)> validateArgumentResult = ValidateArguments(args, maxHeight, maxWidth);
+        Result<(bool, int, int, OutputTypeEnum)> validateArgumentResult = ValidateArguments(args, maxHeight, maxWidth);
 
         // Assert
         Assert.True(validateArgumentResult.Data.Item1);

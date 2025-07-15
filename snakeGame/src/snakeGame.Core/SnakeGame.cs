@@ -1,13 +1,13 @@
-﻿using snakeGame.Core.Abstractions;
-using snakeGame.Core.Shared;
+﻿using snakeGame.Core.Shared;
 using snakeGame.Core.Helpers;
 using snakeGame.Core.State;
-using snakeGame.Core.Library;
 using snakeGame.Core.Enums;
+using snakeGame.Core.Abstractions;
 
 namespace snakeGame.Core;
 
 using static Constants;
+using static GameStateHelper;
 using static ArgumentHelper;
 using static ChainingHelper;
 using static OutputHelper;
@@ -17,8 +17,8 @@ public class SnakeGame
 {
     public static void Run(string[] args)
     {
-        Result<(bool, int, int, OutputTypeEnum)> argumentsValidationResult
-        = ValidateArguments(args, MaxHeight, MaxWidth);
+        Result<(bool, int, int, OutputTypeEnum)> argumentsValidationResult = ValidateArguments
+        (args, MaxHeight, MaxWidth);
         if (argumentsValidationResult.Error != null)
         {
             Environment.ExitCode = 1;
@@ -26,13 +26,13 @@ public class SnakeGame
             return;
         }
 
-        Manager manager = new()
+        Result<bool> getManagerResult = GetManager(argumentsValidationResult.Data, out Manager manager);
+        if (getManagerResult.Error != null)
         {
-            Height = argumentsValidationResult.Data.Item2,
-            Width = argumentsValidationResult.Data.Item3,
-            Map = new Block[argumentsValidationResult.Data.Item2, argumentsValidationResult.Data.Item3],
-            Spaces = new DynamicArray<Block>(),
-        };
+            Environment.ExitCode = 1;
+            WriteError(getManagerResult.Error);
+            return;
+        }
 
         Result<bool> generatedGameContext = GetGenerator().Generate(manager);
         if (generatedGameContext.Error != null)
@@ -42,9 +42,22 @@ public class SnakeGame
             return;
         }
 
-        // INFO: Just testing
-        GetOutput(argumentsValidationResult.Data.Item4).Output(manager);
+        Result<bool> outputContext = GetOutput(manager.OutputType, out IOutput output);
+        if (outputContext.Error != null)
+        {
+            Environment.ExitCode = 1;
+            WriteError(outputContext.Error);
+            return;
+        }
 
-        // TODO: run loop
+        Result<bool> runnableGameContext = GetPlayable(manager, output, out IPlay playable);
+        if (runnableGameContext.Error != null)
+        {
+            Environment.ExitCode = 1;
+            WriteError(runnableGameContext.Error);
+            return;
+        }
+
+        playable.Play();
     }
 }

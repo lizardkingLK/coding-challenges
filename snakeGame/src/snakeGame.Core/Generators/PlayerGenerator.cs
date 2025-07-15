@@ -59,10 +59,11 @@ public class PlayerGenerator : IGenerate
 
             ArgumentOutOfRangeException.ThrowIfEqual(checkCordinateCount, directionsLength);
 
-            checkCordinateCount = 0;
             selectedPlayerBodyBlock = spaces.Remove(SelectSearchFunction(y, x))!;
             map[y, x].Type = CharPlayerBody;
             map[y, x].Direction = direction;
+
+            playerBody.InsertToRear(selectedPlayerBodyBlock);
         }
 
         return playerBody;
