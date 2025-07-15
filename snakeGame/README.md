@@ -28,6 +28,7 @@ dotnet tool install --global --add-source .\nupkg snakegame.program
 ```
 width   = [-[w|-width] <width_value>]
 height  = [-[h|-height] <height_value>]
+output  = [-[o|-output] [0-1]]
 ```
 
 ### Inside Dev Environment
@@ -39,13 +40,26 @@ dotnet run -f net9.0 -- [options]
 ### Using Installed Binary
 
 ```
-snake [-[w|width] <width_value>] [-[h|height] <height_value>]
+snake <Options.width> <Options.height> <Options.output>
 ```
 
 ### Example
 
 ```
-snake -w 200 -h 100
+snake -w 20 -h 10 -o 0
+```
+
+```
+********************
+*                  *
+*         O        *
+*         O        *
+*         O        *
+*         0        *
+*        +         *
+*                  *
+*                  *
+********************
 ```
 
 ## Uninstall
