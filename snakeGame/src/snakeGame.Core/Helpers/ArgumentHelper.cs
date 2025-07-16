@@ -1,23 +1,29 @@
 namespace snakeGame.Core.Helpers;
 
+using snakeGame.Core.Enums;
 using snakeGame.Core.Shared;
-using static snakeGame.Core.Shared.Constants;
+
 using static snakeGame.Core.Shared.Utility;
 using static snakeGame.Core.Shared.Values;
 
 public static class ArgumentHelper
 {
-    public static Result<(bool, int, int)> ValidateArguments(string[] args, int maxHeight, int maxWidth)
+    public static
+    Result<(bool, int, int, OutputTypeEnum)> ValidateArguments(
+        string[] args,
+        int maxHeight,
+        int maxWidth)
     {
+        OutputTypeEnum outputType = default;
         int length = args.Length;
         if (length == 0)
         {
-            return new((true, maxHeight, maxWidth), null);
+            return new((true, maxHeight, maxWidth, outputType), null);
         }
 
         if (length % 2 != 0)
         {
-            return new((false, -1, -1), ERROR_INVALID_ARGUMENTS);
+            return ErrorInvalidArguments;
         }
 
         int i;
@@ -31,7 +37,7 @@ public static class ArgumentHelper
             currentValueString = args[i + 1];
             if (!int.TryParse(currentValueString, out int currentValue))
             {
-                return new((false, -1, -1), ERROR_INVALID_ARGUMENTS);
+                return ErrorInvalidArguments;
             }
 
             if (IncludesInCollection(currentArgument, heightFlags))
@@ -46,7 +52,13 @@ public static class ArgumentHelper
                 continue;
             }
 
-            return new((false, -1, -1), ERROR_INVALID_ARGUMENTS);
+            if (IncludesInCollection(currentArgument, outputFlags)
+            && Enum.TryParse(currentValueString, out outputType))
+            {
+                continue;
+            }
+
+            return ErrorInvalidArguments;
         }
 
         if (height < 10 || height > maxHeight)
@@ -59,6 +71,6 @@ public static class ArgumentHelper
             width = maxWidth;
         }
 
-        return new((true, height, width), null);
+        return new((true, height, width, outputType), null);
     }
 }

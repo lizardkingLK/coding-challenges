@@ -12,7 +12,7 @@ class Program
         try
         {
             SnakeGame snakeGame = new();
-            snakeGame.Run(args);
+            SnakeGame.Run(args);
         }
         catch (IOException)
         {

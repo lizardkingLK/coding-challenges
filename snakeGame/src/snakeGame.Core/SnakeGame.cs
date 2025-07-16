@@ -1,22 +1,24 @@
-﻿using snakeGame.Core.Abstractions;
-using snakeGame.Core.Actors;
-using snakeGame.Core.Shared;
+﻿using snakeGame.Core.Shared;
+using snakeGame.Core.Helpers;
+using snakeGame.Core.State;
+using snakeGame.Core.Enums;
+using snakeGame.Core.Abstractions;
 
 namespace snakeGame.Core;
 
-using static Helpers.ArgumentHelper;
-using static Helpers.ChainingHelper;
+using static Constants;
+using static GameStateHelper;
+using static ArgumentHelper;
+using static ChainingHelper;
+using static OutputHelper;
 using static Utility;
 
 public class SnakeGame
 {
-    private readonly IGenerate generator = GetGenerator();
-
-    private readonly IDisplay display = GetFileDisplay();
-
-    public void Run(string[] args)
+    public static void Run(string[] args)
     {
-        Result<(bool, int, int)> argumentsValidationResult = ValidateArguments(args, Console.BufferHeight, Console.BufferWidth);
+        Result<(bool, int, int, OutputTypeEnum)> argumentsValidationResult = ValidateArguments
+        (args, MaxHeight, MaxWidth);
         if (argumentsValidationResult.Error != null)
         {
             Environment.ExitCode = 1;
@@ -24,13 +26,15 @@ public class SnakeGame
             return;
         }
 
-        Manager manager = new()
+        Result<bool> getManagerResult = GetManager(argumentsValidationResult.Data, out Manager manager);
+        if (getManagerResult.Error != null)
         {
-            Height = argumentsValidationResult.Data.Item2,
-            Width = argumentsValidationResult.Data.Item3,
-        };
+            Environment.ExitCode = 1;
+            WriteError(getManagerResult.Error);
+            return;
+        }
 
-        Result<bool> generatedGameContext = generator.Generate(manager);
+        Result<bool> generatedGameContext = GetGenerator().Generate(manager);
         if (generatedGameContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -38,11 +42,22 @@ public class SnakeGame
             return;
         }
 
-        for (int i = 0; i < 1; i++)
+        Result<bool> outputContext = GetOutput(manager.OutputType, out IOutput output);
+        if (outputContext.Error != null)
         {
-            Console.Clear();
-            display.Display(manager);
-            Thread.Sleep(100);
+            Environment.ExitCode = 1;
+            WriteError(outputContext.Error);
+            return;
         }
+
+        Result<bool> runnableGameContext = GetPlayable(manager, output, out IPlay playable);
+        if (runnableGameContext.Error != null)
+        {
+            Environment.ExitCode = 1;
+            WriteError(runnableGameContext.Error);
+            return;
+        }
+
+        playable.Play();
     }
 }

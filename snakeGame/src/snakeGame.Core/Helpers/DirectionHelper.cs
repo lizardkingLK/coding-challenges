@@ -1,35 +1,66 @@
 using snakeGame.Core.Enums;
+using snakeGame.Core.State;
+
+using static snakeGame.Core.Shared.Constants;
 
 namespace snakeGame.Core.Helpers;
 
 public static class DirectionHelper
 {
-    public static Tuple<int, int> GetNextCordinate(int cordinateY, int cordinateX, DirectionEnum directionEnum)
-    {
-        int nextCordinateY = cordinateY;
-        int nextCordinateX = cordinateX;
-        if (directionEnum == DirectionEnum.RIGHT)
-        {
-            nextCordinateX++;
-        }
-        else if (directionEnum == DirectionEnum.DOWN)
-        {
-            nextCordinateY++;
-        }
-        else if (directionEnum == DirectionEnum.LEFT)
-        {
-            nextCordinateX--;
-        }
-        else if (directionEnum == DirectionEnum.UP)
-        {
-            nextCordinateY--;
-        }
+    private static readonly Random _random = new();
+    private static readonly DirectionEnum[] _directions = Enum.GetValues<DirectionEnum>();
 
-        return new(nextCordinateY, nextCordinateX);
+    public static readonly int directionsLength = _directions.Length;
+
+    public static DirectionEnum GetRandomDirection()
+    {
+        return _directions[_random.Next(directionsLength)];
     }
 
-    public static bool IsValidNonBlockingDirection(int cordinateY, int cordinateX, int height, int width)
+    public static DirectionEnum GetNextDirection(DirectionEnum direction)
     {
-        return cordinateY > 1 && cordinateY < height - 1 && cordinateX > 1 && cordinateX < width;
+        return (DirectionEnum)(((int)direction + 1) % directionsLength);
+    }
+
+    public static void GetNextCordinate(
+        (int, int) cordinates,
+        DirectionEnum directionEnum,
+        out int cordinateY,
+        out int cordinateX)
+    {
+        (int y, int x) = cordinates;
+        cordinateY = y;
+        cordinateX = x;
+        if (directionEnum == DirectionEnum.Right)
+        {
+            cordinateX++;
+        }
+        else if (directionEnum == DirectionEnum.Down)
+        {
+            cordinateY++;
+        }
+        else if (directionEnum == DirectionEnum.Left)
+        {
+            cordinateX--;
+        }
+        else if (directionEnum == DirectionEnum.Up)
+        {
+            cordinateY--;
+        }
+    }
+
+    public static bool IsValidCordinate(
+        int cordinateY,
+        int cordinateX,
+        (int, int) dimensions,
+        Block[,] map)
+    {
+        (int height, int width) = dimensions;
+
+        return cordinateY > 0
+        && cordinateY < height - 1
+        && cordinateX > 0
+        && cordinateX < width - 1
+        && map[cordinateY, cordinateX].Type == CharSpaceBlock;
     }
 }

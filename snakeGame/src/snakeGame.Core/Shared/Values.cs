@@ -17,5 +17,13 @@ public readonly struct Values
         FlagHeightPrefixed,
     ];
 
-    public static readonly DirectionEnum[] directions = Enum.GetValues<DirectionEnum>();
+    public static readonly string[] outputFlags =
+    [
+        FlagOutput,
+        FlagOutputPrefixed,
+    ];
+
+    public static readonly
+    Result<(bool, int, int, OutputTypeEnum)> ErrorInvalidArguments
+    = new((false, -1, -1, default), ERROR_INVALID_ARGUMENTS);
 }
