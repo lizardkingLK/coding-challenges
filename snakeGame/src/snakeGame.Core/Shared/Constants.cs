@@ -16,6 +16,8 @@ public static class Constants
     public const char CharPlayerHead = '0';
     public const char CharEnemy = '+';
     public const char CharPlayerBody = 'O';
+    public const string INFO_AWAITING_KEY_PRESS = "info. awaiting key press... (^ | k, > | l, < | h, v | j)";
     public const string ERROR_INVALID_ARGUMENTS = "error. invalid arguments given";
     public const string ERROR_INVALID_TERMINAL = "error. invalid terminal environment";
+    public const string ERROR_INVALID_KEY_PRESSED = "error. invalid key pressed";
 }

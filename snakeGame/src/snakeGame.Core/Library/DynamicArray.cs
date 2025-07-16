@@ -138,6 +138,20 @@ public class DynamicArray<T>
         return values[index];
     }
 
+    public bool TryGetValue(int index, out T? value)
+    {
+        value = default;
+
+        if (Size == 0 || index < 0 || index > Size - 1)
+        {
+            return false;
+        }
+
+        value = values[index];
+
+        return true;
+    }
+
     public T? Remove(Func<T, bool> searchFunction)
     {
         for (int i = 0; i < Size; i++)
