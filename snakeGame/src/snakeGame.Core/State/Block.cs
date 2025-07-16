@@ -14,4 +14,9 @@ public struct Block
         cordinateX = CordinateX;
         type = Type;
     }
+
+    public override readonly string ToString()
+    {
+        return $"({CordinateY}, {CordinateX}, {Type})";
+    }
 }

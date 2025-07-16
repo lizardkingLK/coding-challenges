@@ -4,6 +4,7 @@ using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 
 using static snakeGame.Core.Shared.Constants;
+using static snakeGame.Core.Helpers.GameBoardHelper;
 
 namespace snakeGame.Core.Generators;
 
@@ -35,7 +36,7 @@ public class WallGenerator : IGenerate
                         CordinateX = j,
                         Type = CharWallBlock,
                     };
-                    map[i, j] = currentBlock;
+                    UpdateMapBlock(map, (i, j), currentBlock);
                     continue;
                 }
 
@@ -45,8 +46,8 @@ public class WallGenerator : IGenerate
                     CordinateX = j,
                     Type = CharSpaceBlock,
                 };
-                map[i, j] = currentBlock;
-                spaces.Add(currentBlock);
+                UpdateMapBlock(map, (i, j), currentBlock);
+                UpdateSpaceBlockIn(spaces, currentBlock);
             }
         }
 

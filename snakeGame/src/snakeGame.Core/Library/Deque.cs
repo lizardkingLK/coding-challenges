@@ -1,19 +1,26 @@
 namespace snakeGame.Core.Library;
 
-public class Deque<T>(T head)
+public class Deque<T>
 {
-    private LinkNode<T>? front = new(head);
-    private LinkNode<T>? rear = new(head);
-
+    private LinkNode<T>? front;
+    private LinkNode<T>? rear;
     public int Size { get; set; }
+
+    public Deque(T head)
+    {
+        front = new(head);
+        rear = front;
+        Size++;
+    }
 
     public void InsertToRear(T item)
     {
-        LinkNode<T>? tailNode = front;
+        LinkNode<T>? tailNode = rear;
         if (tailNode == null)
         {
             front = new LinkNode<T>(item);
             rear = front;
+            Size++;
             return;
         }
 
@@ -31,6 +38,7 @@ public class Deque<T>(T head)
         {
             front = new LinkNode<T>(item);
             rear = front;
+            Size++;
             return;
         }
 
@@ -61,6 +69,7 @@ public class Deque<T>(T head)
         tailNode.Previous!.Next = null;
         rear = tailNode.Previous;
         tailNode.Previous = null;
+        Size--;
 
         return tailNode.Value;
     }
@@ -73,6 +82,7 @@ public class Deque<T>(T head)
         headNode.Next!.Previous = null;
         front = headNode.Next;
         headNode.Next = null;
+        Size--;
 
         return headNode.Value;
     }

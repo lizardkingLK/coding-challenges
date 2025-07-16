@@ -6,6 +6,7 @@ using snakeGame.Core.Enums;
 
 using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Helpers.DirectionHelper;
+using static snakeGame.Core.Helpers.GameBoardHelper;
 
 namespace snakeGame.Core.Generators;
 
@@ -20,9 +21,9 @@ public class PlayerGenerator : IGenerate
         DynamicArray<Block> spaces = manager.Spaces;
         Block[,] map = manager.Map;
 
-        Block player = spaces.Remove(_random.Next(0, spaces.Size));
+        Block player = UpdateSpaceBlockOut(spaces, _random.Next(0, spaces.Size));
         (int y, int x, _) = player;
-        map[y, x].Type = CharPlayerHead;
+        UpdateMapBlock(map, (y, x), CharPlayerHead);
 
         manager.Player = SelectPlayerBody(
             player,
@@ -45,8 +46,8 @@ public class PlayerGenerator : IGenerate
         (int y, int x, _) = player;
         DynamicArray<Block> spaces = manager.Spaces;
         Block[,] map = manager.Map;
-
         Deque<Block> playerBody = new(player);
+
         Block selectedPlayerBodyBlock;
         DirectionEnum direction = GetRandomDirection();
         for (int i = 0; i < PlayerInitialLength; i++)
@@ -59,9 +60,9 @@ public class PlayerGenerator : IGenerate
 
             ArgumentOutOfRangeException.ThrowIfEqual(checkCordinateCount, directionsLength);
 
-            selectedPlayerBodyBlock = spaces.Remove(SelectSearchFunction(y, x))!;
-            map[y, x].Type = CharPlayerBody;
-            map[y, x].Direction = direction;
+            selectedPlayerBodyBlock = UpdateSpaceBlockOut(spaces, SelectSearchFunction(y, x)!);
+
+            UpdateMapBlock(map, (y, x), CharPlayerBody, direction);
 
             playerBody.InsertToRear(selectedPlayerBodyBlock);
         }

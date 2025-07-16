@@ -5,6 +5,8 @@ using snakeGame.Core.State;
 
 using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Shared.Utility;
+using static snakeGame.Core.Helpers.DirectionHelper;
+using static snakeGame.Core.Helpers.GameBoardHelper;
 
 namespace snakeGame.Core.Updators;
 
@@ -16,14 +18,20 @@ public class PlayerUpdator : IPlay
 
     public required IOutput Output { get; init; }
 
-    public HashMap<ConsoleKey, DirectionEnum> keyMap = new();
+    private static readonly HashMap<ConsoleKey, DirectionEnum> keyMap = new();
 
     static PlayerUpdator()
+    {
+        SetKeyMapValues();
+        SetCancelEvent();
+    }
+
+    private static void SetCancelEvent()
     {
         Console.CancelKeyPress += OnCancelKeyPress;
     }
 
-    public PlayerUpdator()
+    private static void SetKeyMapValues()
     {
         keyMap.Insert(ConsoleKey.RightArrow, DirectionEnum.Right);
         keyMap.Insert(ConsoleKey.L, DirectionEnum.Right);
@@ -37,6 +45,8 @@ public class PlayerUpdator : IPlay
 
     public void Play()
     {
+        Output.Output(Manager);
+
         DirectionEnum? previousDirection = null;
         WriteInfo(INFO_AWAITING_KEY_PRESS);
         do
@@ -50,24 +60,55 @@ public class PlayerUpdator : IPlay
             if (previousDirection != direction)
             {
                 previousDirection = direction;
-                Output.Output(Manager);
             }
 
             StepToDirection(direction);
-        } while (true);
+        }
+        while (true);
     }
 
-    private static void StepToDirection(DirectionEnum direction)
+    private void StepToDirection(DirectionEnum direction)
     {
-        Console.WriteLine(direction);
+        (int y, int x, _) = Manager.Player!.SeekFront();
+        GetNextCordinate((y, x), direction, out int cordinateY, out int cordinateX);
+        if (!IsValidCordinate(cordinateY, cordinateX, Manager.Dimensions, Manager.Map))
+        {
+            throw new Exception("error. game over");
+        }
+
+        UpdateMapForNewPosition(new Block()
+        {
+            CordinateY = cordinateY,
+            CordinateX = cordinateX,
+            Direction = direction,
+            Type = CharPlayerHead,
+        });
+
+        Output.Output(Manager);
     }
 
-    private bool ReadKeyPress(out DirectionEnum value)
+    private void UpdateMapForNewPosition(Block newPlayerBlock)
+    {
+        (int y, int x, _) = Manager.Player!.SeekFront();
+        UpdateMapBlock(Manager.Map, (y, x), CharPlayerBody);
+
+        Manager.Player!.InsertToFront(newPlayerBlock);
+        (int cordinateY, int cordinateX, _) = newPlayerBlock;
+        UpdateMapBlock(Manager.Map, (cordinateY, cordinateX), CharPlayerHead);
+        UpdateSpaceBlockOut(Manager.Spaces, block =>
+            block.CordinateY == cordinateY && block.CordinateX == cordinateX);
+
+        Block oldPlayerTailBlock = Manager.Player!.RemoveFromRear();
+        (y, x, _) = oldPlayerTailBlock;
+        UpdateMapBlock(Manager.Map, (y, x), CharSpaceBlock);
+        UpdateSpaceBlockIn(Manager.Spaces, oldPlayerTailBlock);
+    }
+
+    private static bool ReadKeyPress(out DirectionEnum value)
     {
         value = default;
 
-        ConsoleKeyInfo read;
-        read = Console.ReadKey();
+        ConsoleKeyInfo read = Console.ReadKey();
         if (!keyMap.TryGetValue(
             read.Key,
             out _,

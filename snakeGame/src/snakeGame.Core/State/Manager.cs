@@ -9,6 +9,8 @@ public class Manager
 
     public int Width { get; init; }
 
+    public (int, int) Dimensions { get => (Height, Width); }
+
     public OutputTypeEnum OutputType { get; init; }
 
     public Block? Enemy { get; set; }

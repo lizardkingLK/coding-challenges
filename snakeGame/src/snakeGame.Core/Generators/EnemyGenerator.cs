@@ -4,6 +4,7 @@ using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 
 using static snakeGame.Core.Shared.Constants;
+using static snakeGame.Core.Helpers.GameBoardHelper;
 
 namespace snakeGame.Core.Generators;
 
@@ -22,7 +23,7 @@ public class EnemyGenerator : IGenerate
         manager.Enemy = enemy;
 
         (int y, int x, _) = enemy;
-        map[y, x].Type = CharEnemy;
+        UpdateMapBlock(map, (y, x), CharEnemy);
 
         if (Next != null)
         {

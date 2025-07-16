@@ -123,6 +123,57 @@ public class DynamicArray<T>
         return removed;
     }
 
+    public T? Remove(T? value)
+    {
+        if (Size == 0)
+        {
+            throw new Exception("error. cannot remove, array is empty");
+        }
+
+        T? removed = default;
+        int i;
+        for (i = 0; i < Size; i++)
+        {
+            removed = values[i];
+            if (ReferenceEquals(value, removed))
+            {
+                break;
+            }
+        }
+
+        int index = i;
+
+        values[index] = default;
+        int length = Size - i - 1;
+        for (i = 0; i < length; i++)
+        {
+            value = values[index + 1 + i];
+            values[index + 1 + i] = default;
+            values[index + i] = value;
+        }
+
+        Size--;
+        if (Size <= Capacity / 3)
+        {
+            ShrinkArray();
+        }
+
+        return removed;
+    }
+
+    public T? Remove(Func<T, bool> searchFunction)
+    {
+        for (int i = 0; i < Size; i++)
+        {
+            if (searchFunction(values[i]!))
+            {
+                return Remove(i);
+            }
+        }
+
+        return default;
+    }
+
     public T? GetValue(int index)
     {
         if (Size == 0)
@@ -152,17 +203,9 @@ public class DynamicArray<T>
         return true;
     }
 
-    public T? Remove(Func<T, bool> searchFunction)
+    public T?[] ToArray()
     {
-        for (int i = 0; i < Size; i++)
-        {
-            if (searchFunction(values[i]!))
-            {
-                return Remove(i);
-            }
-        }
-
-        return default;
+        return values;
     }
 
     private void GrowArray()
