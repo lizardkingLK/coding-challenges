@@ -59,9 +59,10 @@ public class PlayerUpdator : IPlay
 
             stepResult = StepToDirection(direction, out (int, int) newCordinates);
             // 0 -> wall block. lost
-            // 1 -> previous block. do nothing
-            // 2 -> space block. update map
-            // 3 -> enemy ate. scored. spawn new enemy. update map
+            // 1 -> body block - not neck. lost
+            // 2 -> body block - is neck. do nothing
+            // 3 -> space block. update map
+            // 4 -> ate enemy. scores. spawn enemy. update map
             if (stepResult != 1)
             {
                 throw new Exception("error. game over");
