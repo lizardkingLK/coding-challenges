@@ -47,8 +47,8 @@ public class PlayerUpdator : IPlay
     {
         Output.Output(Manager);
 
-        DirectionEnum? previousDirection = null;
         WriteInfo(INFO_AWAITING_KEY_PRESS);
+        int stepResult;
         do
         {
             if (!ReadKeyPress(out DirectionEnum direction))
@@ -57,34 +57,42 @@ public class PlayerUpdator : IPlay
                 continue;
             }
 
-            if (previousDirection != direction)
+            stepResult = StepToDirection(direction, out (int, int) newCordinates);
+            // 0 -> wall block. lost
+            // 1 -> previous block. do nothing
+            // 2 -> space block. update map
+            // 3 -> enemy ate. scored. spawn new enemy. update map
+            if (stepResult != 1)
             {
-                previousDirection = direction;
+                throw new Exception("error. game over");
             }
 
-            StepToDirection(direction);
+            (int cordinateY, int cordinateX) = newCordinates;
+            UpdateMapForNewPosition(new Block()
+            {
+                CordinateY = cordinateY,
+                CordinateX = cordinateX,
+                Direction = direction,
+                Type = CharPlayerHead,
+            });
+
+            Output.Output(Manager);
         }
         while (true);
     }
 
-    private void StepToDirection(DirectionEnum direction)
+    private int StepToDirection(DirectionEnum direction, out (int, int) cordinates)
     {
         (int y, int x, _) = Manager.Player!.SeekFront();
         GetNextCordinate((y, x), direction, out int cordinateY, out int cordinateX);
-        if (!IsValidCordinate(cordinateY, cordinateX, Manager.Dimensions, Manager.Map))
-        {
-            throw new Exception("error. game over");
-        }
+        cordinates = (cordinateY, cordinateX);
 
-        UpdateMapForNewPosition(new Block()
-        {
-            CordinateY = cordinateY,
-            CordinateX = cordinateX,
-            Direction = direction,
-            Type = CharPlayerHead,
-        });
+        return ValidateNewCordinate(cordinateY, cordinateX, Manager.Dimensions, Manager.Map);
+    }
 
-        Output.Output(Manager);
+    private int ValidateNewCordinate(int cordinateY, int cordinateX, (int, int) dimensions, Block[,] map)
+    {
+        return IsValidCordinate(cordinateY, cordinateX, dimensions, map) ? 1 : -1;
     }
 
     private void UpdateMapForNewPosition(Block newPlayerBlock)

@@ -63,12 +63,12 @@ public class HashMap<K, V>
     {
         ArgumentNullException.ThrowIfNull(key, nameof(key));
 
-        if (!TryGetValue(key, out LinkedList<HashNode<K, V>>? bucketValues, out V? existingValue))
+        if (!TryGetValue(key, out LinkedList<HashNode<K, V>>? bucketValues, out _))
         {
             throw new Exception("error. cannot remove. key does not exist");
         }
 
-        HashNode<K, V>? existingNode = Search(bucketValues!, key);
+        HashNode<K, V>? existingNode = HashMap<K, V>.Search(bucketValues!, key);
         bucketValues!.RemoveLinkNodeAtFirstOccurrence(existingNode!.Value);
         Size--;
 
@@ -80,7 +80,7 @@ public class HashMap<K, V>
         value = default;
 
         bucketValues = GetBucketForKey(key);
-        HashNode<K, V>? existingNode = Search(bucketValues, key);
+        HashNode<K, V>? existingNode = HashMap<K, V>.Search(bucketValues, key);
         if (existingNode.HasValue)
         {
             value = existingNode.Value.Value;
@@ -90,7 +90,7 @@ public class HashMap<K, V>
         return false;
     }
 
-    public HashNode<K, V>? Search(LinkedList<HashNode<K, V>> bucketValues, K key)
+    private static HashNode<K, V>? Search(LinkedList<HashNode<K, V>> bucketValues, K key)
     {
         if (bucketValues.Search(hashNode => hashNode.Key!.Equals(key), out HashNode<K, V> value))
         {

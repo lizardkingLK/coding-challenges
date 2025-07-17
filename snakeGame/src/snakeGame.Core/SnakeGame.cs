@@ -13,20 +13,20 @@ using static ChainingHelper;
 using static OutputHelper;
 using static Utility;
 
-public class SnakeGame
+public static class SnakeGame
 {
     public static void Run(string[] args)
     {
-        Result<(bool, int, int, OutputTypeEnum)> argumentsValidationResult = ValidateArguments
+        Result<(bool, int, int, OutputTypeEnum)> validationResult = ValidateArguments
         (args, MaxHeight, MaxWidth);
-        if (argumentsValidationResult.Error != null)
+        if (validationResult.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(argumentsValidationResult.Error);
+            WriteError(validationResult.Error);
             return;
         }
 
-        Result<bool> getManagerResult = GetManager(argumentsValidationResult.Data, out Manager manager);
+        Result<bool> getManagerResult = GetManager(validationResult.Data, out Manager manager);
         if (getManagerResult.Error != null)
         {
             Environment.ExitCode = 1;
