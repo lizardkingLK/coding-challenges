@@ -32,4 +32,11 @@ public static class Utility
         Console.WriteLine(message);
         Console.ResetColor();
     }
+
+    public static void WriteInfo(string format, params object[] args)
+    {
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.WriteLine(string.Format(format, args));
+        Console.ResetColor();
+    }
 }

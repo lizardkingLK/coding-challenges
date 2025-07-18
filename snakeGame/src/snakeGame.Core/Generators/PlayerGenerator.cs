@@ -95,6 +95,7 @@ public class PlayerGenerator : IGenerate
 
     private static Func<Block, bool> SelectSearchFunction(int y, int x)
     {
-        return space => space.CordinateY == y && space.CordinateX == x;
+        return space =>
+        AreSameCordinates((space.CordinateY, space.CordinateX), (y,x));
     }
 }

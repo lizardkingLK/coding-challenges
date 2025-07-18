@@ -63,21 +63,9 @@ public static class DirectionHelper
         && cordinateX < width - 1
         && map[cordinateY, cordinateX].Type == CharSpaceBlock;
     }
-
-    public static bool AreOppositeDirections(DirectionEnum? firstDirection, DirectionEnum? secondDirection)
+    
+    public static bool AreSameCordinates((int, int) firstCordinate, (int, int) secondCordinate)
     {
-        return GetReversedDirection(firstDirection) == secondDirection;
-    }
-
-    private static DirectionEnum? GetReversedDirection(DirectionEnum? direction)
-    {
-        return direction switch
-        {
-            DirectionEnum.Right => DirectionEnum.Left,
-            DirectionEnum.Down => DirectionEnum.Up,
-            DirectionEnum.Left => DirectionEnum.Right,
-            DirectionEnum.Up => DirectionEnum.Down,
-            _ => null,
-        };
+        return firstCordinate.Item1 == secondCordinate.Item1 && firstCordinate.Item2 == secondCordinate.Item2;
     }
 }

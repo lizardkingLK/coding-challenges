@@ -99,6 +99,24 @@ public class Deque<T>
         Console.WriteLine();
     }
 
+    public T? SearchValue(int index)
+    {
+        LinkNode<T>? currentNode = front;
+        int i = 0;
+        while (currentNode != null && i <= index)
+        {
+            currentNode = currentNode.Next;
+            i++;
+        }
+
+        if (currentNode == null)
+        {
+            return default;
+        }
+
+        return currentNode.Value;
+    }
+
     public T SeekRear()
     {
         LinkNode<T>? tailNode = rear
