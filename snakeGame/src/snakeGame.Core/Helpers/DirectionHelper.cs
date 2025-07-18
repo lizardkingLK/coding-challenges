@@ -49,6 +49,17 @@ public static class DirectionHelper
         }
     }
 
+    public static DirectionEnum GetReversedDirection(DirectionEnum direction)
+    {
+        return direction switch
+        {
+            DirectionEnum.Right => DirectionEnum.Left,
+            DirectionEnum.Down => DirectionEnum.Up,
+            DirectionEnum.Left => DirectionEnum.Right,
+            _ => DirectionEnum.Down,
+        };
+    }
+
     public static bool IsValidCordinate(
         int cordinateY,
         int cordinateX,

@@ -31,11 +31,6 @@ public static class GameBoardHelper
         map[cordinates.Item1, cordinates.Item2].Type = type;
     }
 
-    public static void UpdateMapBlock(Block[,] map, (int, int) cordinates, DirectionEnum direction)
-    {
-        map[cordinates.Item1, cordinates.Item2].Direction = direction;
-    }
-
     public static void UpdateMapBlock(Block[,] map, (int, int) cordinates, char type, DirectionEnum direction)
     {
         map[cordinates.Item1, cordinates.Item2].Type = type;

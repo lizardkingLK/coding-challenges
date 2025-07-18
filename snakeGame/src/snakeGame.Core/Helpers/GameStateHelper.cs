@@ -22,6 +22,7 @@ public static class GameStateHelper
             OutputType = outputType,
             Map = new Block[height, width],
             Spaces = new DynamicArray<Block>(),
+            Player = new Deque<Block>(),
         };
 
         return new(true, null);

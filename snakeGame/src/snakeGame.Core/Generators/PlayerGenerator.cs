@@ -38,27 +38,30 @@ public class PlayerGenerator : IGenerate
         return new(true, null);
     }
 
-    private static Deque<Block>? SelectPlayerBody(
+    private static Deque<Block> SelectPlayerBody(
         Block player,
         Manager manager,
         (int, int) dimensions)
     {
         (int y, int x, _) = player;
+        Deque<Block> playerBody = new(player);
         DynamicArray<Block> spaces = manager.Spaces;
         Block[,] map = manager.Map;
-        Deque<Block> playerBody = new(player);
 
         Block selectedPlayerBodyBlock;
         DirectionEnum direction = GetRandomDirection();
         for (int i = 0; i < PlayerInitialLength; i++)
         {
             (y, x, direction) = SelectValidCordinate(
-                (y, x, direction),
-                dimensions,
-                map,
-                out int checkCordinateCount);
+            (y, x, direction),
+            dimensions,
+            map,
+            out int checkCordinateCount);
 
-            ArgumentOutOfRangeException.ThrowIfEqual(checkCordinateCount, directionsLength);
+            if (checkCordinateCount == directionsLength)
+            {
+                break;
+            }
 
             selectedPlayerBodyBlock = UpdateSpaceBlockOut(spaces, SelectSearchFunction(y, x)!);
 
@@ -96,6 +99,6 @@ public class PlayerGenerator : IGenerate
     private static Func<Block, bool> SelectSearchFunction(int y, int x)
     {
         return space =>
-        AreSameCordinates((space.CordinateY, space.CordinateX), (y,x));
+        AreSameCordinates((space.CordinateY, space.CordinateX), (y, x));
     }
 }

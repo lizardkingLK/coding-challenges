@@ -25,7 +25,6 @@ public class PlayerUpdator : IPlay
         Output.Output(Manager);
 
         WriteInfo(INFO_AWAITING_KEY_PRESS);
-        StepResultEnum stepResult;
         do
         {
             if (!ReadKeyPress(out DirectionEnum direction))
@@ -34,9 +33,10 @@ public class PlayerUpdator : IPlay
                 continue;
             }
 
-            stepResult = ValidateStepToDirection(direction, out (int, int) newCordinates);
-            if (stepResult == StepResultEnum.LostAteAWall
-            || stepResult == StepResultEnum.LostAteBody)
+            if (!ValidateStepToDirection(
+                direction,
+                out (int, int) newCordinates,
+                out StepResultEnum stepResult))
             {
                 WriteInfo(INFO_GAME_OVER, score);
                 return;
@@ -47,66 +47,40 @@ public class PlayerUpdator : IPlay
                 continue;
             }
 
-            UpdateStepResult(newCordinates, direction);
+            (int cordinateY, int cordinateX) = newCordinates;
+            if (!ValidateMapForPlayerNewPosition(new Block()
+            {
+                CordinateY = cordinateY,
+                CordinateX = cordinateX,
+                Direction = direction,
+                Type = CharPlayerHead,
+            }, stepResult == StepResultEnum.ScoreAteEnemy))
+            {
+                WriteSuccess(SUCCESS_GAME_COMPLETE, score);
+                return;
+            }
 
             if (stepResult == StepResultEnum.ScoreAteEnemy)
             {
                 score += ScorePerMeal;
                 Next?.Play();
             }
+
+            Output.Output(Manager);
         }
         while (true);
     }
 
-    private void UpdateStepResult((int, int) newCordinates, DirectionEnum direction)
+    private bool ValidateMapForPlayerNewPosition(
+        Block newPlayerBlock,
+        bool didPlayerEatEnemy)
     {
-        (int cordinateY, int cordinateX) = newCordinates;
-        UpdateMapForPlayerNewPosition(new Block()
+        if (Manager.Spaces.Size == 0)
         {
-            CordinateY = cordinateY,
-            CordinateX = cordinateX,
-            Direction = direction,
-            Type = CharPlayerHead,
-        });
-
-        Output.Output(Manager);
-    }
-
-    private StepResultEnum ValidateStepToDirection(DirectionEnum direction, out (int, int) cordinates)
-    {
-        (int y, int x, _) = Manager.Player!.SeekFront();
-        GetNextCordinate((y, x), direction, out int cordinateY, out int cordinateX);
-        cordinates = (cordinateY, cordinateX);
-
-        Block[,] map = Manager.Map;
-        char cordinateType = map[cordinateY, cordinateX].Type;
-
-        if (cordinateType == CharWallBlock)
-        {
-            return StepResultEnum.LostAteAWall;
+            score += ScorePerMeal;
+            return false;
         }
 
-        if (cordinateType == CharSpaceBlock)
-        {
-            return StepResultEnum.ContinueWithSpace;
-        }
-
-        if (cordinateType == CharEnemy)
-        {
-            return StepResultEnum.ScoreAteEnemy;
-        }
-
-        Block neckBlock = Manager.Player!.SearchValue(0);
-        if (AreSameCordinates((neckBlock.CordinateY, neckBlock.CordinateX), cordinates))
-        {
-            return StepResultEnum.ContinueWithNeck;
-        }
-
-        return StepResultEnum.LostAteBody;
-    }
-
-    private void UpdateMapForPlayerNewPosition(Block newPlayerBlock)
-    {
         (int y, int x, _) = Manager.Player!.SeekFront();
         (int, int) newCordinates = (y, x);
         UpdateMapBlock(Manager.Map, newCordinates, CharPlayerBody);
@@ -117,9 +91,58 @@ public class PlayerUpdator : IPlay
         UpdateSpaceBlockOut(Manager.Spaces, block => AreSameCordinates
         ((block.CordinateY, block.CordinateX), newCordinates));
 
+        if (didPlayerEatEnemy)
+        {
+            return true;
+        }
+
         Block oldPlayerTailBlock = Manager.Player!.RemoveFromRear();
         (y, x, _) = oldPlayerTailBlock;
         UpdateMapBlock(Manager.Map, (y, x), CharSpaceBlock);
         UpdateSpaceBlockIn(Manager.Spaces, oldPlayerTailBlock);
+
+        return true;
+    }
+
+    private bool ValidateStepToDirection(
+        DirectionEnum direction,
+        out (int, int) cordinates,
+        out StepResultEnum stepResult)
+    {
+        (int y, int x, _) = Manager.Player!.SeekFront();
+        GetNextCordinate((y, x), direction, out int cordinateY, out int cordinateX);
+        cordinates = (cordinateY, cordinateX);
+
+        Block[,] map = Manager.Map;
+        char cordinateType = map[cordinateY, cordinateX].Type;
+
+        if (cordinateType == CharWallBlock)
+        {
+            stepResult = StepResultEnum.LostAteAWall;
+            return false;
+        }
+
+        if (cordinateType == CharSpaceBlock)
+        {
+            stepResult = StepResultEnum.ContinueWithSpace;
+            return true;
+        }
+
+        if (cordinateType == CharEnemy)
+        {
+            stepResult = StepResultEnum.ScoreAteEnemy;
+            return true;
+        }
+
+        Block neckBlock = Manager.Player!.SearchValue(0);
+        if (AreSameCordinates((neckBlock.CordinateY, neckBlock.CordinateX), cordinates))
+        {
+            stepResult = StepResultEnum.ContinueWithNeck;
+            return true;
+        }
+
+        stepResult = StepResultEnum.LostAteBody;
+
+        return false;
     }
 }

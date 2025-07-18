@@ -15,7 +15,7 @@ public class Manager
 
     public Block? Enemy { get; set; }
 
-    public Deque<Block>? Player { get; set; }
+    public required Deque<Block> Player { get; set; }
 
     public required Block[,] Map { get; init; }
 

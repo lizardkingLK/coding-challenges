@@ -3,22 +3,20 @@ namespace snakeGame.Core.Helpers;
 using snakeGame.Core.Enums;
 using snakeGame.Core.Shared;
 
+using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Shared.Utility;
 using static snakeGame.Core.Shared.Values;
 
 public static class ArgumentHelper
 {
     public static
-    Result<(bool, int, int, OutputTypeEnum)> ValidateArguments(
-        string[] args,
-        int maxHeight,
-        int maxWidth)
+    Result<(bool, int, int, OutputTypeEnum)> ValidateArguments(string[] args)
     {
         OutputTypeEnum outputType = default;
         int length = args.Length;
         if (length == 0)
         {
-            return new((true, maxHeight, maxWidth, outputType), null);
+            return new((true, MinHeight, MinWidth, outputType), null);
         }
 
         if (length % 2 != 0)
@@ -61,14 +59,14 @@ public static class ArgumentHelper
             return ErrorInvalidArguments;
         }
 
-        if (height < 10 || height > maxHeight)
+        if (height < MinHeight || height > MaxHeight)
         {
-            height = maxHeight;
+            height = MinHeight;
         }
 
-        if (width < 10 || width > maxWidth)
+        if (width < MinWidth || width > MaxWidth)
         {
-            width = maxWidth;
+            width = MinWidth;
         }
 
         return new((true, height, width, outputType), null);

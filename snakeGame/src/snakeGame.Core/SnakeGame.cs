@@ -6,7 +6,6 @@ using snakeGame.Core.Abstractions;
 
 namespace snakeGame.Core;
 
-using static Constants;
 using static GameStateHelper;
 using static ArgumentHelper;
 using static ChainingHelper;
@@ -17,8 +16,7 @@ public static class SnakeGame
 {
     public static void Run(string[] args)
     {
-        Result<(bool, int, int, OutputTypeEnum)> validationResult = ValidateArguments
-        (args, MaxHeight, MaxWidth);
+        Result<(bool, int, int, OutputTypeEnum)> validationResult = ValidateArguments(args);
         if (validationResult.Error != null)
         {
             Environment.ExitCode = 1;
