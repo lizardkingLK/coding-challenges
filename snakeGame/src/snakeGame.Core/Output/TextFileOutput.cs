@@ -1,17 +1,21 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.State;
 
+using static snakeGame.Core.Shared.Constants;
+
 namespace snakeGame.Core.Output;
 
 public class TextFileOutput : IOutput
 {
-    public void Output(Manager manager)
-    {
-        int height = manager.Height;
-        int width = manager.Width;
-        Block[,] map = manager.Map;
+    public Manager? Manager { get; set; }
 
-        using FileStream fileStream = new(Path.Join(Directory.GetCurrentDirectory(), "output.txt"), FileMode.Create);
+    public void Output()
+    {
+        int height = Manager!.Height;
+        int width = Manager.Width;
+        Block[,] map = Manager.Map;
+
+        using FileStream fileStream = new(Path.Join(Directory.GetCurrentDirectory(), DefaultFileName), FileMode.Create);
 
         for (int i = 0; i < height; i++)
         {

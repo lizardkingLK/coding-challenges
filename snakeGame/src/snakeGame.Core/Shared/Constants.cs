@@ -2,7 +2,7 @@ namespace snakeGame.Core.Shared;
 
 public static class Constants
 {
-    public const int MaxWidth = 60;
+    public const int MaxWidth = 40;
     public const int MinWidth = 5;
     public const int MaxHeight = 20;
     public const int MinHeight = 5;
@@ -19,7 +19,8 @@ public static class Constants
     public const char CharPlayerHead = '0';
     public const char CharEnemy = '+';
     public const char CharPlayerBody = 'O';
-public const char CharNewLine = '\n';
+    public const char CharNewLine = '\n';
+    public const string DefaultFileName = "output.txt";
     public const string INFO_AWAITING_KEY_PRESS = "info. awaiting key press... (^ | k, > | l, < | h, v | j)";
     public const string INFO_GAME_OVER = "Game Over. Your Score is {0}";
     public const string SUCCESS_GAME_COMPLETE = "Game Complete. Your Score is {0}";

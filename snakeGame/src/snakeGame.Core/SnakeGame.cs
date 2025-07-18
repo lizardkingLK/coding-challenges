@@ -32,7 +32,7 @@ public static class SnakeGame
             return;
         }
 
-        Result<bool> generatedGameContext = GetGenerator().Generate(manager);
+        Result<bool> generatedGameContext = GetGenerator(manager).Generate();
         if (generatedGameContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -40,7 +40,7 @@ public static class SnakeGame
             return;
         }
 
-        Result<bool> outputContext = GetOutput(manager.OutputType, out IOutput output);
+        Result<bool> outputContext = GetOutput(manager, out IOutput? output);
         if (outputContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -48,7 +48,7 @@ public static class SnakeGame
             return;
         }
 
-        Result<bool> runnableGameContext = GetPlayable(manager, output, out IPlay playable);
+        Result<bool> runnableGameContext = GetPlayable(manager, output!, out IPlayable playable);
         if (runnableGameContext.Error != null)
         {
             Environment.ExitCode = 1;

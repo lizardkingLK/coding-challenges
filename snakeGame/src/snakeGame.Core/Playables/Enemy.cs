@@ -5,11 +5,11 @@ using snakeGame.Core.Library;
 using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Helpers.GameBoardHelper;
 
-namespace snakeGame.Core.Updators;
+namespace snakeGame.Core.Playables;
 
-public class EnemyUpdator : IPlay
+public class Enemy : IPlayable
 {
-    public IPlay? Next { get; init; }
+    public IPlayable? Next { get; init; }
 
     public required Manager Manager { get; init; }
 
@@ -22,10 +22,7 @@ public class EnemyUpdator : IPlay
         DynamicArray<Block> spaces = Manager.Spaces;
         Block[,] map = Manager.Map;
 
-        Block enemy = spaces.Remove(_random.Next(0, spaces.Size));
-        Manager.Enemy = enemy;
-
-        (int y, int x, _) = enemy;
-        UpdateMapBlock(map, (y, x), CharEnemy);
+        Manager.Enemy = spaces.Remove(_random.Next(0, spaces.Size));
+        UpdateMapBlock(map, Manager.Enemy.Cordinates, CharEnemy);
     }
 }

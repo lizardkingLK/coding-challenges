@@ -4,46 +4,49 @@ using snakeGame.Core.Abstractions;
 using snakeGame.Core.Generators;
 using snakeGame.Core.Shared;
 using snakeGame.Core.State;
-using snakeGame.Core.Updators;
+using snakeGame.Core.Playables;
 
 public static class ChainingHelper
 {
-    public static Result<bool> GetPlayable(Manager manager, IOutput output, out IPlay playable)
+    public static Result<bool> GetPlayable(Manager manager, IOutput output, out IPlayable playable)
     {
-        EnemyUpdator enemyUpdator = new()
+        Enemy enemy = new()
         {
             Next = null,
             Manager = manager,
             Output = output,
         };
 
-        PlayerUpdator playerUpdator = new()
+        Player player = new()
         {
-            Next = enemyUpdator,
+            Next = enemy,
             Manager = manager,
             Output = output,
         };
 
-        playable = playerUpdator;
+        playable = player;
 
         return new(true, null);
     }
 
-    public static IGenerate GetGenerator()
+    public static IGenerate GetGenerator(Manager manager)
     {
         PlayerGenerator playerGenerator = new()
         {
             Next = null,
+            Manager = manager,
         };
 
         EnemyGenerator enemyGenerator = new()
         {
             Next = playerGenerator,
+            Manager = manager,
         };
 
         WallGenerator wallGenerator = new()
         {
             Next = enemyGenerator,
+            Manager = manager,
         };
 
         return wallGenerator;

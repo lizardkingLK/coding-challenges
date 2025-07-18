@@ -13,12 +13,11 @@ public class Manager
 
     public OutputTypeEnum OutputType { get; init; }
 
-    public Block? Enemy { get; set; }
+    public Block Enemy { get; set; }
 
     public required Deque<Block> Player { get; set; }
 
     public required Block[,] Map { get; init; }
 
     public required DynamicArray<Block> Spaces { get; init; }
-
 }

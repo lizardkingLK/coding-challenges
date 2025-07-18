@@ -7,11 +7,13 @@ namespace snakeGame.Core.Output;
 
 public class ConsoleOutput : IOutput
 {
-    public void Output(Manager manager)
+    public Manager? Manager { get; set; }
+
+    public void Output()
     {
-        int height = manager.Height;
-        int width = manager.Width;
-        Block[,] map = manager.Map;
+        int height = Manager!.Height;
+        int width = Manager.Width;
+        Block[,] map = Manager.Map;
 
         char type;
         Console.Clear();

@@ -8,11 +8,11 @@ using static snakeGame.Core.Helpers.DirectionHelper;
 using static snakeGame.Core.Helpers.GameBoardHelper;
 using static snakeGame.Core.Helpers.ConsoleHelper;
 
-namespace snakeGame.Core.Updators;
+namespace snakeGame.Core.Playables;
 
-public class PlayerUpdator : IPlay
+public class Player : IPlayable
 {
-    public IPlay? Next { get; init; }
+    public IPlayable? Next { get; init; }
 
     public required Manager Manager { get; init; }
 
@@ -22,7 +22,7 @@ public class PlayerUpdator : IPlay
 
     public void Play()
     {
-        Output.Output(Manager);
+        Output.Output();
 
         WriteInfo(INFO_AWAITING_KEY_PRESS);
         do
@@ -66,13 +66,13 @@ public class PlayerUpdator : IPlay
                 Next?.Play();
             }
 
-            Output.Output(Manager);
+            Output.Output();
         }
         while (true);
     }
 
     private bool ValidateMapForPlayerNewPosition(
-        Block newPlayerBlock,
+        Block newPlayerHeadBlock,
         bool didPlayerEatEnemy)
     {
         if (Manager.Spaces.Size == 0)
@@ -81,15 +81,14 @@ public class PlayerUpdator : IPlay
             return false;
         }
 
-        (int y, int x, _) = Manager.Player!.SeekFront();
+        (int y, int x) = Manager.Player!.SeekFront().Cordinates;
         (int, int) newCordinates = (y, x);
         UpdateMapBlock(Manager.Map, newCordinates, CharPlayerBody);
 
-        Manager.Player!.InsertToFront(newPlayerBlock);
-        (int cordinateY, int cordinateX, _) = newPlayerBlock;
-        UpdateMapBlock(Manager.Map, (cordinateY, cordinateX), CharPlayerHead);
-        UpdateSpaceBlockOut(Manager.Spaces, block => AreSameCordinates
-        ((block.CordinateY, block.CordinateX), newCordinates));
+        Manager.Player!.InsertToFront(newPlayerHeadBlock);
+        UpdateMapBlock(Manager.Map, newPlayerHeadBlock.Cordinates, CharPlayerHead);
+        UpdateSpaceBlockOut(Manager.Spaces, block =>
+        AreSameCordinates(block.Cordinates, newCordinates));
 
         if (didPlayerEatEnemy)
         {
@@ -97,8 +96,7 @@ public class PlayerUpdator : IPlay
         }
 
         Block oldPlayerTailBlock = Manager.Player!.RemoveFromRear();
-        (y, x, _) = oldPlayerTailBlock;
-        UpdateMapBlock(Manager.Map, (y, x), CharSpaceBlock);
+        UpdateMapBlock(Manager.Map, oldPlayerTailBlock.Cordinates, CharSpaceBlock);
         UpdateSpaceBlockIn(Manager.Spaces, oldPlayerTailBlock);
 
         return true;
@@ -109,8 +107,8 @@ public class PlayerUpdator : IPlay
         out (int, int) cordinates,
         out StepResultEnum stepResult)
     {
-        (int y, int x, _) = Manager.Player!.SeekFront();
-        GetNextCordinate((y, x), direction, out int cordinateY, out int cordinateX);
+        Block currentHead = Manager.Player!.SeekFront();
+        GetNextCordinate(currentHead.Cordinates, direction, out int cordinateY, out int cordinateX);
         cordinates = (cordinateY, cordinateX);
 
         Block[,] map = Manager.Map;
