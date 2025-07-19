@@ -10,13 +10,14 @@ using static snakeGame.Core.Shared.Values;
 public static class ArgumentHelper
 {
     public static
-    Result<(bool, int, int, OutputTypeEnum)> ValidateArguments(string[] args)
+    Result<(bool, int, int, OutputTypeEnum, GameModeEnum)> ValidateArguments(string[] args)
     {
         OutputTypeEnum outputType = default;
+        GameModeEnum gameMode = default;
         int length = args.Length;
         if (length == 0)
         {
-            return new((true, MinHeight, MinWidth, outputType), null);
+            return new((true, MinHeight, MinWidth, outputType, gameMode), null);
         }
 
         if (length % 2 != 0)
@@ -27,8 +28,8 @@ public static class ArgumentHelper
         int i;
         string currentArgument;
         string currentValueString;
-        int width = 0;
-        int height = 0;
+        int width = MinWidth;
+        int height = MinHeight;
         for (i = 0; i < length; i += 2)
         {
             currentArgument = args[i].Trim().ToLower();
@@ -40,13 +41,17 @@ public static class ArgumentHelper
 
             if (IncludesInCollection(currentArgument, heightFlags))
             {
-                height = currentValue;
+                height = currentValue < MinHeight || currentValue > MaxHeight
+                ? MinHeight
+                : currentValue;
                 continue;
             }
 
             if (IncludesInCollection(currentArgument, widthFlags))
             {
-                width = currentValue;
+                width = currentValue < MinWidth || currentValue > MaxWidth
+                ? MinWidth
+                : currentValue;
                 continue;
             }
 
@@ -56,19 +61,15 @@ public static class ArgumentHelper
                 continue;
             }
 
+            if (IncludesInCollection(currentArgument, gameModeFlags)
+            && Enum.TryParse(currentValueString, out gameMode))
+            {
+                continue;
+            }
+
             return ErrorInvalidArguments;
         }
 
-        if (height < MinHeight || height > MaxHeight)
-        {
-            height = MinHeight;
-        }
-
-        if (width < MinWidth || width > MaxWidth)
-        {
-            width = MinWidth;
-        }
-
-        return new((true, height, width, outputType), null);
+        return new((true, height, width, outputType, gameMode), null);
     }
 }

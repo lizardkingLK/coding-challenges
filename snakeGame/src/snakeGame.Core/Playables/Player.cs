@@ -23,9 +23,50 @@ public class Player : IPlayable
     public void Play()
     {
         Output.Output();
+        if (Manager.GameMode == GameModeEnum.Manual)
+        {
+            PlayManualGame();
+        }
+        else if (Manager.GameMode == GameModeEnum.Automatic)
+        {
+            PlayAutomaticGame();
+        }
+    }
 
+    private void PlayAutomaticGame()
+    {
+    ReadDirection:
         WriteInfo(INFO_AWAITING_KEY_PRESS);
+        if (!ReadKeyPress(out DirectionEnum direction))
+        {
+            WriteError(ERROR_INVALID_KEY_PRESSED);
+            goto ReadDirection;
+        }
+
         do
+        {
+            if (Console.KeyAvailable)
+            {
+                if (!ReadKeyPress(out direction))
+                {
+                    WriteError(ERROR_INVALID_KEY_PRESSED);
+                }
+            }
+
+            if (!ValidatePlayerStep(direction))
+            {
+                return;
+            }
+
+            Thread.Sleep(StepInterval);
+        }
+        while (true);
+    }
+
+    private void PlayManualGame()
+    {
+        WriteInfo(INFO_AWAITING_KEY_PRESS);
+        while (true)
         {
             if (!ReadKeyPress(out DirectionEnum direction))
             {
@@ -33,42 +74,51 @@ public class Player : IPlayable
                 continue;
             }
 
-            if (!ValidateStepToDirection(
+            if (!ValidatePlayerStep(direction))
+            {
+                return;
+            }
+        }
+    }
+
+    private bool ValidatePlayerStep(in DirectionEnum direction)
+    {
+        if (!ValidateStepToDirection(
                 direction,
                 out (int, int) newCordinates,
                 out StepResultEnum stepResult))
-            {
-                WriteInfo(INFO_GAME_OVER, score);
-                return;
-            }
-
-            if (stepResult == StepResultEnum.ContinueWithNeck)
-            {
-                continue;
-            }
-
-            (int cordinateY, int cordinateX) = newCordinates;
-            if (!ValidateMapForPlayerNewPosition(new Block()
-            {
-                CordinateY = cordinateY,
-                CordinateX = cordinateX,
-                Direction = direction,
-                Type = CharPlayerHead,
-            }, stepResult == StepResultEnum.ScoreAteEnemy))
-            {
-                WriteSuccess(SUCCESS_GAME_COMPLETE, score);
-                return;
-            }
-
-            if (stepResult == StepResultEnum.ScoreAteEnemy)
-            {
-                score += ScorePerMeal;
-                Next?.Play();
-            }
-
-            Output.Output();
+        {
+            WriteInfo(INFO_GAME_OVER, score);
+            return false;
         }
-        while (true);
+
+        if (stepResult == StepResultEnum.ContinueWithNeck)
+        {
+            return true;
+        }
+
+        (int cordinateY, int cordinateX) = newCordinates;
+        if (!ValidateMapForPlayerNewPosition(new Block()
+        {
+            CordinateY = cordinateY,
+            CordinateX = cordinateX,
+            Direction = direction,
+            Type = CharPlayerHead,
+        }, stepResult == StepResultEnum.ScoreAteEnemy))
+        {
+            WriteSuccess(SUCCESS_GAME_COMPLETE, score);
+            return false;
+        }
+
+        if (stepResult == StepResultEnum.ScoreAteEnemy)
+        {
+            score += ScorePerMeal;
+            Next?.Play();
+        }
+
+        Output.Output();
+
+        return true;
     }
 
     private bool ValidateMapForPlayerNewPosition(
@@ -81,8 +131,7 @@ public class Player : IPlayable
             return false;
         }
 
-        (int y, int x) = Manager.Player!.SeekFront().Cordinates;
-        (int, int) newCordinates = (y, x);
+        (int y, int x) newCordinates = Manager.Player!.SeekFront().Cordinates;
         UpdateMapBlock(Manager.Map, newCordinates, CharPlayerBody);
 
         Manager.Player!.InsertToFront(newPlayerHeadBlock);

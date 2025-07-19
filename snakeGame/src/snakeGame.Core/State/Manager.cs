@@ -13,6 +13,8 @@ public class Manager
 
     public OutputTypeEnum OutputType { get; init; }
 
+    public GameModeEnum GameMode { get; init; }
+
     public Block Enemy { get; set; }
 
     public required Deque<Block> Player { get; set; }

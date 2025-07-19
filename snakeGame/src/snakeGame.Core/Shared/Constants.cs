@@ -3,16 +3,19 @@ namespace snakeGame.Core.Shared;
 public static class Constants
 {
     public const int MaxWidth = 40;
-    public const int MinWidth = 5;
+    public const int MinWidth = 10;
     public const int MaxHeight = 20;
-    public const int MinHeight = 5;
+    public const int MinHeight = 10;
     public const int ScorePerMeal = 100;
+    public const int StepInterval= 500;
     public const string FlagHeight = "--height";
     public const string FlagHeightPrefixed = "-h";
     public const string FlagWidth = "--width";
     public const string FlagWidthPrefixed = "-w";
     public const string FlagOutput = "--output";
     public const string FlagOutputPrefixed = "-o";
+    public const string FlagGameMode = "--gameMode";
+    public const string FlagGameModePrefixed = "-gm";
     public const int PlayerInitialLength = 3;
     public const char CharWallBlock = '&';
     public const char CharSpaceBlock = ' ';

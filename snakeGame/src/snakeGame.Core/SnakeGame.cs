@@ -16,7 +16,7 @@ public static class SnakeGame
 {
     public static void Run(string[] args)
     {
-        Result<(bool, int, int, OutputTypeEnum)> validationResult = ValidateArguments(args);
+        Result<(bool, int, int, OutputTypeEnum, GameModeEnum)> validationResult = ValidateArguments(args);
         if (validationResult.Error != null)
         {
             Environment.ExitCode = 1;
