@@ -23,13 +23,13 @@ public class Player : IPlayable
     public void Play()
     {
         Output.Output();
-        if (Manager.GameMode == GameModeEnum.Manual)
-        {
-            PlayManualGame();
-        }
-        else if (Manager.GameMode == GameModeEnum.Automatic)
+        if (Manager.GameMode == GameModeEnum.Automatic)
         {
             PlayAutomaticGame();
+        }
+        else if (Manager.GameMode == GameModeEnum.Manual)
+        {
+            PlayManualGame();
         }
     }
 

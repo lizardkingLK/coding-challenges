@@ -14,7 +14,7 @@ public static class Constants
     public const string FlagWidthPrefixed = "-w";
     public const string FlagOutput = "--output";
     public const string FlagOutputPrefixed = "-o";
-    public const string FlagGameMode = "--gameMode";
+    public const string FlagGameMode = "--game-mode";
     public const string FlagGameModePrefixed = "-gm";
     public const int PlayerInitialLength = 3;
     public const char CharWallBlock = '&';

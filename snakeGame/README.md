@@ -28,15 +28,15 @@ dotnet tool install --global --add-source .\nupkg snakegame.program
 ```
 width       = [-[w|-width] <width_value>]
 height      = [-[h|-height] <height_value>]
-gameMode    = [-[gm|-gameMode] [0-1]]
+game-mode    = [-[gm|-game-mode] [0-1]]
 output      = [-[o|-output] [0-3]]
 ```
 
 #### Game Modes
 
 ```
-0 - Manual
-1 - Automatic
+0 - Automatic
+1 - Manual
 ``` 
 
 #### Output Types

@@ -60,6 +60,7 @@ public static class ArgumentHelper
                 continue;
             }
 
+            System.Console.WriteLine(currentArgument);
             if (IncludesInCollection(currentArgument, gameModeFlags)
             && Enum.TryParse(currentValueString, out gameMode))
             {
