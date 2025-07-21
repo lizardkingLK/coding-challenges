@@ -3,6 +3,7 @@ namespace snakeGame.Core.Helpers;
 using snakeGame.Core.Enums;
 using snakeGame.Core.Library;
 
+using static snakeGame.Core.Helpers.DirectionHelper;
 using static snakeGame.Core.Enums.DirectionEnum;
 
 public static class ConsoleHelper
@@ -21,7 +22,7 @@ public static class ConsoleHelper
         keyMap.Insert(ConsoleKey.K, Up);
     }
 
-    public static bool ReadKeyPress(out DirectionEnum value)
+    public static bool ReadKeyPress(DirectionEnum? previous, out DirectionEnum? value)
     {
         value = default;
 
@@ -29,12 +30,22 @@ public static class ConsoleHelper
         if (!keyMap.TryGetValue(
             read.Key,
             out _,
-            out DirectionEnum direction))
+            out DirectionEnum readDirection))
         {
             return false;
         }
 
-        value = direction;
+        value = readDirection;
+        if (previous == null)
+        {
+            return true;
+        }
+
+        DirectionEnum reversedDirection = GetReversedDirection(previous.Value);
+        if (reversedDirection == value)
+        {
+            value = previous;
+        }
 
         return true;
     }

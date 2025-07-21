@@ -35,9 +35,11 @@ public class Player : IPlayable
 
     private void PlayAutomaticGame()
     {
+        DirectionEnum? direction = null;
+
     ReadDirection:
         WriteInfo(INFO_AWAITING_KEY_PRESS);
-        if (!ReadKeyPress(out DirectionEnum direction))
+        if (!ReadKeyPress(direction, out direction))
         {
             WriteError(ERROR_INVALID_KEY_PRESSED);
             goto ReadDirection;
@@ -45,15 +47,12 @@ public class Player : IPlayable
 
         do
         {
-            if (Console.KeyAvailable)
+            if (Console.KeyAvailable && !ReadKeyPress(direction, out direction))
             {
-                if (!ReadKeyPress(out direction))
-                {
-                    WriteError(ERROR_INVALID_KEY_PRESSED);
-                }
+                WriteError(ERROR_INVALID_KEY_PRESSED);
             }
 
-            if (!ValidatePlayerStep(direction))
+            if (!ValidatePlayerStep(direction!.Value))
             {
                 return;
             }
@@ -65,16 +64,17 @@ public class Player : IPlayable
 
     private void PlayManualGame()
     {
+        DirectionEnum? direction = null;
         WriteInfo(INFO_AWAITING_KEY_PRESS);
         while (true)
         {
-            if (!ReadKeyPress(out DirectionEnum direction))
+            if (!ReadKeyPress(direction, out direction))
             {
                 WriteError(ERROR_INVALID_KEY_PRESSED);
                 continue;
             }
 
-            if (!ValidatePlayerStep(direction))
+            if (!ValidatePlayerStep(direction!.Value))
             {
                 return;
             }
