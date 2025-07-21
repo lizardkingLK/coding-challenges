@@ -11,6 +11,7 @@ using static ArgumentHelper;
 using static ChainingHelper;
 using static OutputHelper;
 using static Utility;
+using static Constants;
 
 public static class SnakeGame
 {
@@ -21,6 +22,7 @@ public static class SnakeGame
         {
             Environment.ExitCode = 1;
             WriteError(validationResult.Error);
+            WriteInfo(INFO_HELP);
             return;
         }
 

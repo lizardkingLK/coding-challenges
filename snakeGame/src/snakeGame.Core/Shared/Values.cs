@@ -1,6 +1,7 @@
 namespace snakeGame.Core.Shared;
 
 using snakeGame.Core.Enums;
+
 using static Constants;
 
 public readonly struct Values

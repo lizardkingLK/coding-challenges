@@ -1,5 +1,6 @@
 using snakeGame.Core.Enums;
 using snakeGame.Core.Shared;
+
 using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Shared.Utility;
 using static snakeGame.Core.Shared.Values;
