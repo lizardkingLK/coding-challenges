@@ -1,9 +1,11 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.State;
 
+using static System.Console;
+
 using static snakeGame.Core.Shared.Constants;
 
-namespace snakeGame.Core.Output;
+namespace snakeGame.Core.Output.Console;
 
 public class ConsoleOutput : IOutput
 {
@@ -16,7 +18,7 @@ public class ConsoleOutput : IOutput
         Block[,] map = Manager.Map;
 
         char type;
-        Console.Clear();
+        Clear();
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
@@ -24,11 +26,11 @@ public class ConsoleOutput : IOutput
                 type = map[i, j].Type;
                 SetColor(type);
 
-                Console.Write(type);
-                Console.ResetColor();
+                Write(type);
+                ResetColor();
             }
 
-            Console.Write(CharNewLine);
+            Write(CharNewLine);
         }
     }
 
@@ -36,22 +38,22 @@ public class ConsoleOutput : IOutput
     {
         if (type == CharWallBlock)
         {
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            ForegroundColor = ConsoleColor.DarkYellow;
         }
 
         if (type == CharEnemy)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            ForegroundColor = ConsoleColor.Red;
         }
 
         if (type == CharPlayerHead)
         { 
-            Console.ForegroundColor = ConsoleColor.Green;
+            ForegroundColor = ConsoleColor.Green;
         }
 
         if (type == CharPlayerBody)
         {
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            ForegroundColor = ConsoleColor.DarkGreen;
         }
     }
 }

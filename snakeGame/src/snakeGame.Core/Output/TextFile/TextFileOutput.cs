@@ -3,7 +3,7 @@ using snakeGame.Core.State;
 
 using static snakeGame.Core.Shared.Constants;
 
-namespace snakeGame.Core.Output;
+namespace snakeGame.Core.Output.TextFile;
 
 public class TextFileOutput : IOutput
 {

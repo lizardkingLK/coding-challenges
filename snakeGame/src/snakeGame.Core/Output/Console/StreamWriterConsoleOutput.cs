@@ -2,9 +2,11 @@ using snakeGame.Core.Abstractions;
 using snakeGame.Core.State;
 using System.Text;
 
-namespace snakeGame.Core.Output;
+using static System.Console;
 
-public class StringBuilderConsoleOutput : IOutput
+namespace snakeGame.Core.Output.Console;
+
+public class StreamWriterConsoleOutput : IOutput
 {
     public Manager? Manager { get; set; }
 
@@ -15,7 +17,7 @@ public class StringBuilderConsoleOutput : IOutput
         Block[,] map = Manager.Map;
         StringBuilder consoleOutputBuilder = new();
         using StreamWriter output = new(
-            Console.OpenStandardOutput(),
+            OpenStandardOutput(),
             bufferSize: Manager.Width * Manager.Height);
 
         char type;
@@ -31,7 +33,7 @@ public class StringBuilderConsoleOutput : IOutput
             consoleOutputBuilder.AppendLine();
         }
 
-        Console.Clear();
-        Console.WriteLine(consoleOutputBuilder.ToString());
+        Clear();
+        output.WriteLine(consoleOutputBuilder.ToString());
     }
 }

@@ -30,7 +30,7 @@ public static class Constants
     public const string ERROR_INVALID_KEY_PRESSED = "error. invalid key pressed";
     public const string INFO_AWAITING_KEY_PRESS = "info. awaiting key press... (^ | k, > | l, < | h, v | j)";
     public const string INFO_GAME_OVER = "Game Over. Your Score is {0}";
-    public const string INFO_HELP = @$"
+    public const string INFO_HELP = @"
 Options
 
 width       = [-[w|-width] [10-40]]

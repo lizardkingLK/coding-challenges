@@ -1,9 +1,10 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
-using snakeGame.Core.Output;
 using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 using snakeGame.Core.Library;
+using snakeGame.Core.Output.Console;
+using snakeGame.Core.Output.TextFile;
 
 namespace snakeGame.Core.Helpers;
 
