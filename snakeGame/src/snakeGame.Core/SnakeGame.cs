@@ -6,27 +6,27 @@ using snakeGame.Core.Abstractions;
 
 namespace snakeGame.Core;
 
-using static Constants;
 using static GameStateHelper;
 using static ArgumentHelper;
 using static ChainingHelper;
 using static OutputHelper;
 using static Utility;
+using static Constants;
 
-public class SnakeGame
+public static class SnakeGame
 {
     public static void Run(string[] args)
     {
-        Result<(bool, int, int, OutputTypeEnum)> argumentsValidationResult = ValidateArguments
-        (args, MaxHeight, MaxWidth);
-        if (argumentsValidationResult.Error != null)
+        Result<(bool, int, int, OutputTypeEnum, GameModeEnum)> validationResult = ValidateArguments(args);
+        if (validationResult.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(argumentsValidationResult.Error);
+            WriteError(validationResult.Error);
+            WriteInfo(INFO_HELP);
             return;
         }
 
-        Result<bool> getManagerResult = GetManager(argumentsValidationResult.Data, out Manager manager);
+        Result<bool> getManagerResult = GetManager(validationResult.Data, out Manager manager);
         if (getManagerResult.Error != null)
         {
             Environment.ExitCode = 1;
@@ -34,7 +34,7 @@ public class SnakeGame
             return;
         }
 
-        Result<bool> generatedGameContext = GetGenerator().Generate(manager);
+        Result<bool> generatedGameContext = GetGenerator(manager).Generate();
         if (generatedGameContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -42,7 +42,7 @@ public class SnakeGame
             return;
         }
 
-        Result<bool> outputContext = GetOutput(manager.OutputType, out IOutput output);
+        Result<bool> outputContext = GetOutput(manager, out IOutput? output);
         if (outputContext.Error != null)
         {
             Environment.ExitCode = 1;
@@ -50,7 +50,7 @@ public class SnakeGame
             return;
         }
 
-        Result<bool> runnableGameContext = GetPlayable(manager, output, out IPlay playable);
+        Result<bool> runnableGameContext = GetPlayable(manager, output!, out IPlayable playable);
         if (runnableGameContext.Error != null)
         {
             Environment.ExitCode = 1;

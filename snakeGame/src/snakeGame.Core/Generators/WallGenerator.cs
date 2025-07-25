@@ -4,19 +4,22 @@ using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 
 using static snakeGame.Core.Shared.Constants;
+using static snakeGame.Core.Helpers.GameBoardHelper;
 
 namespace snakeGame.Core.Generators;
 
 public class WallGenerator : IGenerate
 {
+    public required Manager Manager { get; init; }
+
     public IGenerate? Next { get; set; }
 
-    public Result<bool> Generate(Manager manager)
+    public Result<bool> Generate()
     {
-        int height = manager.Height;
-        int width = manager.Width;
-        Block[,] map = manager.Map;
-        DynamicArray<Block> spaces = manager.Spaces;
+        int height = Manager.Height;
+        int width = Manager.Width;
+        Block[,] map = Manager.Map;
+        DynamicArray<Block> spaces = Manager.Spaces;
 
         int i;
         int j;
@@ -35,7 +38,7 @@ public class WallGenerator : IGenerate
                         CordinateX = j,
                         Type = CharWallBlock,
                     };
-                    map[i, j] = currentBlock;
+                    UpdateMapBlock(map, (i, j), currentBlock);
                     continue;
                 }
 
@@ -45,14 +48,14 @@ public class WallGenerator : IGenerate
                     CordinateX = j,
                     Type = CharSpaceBlock,
                 };
-                map[i, j] = currentBlock;
-                spaces.Add(currentBlock);
+                UpdateMapBlock(map, (i, j), currentBlock);
+                UpdateSpaceBlockIn(spaces, currentBlock);
             }
         }
 
         if (Next != null)
         {
-            return Next.Generate(manager);
+            return Next.Generate();
         }
 
         return new(true, null);

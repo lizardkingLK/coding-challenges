@@ -7,5 +7,7 @@ public interface IGenerate
 {
     public IGenerate? Next { get; set; }
 
-    public Result<bool> Generate(Manager manager);
+    public Manager Manager { get; init; }
+
+    public Result<bool> Generate();
 }

@@ -11,7 +11,6 @@ class Program
     {
         try
         {
-            SnakeGame snakeGame = new();
             SnakeGame.Run(args);
         }
         catch (IOException)

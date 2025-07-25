@@ -4,16 +4,6 @@ public class LinkedList<T>
 {
     public LinkNode<T>? Head { get; set; }
 
-    public void Display()
-    {
-        LinkNode<T>? current = Head;
-        while (current != null)
-        {
-            Console.WriteLine(current.Value);
-            current = current.Next;
-        }
-    }
-
     public void InsertToEnd(T value)
     {
         LinkNode<T>? current = Head;

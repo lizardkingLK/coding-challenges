@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using snakeGame.Core.Enums;
 using snakeGame.Core.State;
 
@@ -8,6 +9,7 @@ namespace snakeGame.Core.Helpers;
 public static class DirectionHelper
 {
     private static readonly Random _random = new();
+
     private static readonly DirectionEnum[] _directions = Enum.GetValues<DirectionEnum>();
 
     public static readonly int directionsLength = _directions.Length;
@@ -20,6 +22,17 @@ public static class DirectionHelper
     public static DirectionEnum GetNextDirection(DirectionEnum direction)
     {
         return (DirectionEnum)(((int)direction + 1) % directionsLength);
+    }
+
+    public static DirectionEnum GetReversedDirection(DirectionEnum direction)
+    {
+        return direction switch
+        {
+            DirectionEnum.Right => DirectionEnum.Left,
+            DirectionEnum.Down => DirectionEnum.Up,
+            DirectionEnum.Left => DirectionEnum.Right,
+            _ => DirectionEnum.Down,
+        };
     }
 
     public static void GetNextCordinate(
@@ -62,5 +75,10 @@ public static class DirectionHelper
         && cordinateX > 0
         && cordinateX < width - 1
         && map[cordinateY, cordinateX].Type == CharSpaceBlock;
+    }
+
+    public static bool AreSameCordinates((int, int) firstCordinate, (int, int) secondCordinate)
+    {
+        return firstCordinate.Item1 == secondCordinate.Item1 && firstCordinate.Item2 == secondCordinate.Item2;
     }
 }

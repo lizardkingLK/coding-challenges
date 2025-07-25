@@ -9,14 +9,17 @@ public class Manager
 
     public int Width { get; init; }
 
+    public (int, int) Dimensions { get => (Height, Width); }
+
     public OutputTypeEnum OutputType { get; init; }
 
-    public Block? Enemy { get; set; }
+    public GameModeEnum GameMode { get; init; }
 
-    public Deque<Block>? Player { get; set; }
+    public Block Enemy { get; set; }
+
+    public required Deque<Block> Player { get; set; }
 
     public required Block[,] Map { get; init; }
 
     public required DynamicArray<Block> Spaces { get; init; }
-
 }

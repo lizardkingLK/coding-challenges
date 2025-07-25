@@ -1,24 +1,23 @@
-namespace snakeGame.Core.Helpers;
-
 using snakeGame.Core.Enums;
 using snakeGame.Core.Shared;
 
+using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Shared.Utility;
 using static snakeGame.Core.Shared.Values;
+
+namespace snakeGame.Core.Helpers;
 
 public static class ArgumentHelper
 {
     public static
-    Result<(bool, int, int, OutputTypeEnum)> ValidateArguments(
-        string[] args,
-        int maxHeight,
-        int maxWidth)
+    Result<(bool, int, int, OutputTypeEnum, GameModeEnum)> ValidateArguments(string[] args)
     {
         OutputTypeEnum outputType = default;
+        GameModeEnum gameMode = default;
         int length = args.Length;
         if (length == 0)
         {
-            return new((true, maxHeight, maxWidth, outputType), null);
+            return new((true, MinHeight, MinWidth, outputType, gameMode), null);
         }
 
         if (length % 2 != 0)
@@ -29,8 +28,8 @@ public static class ArgumentHelper
         int i;
         string currentArgument;
         string currentValueString;
-        int width = 0;
-        int height = 0;
+        int width = MinWidth;
+        int height = MinHeight;
         for (i = 0; i < length; i += 2)
         {
             currentArgument = args[i].Trim().ToLower();
@@ -42,13 +41,17 @@ public static class ArgumentHelper
 
             if (IncludesInCollection(currentArgument, heightFlags))
             {
-                height = currentValue;
+                height = currentValue < MinHeight || currentValue > MaxHeight
+                ? MinHeight
+                : currentValue;
                 continue;
             }
 
             if (IncludesInCollection(currentArgument, widthFlags))
             {
-                width = currentValue;
+                width = currentValue < MinWidth || currentValue > MaxWidth
+                ? MinWidth
+                : currentValue;
                 continue;
             }
 
@@ -58,19 +61,16 @@ public static class ArgumentHelper
                 continue;
             }
 
+            System.Console.WriteLine(currentArgument);
+            if (IncludesInCollection(currentArgument, gameModeFlags)
+            && Enum.TryParse(currentValueString, out gameMode))
+            {
+                continue;
+            }
+
             return ErrorInvalidArguments;
         }
 
-        if (height < 10 || height > maxHeight)
-        {
-            height = maxHeight;
-        }
-
-        if (width < 10 || width > maxWidth)
-        {
-            width = maxWidth;
-        }
-
-        return new((true, height, width, outputType), null);
+        return new((true, height, width, outputType, gameMode), null);
     }
 }

@@ -1,6 +1,7 @@
 namespace snakeGame.Core.Shared;
 
 using snakeGame.Core.Enums;
+
 using static Constants;
 
 public readonly struct Values
@@ -23,7 +24,13 @@ public readonly struct Values
         FlagOutputPrefixed,
     ];
 
+    public static readonly string[] gameModeFlags =
+    [
+        FlagGameMode,
+        FlagGameModePrefixed,
+    ];
+
     public static readonly
-    Result<(bool, int, int, OutputTypeEnum)> ErrorInvalidArguments
-    = new((false, -1, -1, default), ERROR_INVALID_ARGUMENTS);
+    Result<(bool, int, int, OutputTypeEnum, GameModeEnum)> ErrorInvalidArguments
+    = new((false, -1, -1, default, default), ERROR_INVALID_ARGUMENTS);
 }

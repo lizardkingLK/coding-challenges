@@ -1,22 +1,34 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
-using snakeGame.Core.Output;
 using snakeGame.Core.Shared;
+using snakeGame.Core.State;
+using snakeGame.Core.Library;
+using snakeGame.Core.Output.Console;
+using snakeGame.Core.Output.TextFile;
 
 namespace snakeGame.Core.Helpers;
 
 public static class OutputHelper
 {
-    public static Result<bool> GetOutput(OutputTypeEnum outputType, out IOutput output)
+    private static readonly HashMap<OutputTypeEnum, IOutput> outputMap = new();
+
+    static OutputHelper()
     {
-        if (outputType == OutputTypeEnum.Console)
+        outputMap.Insert(OutputTypeEnum.Console, new ConsoleOutput());
+        outputMap.Insert(OutputTypeEnum.StreamWriterConsole, new StreamWriterConsoleOutput());
+        outputMap.Insert(OutputTypeEnum.StringBuilderConsole, new StringBuilderConsoleOutput());
+        outputMap.Insert(OutputTypeEnum.TextFile, new TextFileOutput());
+    }
+
+    public static Result<bool> GetOutput(Manager manager, out IOutput? output)
+    {
+        OutputTypeEnum outputType = manager.OutputType;
+        if (outputMap.TryGetValue(outputType, out _, out output))
         {
-            output = new ConsoleOutput();
+            output!.Manager = manager;
             return new(true, null);
         }
 
-        output = new TextFileOutput();
-
-        return new(true, null);
+        return new(false, null);
     }
 }

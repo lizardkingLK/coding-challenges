@@ -9,10 +9,10 @@ public static class GameStateHelper
 {
     public static
     Result<bool> GetManager(
-        (bool, int, int, OutputTypeEnum) managerData,
+        (bool, int, int, OutputTypeEnum, GameModeEnum) managerData,
         out Manager manager)
     {
-        (_, int height, int width, OutputTypeEnum outputType)
+        (_, int height, int width, OutputTypeEnum outputType, GameModeEnum gameMode)
         = managerData;
 
         manager = new()
@@ -20,8 +20,10 @@ public static class GameStateHelper
             Height = height,
             Width = width,
             OutputType = outputType,
+            GameMode = gameMode,
             Map = new Block[height, width],
             Spaces = new DynamicArray<Block>(),
+            Player = new Deque<Block>(),
         };
 
         return new(true, null);

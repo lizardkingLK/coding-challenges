@@ -4,5 +4,7 @@ namespace snakeGame.Core.Abstractions;
 
 public interface IOutput
 {
-    public void Output(Manager manager);
+    public Manager? Manager { get; set; }
+
+    public void Output();
 }

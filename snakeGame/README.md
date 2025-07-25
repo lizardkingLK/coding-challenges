@@ -26,40 +26,57 @@ dotnet tool install --global --add-source .\nupkg snakegame.program
 ### Options
 
 ```
-width   = [-[w|-width] <width_value>]
-height  = [-[h|-height] <height_value>]
-output  = [-[o|-output] [0-1]]
+width       = [-[w|-width] [10-40]]
+height      = [-[h|-height] [10-20]]
+game-mode   = [-[gm|-game-mode] [0-1]]
+output      = [-[o|-output] [0-3]]
+```
+
+#### Game Modes
+
+```
+0 - Automatic
+1 - Manual
+```
+
+#### Output Types
+
+```
+0 - Default Console
+1 - Stream Writer Console Output
+2 - String Builder Console Output
+3 - Text File Console Output (Works with VSCode)
 ```
 
 ### Inside Dev Environment
 
 ```
-dotnet run -f net9.0 -- [options]
+dotnet run -f net9.0 -- [above_options]
 ```
 
 ### Using Installed Binary
 
 ```
-snake <Options.width> <Options.height> <Options.output>
+snake [above_options]
 ```
 
 ### Example
 
 ```
-snake -w 20 -h 10 -o 0
+snake -w 10 -h 10 -o 1
 ```
 
 ```
-********************
-*                  *
-*         O        *
-*         O        *
-*         O        *
-*         0        *
-*        +         *
-*                  *
-*                  *
-********************
+&&&&&&&&&&
+&        &
+&     +  &
+&        &
+&  0     &
+&  O     &
+&  O     &
+&  O     &
+&        &
+&&&&&&&&&&
 ```
 
 ## Uninstall
