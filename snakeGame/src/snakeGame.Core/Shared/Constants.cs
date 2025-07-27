@@ -7,7 +7,7 @@ public static class Constants
     public const int MaxHeight = 20;
     public const int MinHeight = 10;
     public const int ScorePerMeal = 100;
-    public const int StepInterval= 500;
+    public const int StepInterval = 500;
     public const string FlagHeight = "--height";
     public const string FlagHeightPrefixed = "-h";
     public const string FlagWidth = "--width";
@@ -23,7 +23,7 @@ public static class Constants
     public const char CharEnemy = '+';
     public const char CharPlayerBody = 'O';
     public const char CharNewLine = '\n';
-    public const string DefaultFileName = "output.txt";
+    public const string DefaultFileName = "textFileOutput.txt";
     public const string SUCCESS_GAME_COMPLETE = "Game Complete. Your Score is {0}";
     public const string ERROR_INVALID_ARGUMENTS = "error. invalid arguments given";
     public const string ERROR_INVALID_TERMINAL = "error. invalid terminal environment";
@@ -43,11 +43,10 @@ Game Modes
 0 - Automatic
 1 - Manual
 
-
 Output Types
 
-0 - Default Console
-1 - Stream Writer Console Output
-2 - String Builder Console Output
-3 - Text File Console Output (Works with VSCode)";
+0 - Default Console uses terminal
+1 - Stream Writer Console Output uses terminal
+2 - String Builder Console Output uses terminal
+3 - Text File Console Output use VSCode editor";
 }

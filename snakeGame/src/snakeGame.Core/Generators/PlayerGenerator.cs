@@ -1,20 +1,17 @@
 using snakeGame.Core.Abstractions;
-using snakeGame.Core.Library;
 using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 using snakeGame.Core.Enums;
 
 using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Helpers.DirectionHelper;
-using static snakeGame.Core.Helpers.GameBoardHelper;
+using snakeGame.Core.Events;
 
 namespace snakeGame.Core.Generators;
 
 public class PlayerGenerator : IGenerate
 {
     public required Manager Manager { get; init; }
-
-    private readonly Random _random = new();
 
     public IGenerate? Next { get; set; }
 
@@ -23,32 +20,19 @@ public class PlayerGenerator : IGenerate
         GeneratePlayerHead();
         GeneratePlayerBody();
 
-        if (Next != null)
-        {
-            return Next.Generate();
-        }
-
-        return new(true, null);
+        return Next?.Generate() ?? new(true, null);
     }
 
     public void GeneratePlayerHead()
     {
-        DynamicArray<Block> spaces = Manager.Spaces;
-        Block[,] map = Manager.Map;
-
-        Block player = UpdateSpaceBlockOut(spaces, _random.Next(0, spaces.Size));
-        UpdateMapBlock(map, player.Cordinates, CharPlayerHead);
-
-        Manager.Player = new(player);
+        Manager.Publisher!.Publish(new(GameStateEnum.CreatePlayerHead, null));
     }
 
     private void GeneratePlayerBody()
     {
         (int y, int x) = Manager.Player.SeekRear().Cordinates;
-        DynamicArray<Block> spaces = Manager.Spaces;
-        Block[,] map = Manager.Map;
+        GameStatePublisher publisher = Manager.Publisher!;
 
-        Block playerBodyBlock;
         DirectionEnum direction = GetRandomDirection();
         for (int i = 0; i < PlayerInitialLength; i++)
         {
@@ -60,10 +44,13 @@ public class PlayerGenerator : IGenerate
                 break;
             }
 
-            playerBodyBlock = UpdateSpaceBlockOut(spaces, GetBlockSearchFunction((y, x))!);
-            UpdateMapBlock(map, (y, x), CharPlayerBody, direction);
-
-            Manager.Player.InsertToRear(playerBodyBlock);
+            publisher.Publish(new(
+                GameStateEnum.CreatePlayerBody, new()
+                {
+                    CordinateY = y,
+                    CordinateX = x,
+                    Direction = direction,
+                }));                        
         }
     }
 
@@ -90,10 +77,5 @@ public class PlayerGenerator : IGenerate
         }
 
         return default;
-    }
-
-    private static Func<Block, bool> GetBlockSearchFunction((int, int) cordinates)
-    {
-        return space => AreSameCordinates(space.Cordinates, cordinates);
     }
 }

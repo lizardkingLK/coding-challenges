@@ -8,7 +8,7 @@ using static snakeGame.Core.Shared.Utility;
 class Program
 {
     static void Main(string[] args)
-    {
+    {   
         try
         {
             SnakeGame.Run(args);

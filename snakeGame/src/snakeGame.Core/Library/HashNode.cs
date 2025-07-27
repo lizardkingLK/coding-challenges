@@ -1,14 +1,14 @@
 namespace snakeGame.Core.Library;
 
-public struct HashNode<K, V>(K key, V value)
+public record HashNode<K, V>
 {
-    public readonly K Key { get; } = key;
+    public K Key { get; }
 
-    public V Value { get; set; } = value;
+    public V Value { get; set; }
 
-    public readonly void Deconstruct(out K key, out V value)
+    public HashNode(K key, V value)
     {
-        key = Key;
-        value = Value;
+        Key = key;
+        Value = value;
     }
 }

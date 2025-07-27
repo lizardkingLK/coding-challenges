@@ -10,7 +10,7 @@ public class StreamWriterConsoleOutput : IOutput
 {
     public Manager? Manager { get; set; }
 
-    public void Output()
+    public void Output(GameState? state = null)
     {
         int height = Manager!.Height;
         int width = Manager.Width;
@@ -35,5 +35,9 @@ public class StreamWriterConsoleOutput : IOutput
 
         Clear();
         output.WriteLine(consoleOutputBuilder.ToString());
+    }
+
+    public void Stream(GameState state)
+    {
     }
 }

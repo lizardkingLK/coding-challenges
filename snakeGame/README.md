@@ -42,10 +42,10 @@ output      = [-[o|-output] [0-3]]
 #### Output Types
 
 ```
-0 - Default Console
-1 - Stream Writer Console Output
-2 - String Builder Console Output
-3 - Text File Console Output (Works with VSCode)
+0 - Default Console uses terminal
+1 - Stream Writer Console Output uses terminal
+2 - String Builder Console Output uses terminal
+3 - Text File Console Output use VSCode editor
 ```
 
 ### Inside Dev Environment

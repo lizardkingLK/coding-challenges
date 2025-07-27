@@ -69,21 +69,21 @@ public class HashMap<K, V>
         }
 
         HashNode<K, V>? existingNode = HashMap<K, V>.Search(bucketValues!, key);
-        bucketValues!.RemoveLinkNodeAtFirstOccurrence(existingNode!.Value);
+        bucketValues!.RemoveLinkNodeAtFirstOccurrence(existingNode!);
         Size--;
 
-        return existingNode.Value;
+        return existingNode!;
     }
 
-    public bool TryGetValue(K key, out LinkedList<HashNode<K, V>>? bucketValues, out V? value)
+    public bool TryGetValue(K key, out V? value)
     {
         value = default;
 
-        bucketValues = GetBucketForKey(key);
+        LinkedList<HashNode<K, V>> bucketValues = GetBucketForKey(key);
         HashNode<K, V>? existingNode = HashMap<K, V>.Search(bucketValues, key);
-        if (existingNode.HasValue)
+        if (existingNode != null)
         {
-            value = existingNode.Value.Value;
+            value = existingNode.Value;
             return true;
         }
 
@@ -92,7 +92,7 @@ public class HashMap<K, V>
 
     private static HashNode<K, V>? Search(LinkedList<HashNode<K, V>> bucketValues, K key)
     {
-        if (bucketValues.Search(hashNode => hashNode.Key!.Equals(key), out HashNode<K, V> value))
+        if (bucketValues.Search(hashNode => hashNode.Key!.Equals(key), out HashNode<K, V>? value))
         {
             return value;
         }
@@ -135,6 +135,21 @@ public class HashMap<K, V>
 
         Capacity = newCapacity;
         buckets = tempBuckets;
+    }
+
+    private bool TryGetValue(K key, out LinkedList<HashNode<K, V>>? bucketValues, out V? value)
+    {
+        value = default;
+
+        bucketValues = GetBucketForKey(key);
+        HashNode<K, V>? existingNode = HashMap<K, V>.Search(bucketValues, key);
+        if (existingNode != null)
+        {
+            value = existingNode.Value;
+            return true;
+        }
+
+        return false;
     }
 
     private LinkedList<HashNode<K, V>> GetBucketForKey(K key)
