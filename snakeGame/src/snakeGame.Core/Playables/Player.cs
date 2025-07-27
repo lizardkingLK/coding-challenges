@@ -95,6 +95,7 @@ public class Player : IPlayable
             out StepResultEnum stepResult))
         {
             WriteInfo(INFO_GAME_OVER, _score);
+            Publisher.Publish(new(UpdateGameOver, null));
             return false;
         }
 
@@ -113,6 +114,7 @@ public class Player : IPlayable
         }, stepResult == ScoreAteEnemy))
         {
             WriteSuccess(SUCCESS_GAME_COMPLETE, _score);
+            Publisher.Publish(new(UpdateGameComplete, null));
             return false;
         }
 

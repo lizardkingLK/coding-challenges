@@ -2,6 +2,7 @@ namespace snakeGame.Core.Enums;
 
 public enum GameStateEnum
 {
+    CreateBoard,
     CreateWall,
     CreateSpace,
     CreatePlayerHead,
@@ -11,4 +12,6 @@ public enum GameStateEnum
     UpdatePlayerNewHead,
     UpdatePlayerTail,
     UpdateEnemy,
+    UpdateGameOver,
+    UpdateGameComplete,
 }

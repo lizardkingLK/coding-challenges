@@ -24,7 +24,6 @@ public static class Constants
     public const char CharPlayerBody = 'O';
     public const char CharNewLine = '\n';
     public const string DefaultFileName = "textFileOutput.txt";
-    public const string ApiUrl = "http://localhost:5000";
     public const string SUCCESS_GAME_COMPLETE = "Game Complete. Your Score is {0}";
     public const string ERROR_INVALID_ARGUMENTS = "error. invalid arguments given";
     public const string ERROR_INVALID_TERMINAL = "error. invalid terminal environment";
@@ -37,7 +36,7 @@ Options
 width       = [-[w|-width] [10-40]]
 height      = [-[h|-height] [10-20]]
 game-mode   = [-[gm|-game-mode] [0-1]]
-output      = [-[o|-output] [0-4]]
+output      = [-[o|-output] [0-3]]
 
 Game Modes
 
@@ -49,6 +48,5 @@ Output Types
 0 - Default Console uses terminal
 1 - Stream Writer Console Output uses terminal
 2 - String Builder Console Output uses terminal
-3 - Text File Console Output use VSCode editor
-4 - Web Output uses Web Browser";
+3 - Text File Console Output use VSCode editor";
 }

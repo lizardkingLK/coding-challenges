@@ -6,5 +6,4 @@ public enum OutputTypeEnum
     StreamWriterConsole,
     StringBuilderConsole,
     TextFile,
-    Web,
 }

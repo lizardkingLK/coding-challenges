@@ -14,6 +14,8 @@ public static class EventHelper
 
         manager.Publisher = publisher;
 
+        manager.Publisher.Publish(new(Enums.GameStateEnum.CreateBoard, null, manager.Height, manager.Width));
+
         return new(true, null);
     }
 }

@@ -29,7 +29,7 @@ dotnet tool install --global --add-source .\nupkg snakegame.program
 width       = [-[w|-width] [10-40]]
 height      = [-[h|-height] [10-20]]
 game-mode   = [-[gm|-game-mode] [0-1]]
-output      = [-[o|-output] [0-4]]
+output      = [-[o|-output] [0-3]]
 ```
 
 #### Game Modes
@@ -46,7 +46,6 @@ output      = [-[o|-output] [0-4]]
 1 - Stream Writer Console Output uses terminal
 2 - String Builder Console Output uses terminal
 3 - Text File Console Output use VSCode editor
-4 - Web Output uses Web Browser
 ```
 
 ### Inside Dev Environment

@@ -5,7 +5,6 @@ using snakeGame.Core.State;
 using snakeGame.Core.Library;
 using snakeGame.Core.Output.Console;
 using snakeGame.Core.Output.Document;
-using snakeGame.Core.Output.Web;
 
 namespace snakeGame.Core.Helpers;
 
@@ -19,7 +18,6 @@ public static class OutputHelper
         _outputMap.Insert(OutputTypeEnum.StreamWriterConsole, new StreamWriterConsoleOutput());
         _outputMap.Insert(OutputTypeEnum.StringBuilderConsole, new StringBuilderConsoleOutput());
         _outputMap.Insert(OutputTypeEnum.TextFile, new TextFileOutput());
-        _outputMap.Insert(OutputTypeEnum.Web, new WebOutput());
     }
 
     public static Result<bool> GetOutput(Manager manager, out IOutput? output)

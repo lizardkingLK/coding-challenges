@@ -1,6 +1,5 @@
 ﻿using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
-using snakeGame.Core.Events;
 using snakeGame.Core.Helpers;
 using snakeGame.Core.Shared;
 using snakeGame.Core.State;
