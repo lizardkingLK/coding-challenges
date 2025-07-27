@@ -11,14 +11,14 @@ public static class GameBoardHelper
         spaces.Add(block);
     }
 
-    public static Block UpdateSpaceBlockOut(DynamicArray<Block> spaces, int index)
+    public static void UpdateSpaceBlockOut(DynamicArray<Block> spaces, int index, out Block block)
     {
-        return spaces.Remove(index);
+        block = spaces.Remove(index);
     }
 
-    public static Block UpdateSpaceBlockOut(DynamicArray<Block> spaces, Func<Block, bool> searchFunction)
+    public static void UpdateSpaceBlockOut(DynamicArray<Block> spaces, Func<Block, bool> searchFunction, out Block block)
     {
-        return spaces.Remove(searchFunction);
+        block = spaces.Remove(searchFunction);
     }
 
     public static void UpdateMapBlock(Block[,] map, (int, int) cordinates, Block block)

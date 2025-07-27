@@ -8,20 +8,23 @@ using snakeGame.Core.Playables;
 
 public static class ChainingHelper
 {
-    public static Result<bool> GetPlayable(Manager manager, IOutput output, out IPlayable playable)
+    public static Result<bool> GetPlayable(Manager manager, out IPlayable playable)
     {
         Enemy enemy = new()
         {
             Next = null,
             Manager = manager,
-            Output = output,
+            Output = manager.Output!,
         };
 
         Player player = new()
         {
             Next = enemy,
             Manager = manager,
-            Output = output,
+            Output = manager.Output!,
+            GameMode = manager.GameMode!,
+            Publisher = manager.Publisher!,
+            Spaces = manager.Spaces!,
         };
 
         playable = player;

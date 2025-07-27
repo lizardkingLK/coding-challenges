@@ -1,9 +1,6 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.State;
-using snakeGame.Core.Library;
-
-using static snakeGame.Core.Shared.Constants;
-using static snakeGame.Core.Helpers.GameBoardHelper;
+using snakeGame.Core.Enums;
 
 namespace snakeGame.Core.Playables;
 
@@ -15,14 +12,8 @@ public class Enemy : IPlayable
 
     public required IOutput Output { get; init; }
 
-    private readonly Random _random = new();
-
     public void Play()
     {
-        DynamicArray<Block> spaces = Manager.Spaces;
-        Block[,] map = Manager.Map;
-
-        Manager.Enemy = spaces.Remove(_random.Next(0, spaces.Size));
-        UpdateMapBlock(map, Manager.Enemy.Cordinates, CharEnemy);
+        Manager.Publisher!.Publish(new(GameStateEnum.CreateEnemy, null));
     }
 }

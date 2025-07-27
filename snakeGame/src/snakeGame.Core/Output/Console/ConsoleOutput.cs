@@ -11,7 +11,7 @@ public class ConsoleOutput : IOutput
 {
     public Manager? Manager { get; set; }
 
-    public void Output()
+    public void Output(GameState? state = null)
     {
         int height = Manager!.Height;
         int width = Manager.Width;
@@ -47,7 +47,7 @@ public class ConsoleOutput : IOutput
         }
 
         if (type == CharPlayerHead)
-        { 
+        {
             ForegroundColor = ConsoleColor.Green;
         }
 
@@ -55,5 +55,9 @@ public class ConsoleOutput : IOutput
         {
             ForegroundColor = ConsoleColor.DarkGreen;
         }
+    }
+
+    public void Stream(GameState state)
+    {
     }
 }

@@ -1,4 +1,6 @@
+using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
+using snakeGame.Core.Events;
 using snakeGame.Core.Library;
 
 namespace snakeGame.Core.State;
@@ -13,6 +15,8 @@ public class Manager
 
     public OutputTypeEnum OutputType { get; init; }
 
+    public IOutput? Output { get; set; }
+
     public GameModeEnum GameMode { get; init; }
 
     public Block Enemy { get; set; }
@@ -22,4 +26,6 @@ public class Manager
     public required Block[,] Map { get; init; }
 
     public required DynamicArray<Block> Spaces { get; init; }
+
+    public GameStatePublisher? Publisher { get; set; }
 }

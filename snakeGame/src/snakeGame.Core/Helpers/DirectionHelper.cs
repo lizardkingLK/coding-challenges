@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using snakeGame.Core.Enums;
 using snakeGame.Core.State;
 
@@ -8,7 +7,6 @@ namespace snakeGame.Core.Helpers;
 
 public static class DirectionHelper
 {
-    private static readonly Random _random = new();
 
     private static readonly DirectionEnum[] _directions = Enum.GetValues<DirectionEnum>();
 
@@ -16,7 +14,7 @@ public static class DirectionHelper
 
     public static DirectionEnum GetRandomDirection()
     {
-        return _directions[_random.Next(directionsLength)];
+        return _directions[Random.Shared.Next(directionsLength)];
     }
 
     public static DirectionEnum GetNextDirection(DirectionEnum direction)

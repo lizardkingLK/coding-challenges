@@ -1,12 +1,15 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
 using snakeGame.Core.State;
+using snakeGame.Core.Events;
+using snakeGame.Core.Library;
 
 using static snakeGame.Core.Shared.Constants;
 using static snakeGame.Core.Shared.Utility;
 using static snakeGame.Core.Helpers.DirectionHelper;
-using static snakeGame.Core.Helpers.GameBoardHelper;
 using static snakeGame.Core.Helpers.ConsoleHelper;
+using static snakeGame.Core.Enums.GameStateEnum;
+using static snakeGame.Core.Enums.StepResultEnum;
 
 namespace snakeGame.Core.Playables;
 
@@ -18,16 +21,22 @@ public class Player : IPlayable
 
     public required IOutput Output { get; init; }
 
-    private static int score = 0;
+    public required GameStatePublisher Publisher { get; init; }
+
+    public required GameModeEnum GameMode { get; init; }
+
+    public required DynamicArray<Block> Spaces { get; init; }
+
+    private static int _score = 0;
 
     public void Play()
     {
         Output.Output();
-        if (Manager.GameMode == GameModeEnum.Automatic)
+        if (GameMode == GameModeEnum.Automatic)
         {
             PlayAutomaticGame();
         }
-        else if (Manager.GameMode == GameModeEnum.Manual)
+        else if (GameMode == GameModeEnum.Manual)
         {
             PlayManualGame();
         }
@@ -36,13 +45,10 @@ public class Player : IPlayable
     private void PlayAutomaticGame()
     {
         DirectionEnum? direction = null;
-
-    ReadDirection:
         WriteInfo(INFO_AWAITING_KEY_PRESS);
-        if (!ReadKeyPress(direction, out direction))
+        while (!ReadKeyPress(direction, out direction))
         {
             WriteError(ERROR_INVALID_KEY_PRESSED);
-            goto ReadDirection;
         }
 
         do
@@ -84,15 +90,15 @@ public class Player : IPlayable
     private bool ValidatePlayerStep(in DirectionEnum direction)
     {
         if (!ValidateStepToDirection(
-                direction,
-                out (int, int) newCordinates,
-                out StepResultEnum stepResult))
+            direction,
+            out (int, int) newCordinates,
+            out StepResultEnum stepResult))
         {
-            WriteInfo(INFO_GAME_OVER, score);
+            WriteInfo(INFO_GAME_OVER, _score);
             return false;
         }
 
-        if (stepResult == StepResultEnum.ContinueWithNeck)
+        if (stepResult == ContinueWithNeck)
         {
             return true;
         }
@@ -104,15 +110,15 @@ public class Player : IPlayable
             CordinateX = cordinateX,
             Direction = direction,
             Type = CharPlayerHead,
-        }, stepResult == StepResultEnum.ScoreAteEnemy))
+        }, stepResult == ScoreAteEnemy))
         {
-            WriteSuccess(SUCCESS_GAME_COMPLETE, score);
+            WriteSuccess(SUCCESS_GAME_COMPLETE, _score);
             return false;
         }
 
-        if (stepResult == StepResultEnum.ScoreAteEnemy)
+        if (stepResult == ScoreAteEnemy)
         {
-            score += ScorePerMeal;
+            _score += ScorePerMeal;
             Next?.Play();
         }
 
@@ -122,31 +128,23 @@ public class Player : IPlayable
     }
 
     private bool ValidateMapForPlayerNewPosition(
-        Block newPlayerHeadBlock,
+        Block newPlayerHead,
         bool didPlayerEatEnemy)
     {
-        if (Manager.Spaces.Size == 0)
+        if (Spaces.Size == 0)
         {
-            score += ScorePerMeal;
+            _score += ScorePerMeal;
             return false;
         }
 
-        (int y, int x) newCordinates = Manager.Player!.SeekFront().Cordinates;
-        UpdateMapBlock(Manager.Map, newCordinates, CharPlayerBody);
-
-        Manager.Player!.InsertToFront(newPlayerHeadBlock);
-        UpdateMapBlock(Manager.Map, newPlayerHeadBlock.Cordinates, CharPlayerHead);
-        UpdateSpaceBlockOut(Manager.Spaces, block =>
-        AreSameCordinates(block.Cordinates, newCordinates));
-
+        Publisher.Publish(new(UpdatePlayerOldHead, null));
+        Publisher.Publish(new(UpdatePlayerNewHead, newPlayerHead));
         if (didPlayerEatEnemy)
         {
             return true;
         }
 
-        Block oldPlayerTailBlock = Manager.Player!.RemoveFromRear();
-        UpdateMapBlock(Manager.Map, oldPlayerTailBlock.Cordinates, CharSpaceBlock);
-        UpdateSpaceBlockIn(Manager.Spaces, oldPlayerTailBlock);
+        Publisher.Publish(new(UpdatePlayerTail, null));
 
         return true;
     }
@@ -165,30 +163,30 @@ public class Player : IPlayable
 
         if (cordinateType == CharWallBlock)
         {
-            stepResult = StepResultEnum.LostAteAWall;
+            stepResult = LostAteAWall;
             return false;
         }
 
         if (cordinateType == CharSpaceBlock)
         {
-            stepResult = StepResultEnum.ContinueWithSpace;
+            stepResult = ContinueWithSpace;
             return true;
         }
 
         if (cordinateType == CharEnemy)
         {
-            stepResult = StepResultEnum.ScoreAteEnemy;
+            stepResult = ScoreAteEnemy;
             return true;
         }
 
         Block neckBlock = Manager.Player!.SearchValue(0);
-        if (AreSameCordinates((neckBlock.CordinateY, neckBlock.CordinateX), cordinates))
+        if (AreSameCordinates(neckBlock.Cordinates, cordinates))
         {
-            stepResult = StepResultEnum.ContinueWithNeck;
+            stepResult = ContinueWithNeck;
             return true;
         }
 
-        stepResult = StepResultEnum.LostAteBody;
+        stepResult = LostAteBody;
 
         return false;
     }

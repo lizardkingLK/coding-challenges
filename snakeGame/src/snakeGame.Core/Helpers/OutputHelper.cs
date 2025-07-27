@@ -4,31 +4,35 @@ using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 using snakeGame.Core.Library;
 using snakeGame.Core.Output.Console;
-using snakeGame.Core.Output.TextFile;
+using snakeGame.Core.Output.Document;
+using snakeGame.Core.Output.Web;
 
 namespace snakeGame.Core.Helpers;
 
 public static class OutputHelper
 {
-    private static readonly HashMap<OutputTypeEnum, IOutput> outputMap = new();
+    private static readonly HashMap<OutputTypeEnum, IOutput> _outputMap = new();
 
     static OutputHelper()
     {
-        outputMap.Insert(OutputTypeEnum.Console, new ConsoleOutput());
-        outputMap.Insert(OutputTypeEnum.StreamWriterConsole, new StreamWriterConsoleOutput());
-        outputMap.Insert(OutputTypeEnum.StringBuilderConsole, new StringBuilderConsoleOutput());
-        outputMap.Insert(OutputTypeEnum.TextFile, new TextFileOutput());
+        _outputMap.Insert(OutputTypeEnum.Console, new ConsoleOutput());
+        _outputMap.Insert(OutputTypeEnum.StreamWriterConsole, new StreamWriterConsoleOutput());
+        _outputMap.Insert(OutputTypeEnum.StringBuilderConsole, new StringBuilderConsoleOutput());
+        _outputMap.Insert(OutputTypeEnum.TextFile, new TextFileOutput());
+        _outputMap.Insert(OutputTypeEnum.Web, new WebOutput());
     }
 
     public static Result<bool> GetOutput(Manager manager, out IOutput? output)
     {
         OutputTypeEnum outputType = manager.OutputType;
-        if (outputMap.TryGetValue(outputType, out _, out output))
+        if (!_outputMap.TryGetValue(outputType, out output))
         {
-            output!.Manager = manager;
-            return new(true, null);
+            return new(false, null);
         }
 
-        return new(false, null);
+        output!.Manager = manager;
+        manager.Output = output;
+
+        return new(true, null);
     }
 }

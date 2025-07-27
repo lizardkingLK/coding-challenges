@@ -3,13 +3,13 @@ using snakeGame.Core.State;
 
 using static snakeGame.Core.Shared.Constants;
 
-namespace snakeGame.Core.Output.TextFile;
+namespace snakeGame.Core.Output.Document;
 
 public class TextFileOutput : IOutput
 {
     public Manager? Manager { get; set; }
 
-    public void Output()
+    public void Output(GameState? state = null)
     {
         int height = Manager!.Height;
         int width = Manager.Width;
@@ -24,9 +24,13 @@ public class TextFileOutput : IOutput
                 fileStream.WriteByte((byte)map[i, j].Type);
             }
 
-            fileStream.WriteByte((byte)'\n');
+            fileStream.WriteByte((byte)CharNewLine);
         }
 
         fileStream.Close();
+    }
+
+    public void Stream(GameState state)
+    {
     }
 }
