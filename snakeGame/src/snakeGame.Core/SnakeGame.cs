@@ -35,6 +35,11 @@ public static class SnakeGame
             return;
         }
 
+        Play(manager);
+    }
+
+    private static void Play(Manager manager)
+    {
         Result<bool> outputContext = GetOutput(manager, out _);
         if (outputContext.Error != null)
         {
@@ -68,5 +73,27 @@ public static class SnakeGame
         }
 
         playable.Play();
+
+        ReplayPrompt(manager);
+    }
+
+    private static void ReplayPrompt(Manager oldManager)
+    {
+        WriteInfo(INFO_REPLAY_PROMPT);
+        ConsoleKeyInfo keyInput = Console.ReadKey();
+        if (keyInput.Key != ConsoleKey.Y)
+        {
+            return;
+        }
+
+        Result<bool> getManagerResult = GetManager(oldManager, out Manager manager);
+        if (getManagerResult.Error != null)
+        {
+            Environment.ExitCode = 1;
+            WriteError(getManagerResult.Error);
+            return;
+        }
+
+        Play(manager);
     }
 }

@@ -32,6 +32,7 @@ public class Player : IPlayable
     public void Play()
     {
         Output.Output();
+
         if (GameMode == GameModeEnum.Automatic)
         {
             PlayAutomaticGame();
