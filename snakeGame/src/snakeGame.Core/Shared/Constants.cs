@@ -7,7 +7,7 @@ public static class Constants
     public const int MaxHeight = 20;
     public const int MinHeight = 10;
     public const int ScorePerMeal = 100;
-    public const int StepInterval = 500;
+    public const int StepInterval = 1000;
     public const string FlagHeight = "--height";
     public const string FlagHeightPrefixed = "-h";
     public const string FlagWidth = "--width";
@@ -16,6 +16,8 @@ public static class Constants
     public const string FlagOutputPrefixed = "-o";
     public const string FlagGameMode = "--game-mode";
     public const string FlagGameModePrefixed = "-gm";
+    public const string FlagDifficulty = "--difficulty";
+    public const string FlagDifficultyPrefixed = "-d";
     public const int PlayerInitialLength = 3;
     public const char CharWallBlock = '&';
     public const char CharSpaceBlock = ' ';
@@ -36,8 +38,9 @@ Options
 
 width       = [-[w|-width] [10-40]]
 height      = [-[h|-height] [10-20]]
+output      = [-[o|-output] [0-1]]
 game-mode   = [-[gm|-game-mode] [0-1]]
-output      = [-[o|-output] [0-3]]
+difficulty  = [-[d|-difficulty] [0-2]]
 
 Game Modes
 
@@ -47,7 +50,11 @@ Game Modes
 Output Types
 
 0 - Default Console uses terminal
-1 - Stream Writer Console Output uses terminal
-2 - String Builder Console Output uses terminal
-3 - Text File Console Output use VSCode editor";
+1 - Text File Output may use vscode
+
+Difficulty Levels
+
+0 - Easy
+1 - Medium
+2 - Hard";
 }

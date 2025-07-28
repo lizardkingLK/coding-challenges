@@ -1,37 +1,44 @@
 ﻿using snakeGame.Core.Abstractions;
-using snakeGame.Core.Enums;
 using snakeGame.Core.Helpers;
 using snakeGame.Core.Shared;
 using snakeGame.Core.State;
 
 namespace snakeGame.Core;
 
-using static ArgumentHelper;
-using static ChainingHelper;
 using static Constants;
+using static ChainingHelper;
 using static EventHelper;
 using static GameStateHelper;
 using static OutputHelper;
-using static Utility;
+using static ConsoleHelper;
 
 public static class SnakeGame
 {
     public static void Run(string[] args)
     {
-        Result<(bool, int, int, OutputTypeEnum, GameModeEnum)> validationResult = ValidateArguments(args);
-        if (validationResult.Error != null)
+        Result<bool> validatorResult = GetValidator(args, args.Length, out Arguments arguments, out IValidate? validator);
+        if (validatorResult.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(validationResult.Error);
-            WriteInfo(INFO_HELP);
+            WriteContentToConsoleClearFirst(0, 0, validatorResult.Error, ConsoleColor.Red);
+            WriteContentToConsole(1, 0, INFO_HELP, ConsoleColor.Cyan);
             return;
         }
 
-        Result<bool> getManagerResult = GetManager(validationResult.Data, out Manager manager);
+        Result<bool> validationResult = validator!.Validate(ref arguments);
+        if (validationResult.Error != null)
+        {
+            Environment.ExitCode = 1;
+            WriteContentToConsoleClearFirst(0, 0, validationResult.Error, ConsoleColor.Red);
+            WriteContentToConsole(1, 0, INFO_HELP, ConsoleColor.Cyan);
+            return;
+        }
+
+        Result<bool> getManagerResult = GetManager(arguments, out Manager manager);
         if (getManagerResult.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(getManagerResult.Error);
+            WriteContentToConsoleClearFirst(0, 0, getManagerResult.Error, ConsoleColor.Red);
             return;
         }
 
@@ -44,7 +51,7 @@ public static class SnakeGame
         if (outputContext.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(outputContext.Error);
+            WriteContentToConsoleClearFirst(0, 0, outputContext.Error, ConsoleColor.Red);
             return;
         }
 
@@ -52,7 +59,7 @@ public static class SnakeGame
         if (getEventPublisherResult.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(getEventPublisherResult.Error);
+            WriteContentToConsoleClearFirst(0, 0, getEventPublisherResult.Error, ConsoleColor.Red);
             return;
         }
 
@@ -60,7 +67,7 @@ public static class SnakeGame
         if (generatedGameContext.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(generatedGameContext.Error);
+            WriteContentToConsoleClearFirst(0, 0, generatedGameContext.Error, ConsoleColor.Red);
             return;
         }
 
@@ -68,7 +75,7 @@ public static class SnakeGame
         if (runnableGameContext.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(runnableGameContext.Error);
+            WriteContentToConsoleClearFirst(0, 0, runnableGameContext.Error, ConsoleColor.Red);
             return;
         }
 
@@ -79,7 +86,7 @@ public static class SnakeGame
 
     private static void ReplayPrompt(Manager oldManager)
     {
-        WriteInfo(INFO_REPLAY_PROMPT);
+        WriteContentToConsole(oldManager.Height + 1, 0, INFO_REPLAY_PROMPT, ConsoleColor.Cyan);
         ConsoleKeyInfo keyInput = Console.ReadKey();
         if (keyInput.Key != ConsoleKey.Y)
         {
@@ -90,7 +97,7 @@ public static class SnakeGame
         if (getManagerResult.Error != null)
         {
             Environment.ExitCode = 1;
-            WriteError(getManagerResult.Error);
+            WriteContentToConsoleClearFirst(0, 0, getManagerResult.Error, ConsoleColor.Red);
             return;
         }
 

@@ -19,6 +19,7 @@ public class UpdatePlayerOldHeadSubscriber(Manager manager) : ISubscribe<GameSta
         (int, int) oldHeadCordinates = oldHead.Cordinates;
 
         UpdateMapBlock(_manager.Map, oldHeadCordinates, CharPlayerBody);
+        state.Data = _manager.Map[oldHead.CordinateY, oldHead.CordinateX];
 
         _manager.Output!.Stream(state);
     }

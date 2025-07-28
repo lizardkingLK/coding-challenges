@@ -17,6 +17,7 @@ public class CreateEnemySubscriber(Manager manager) : ISubscribe<GameState>
 
         UpdateSpaceBlockOut(spaces, Random.Shared.Next(spaces.Size), out Block enemyBlock);
         UpdateMapBlock(_manager.Map, enemyBlock.Cordinates, CharEnemy);
+        state.Data = _manager.Map[enemyBlock.CordinateY, enemyBlock.CordinateX];
 
         _manager.Enemy = enemyBlock;
         _manager.Output!.Stream(state);

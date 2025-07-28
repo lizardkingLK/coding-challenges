@@ -1,9 +1,7 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.State;
 
-using static System.Console;
-
-using static snakeGame.Core.Shared.Constants;
+using static snakeGame.Core.Helpers.ConsoleHelper;
 
 namespace snakeGame.Core.Output.Console;
 
@@ -13,51 +11,24 @@ public class ConsoleOutput : IOutput
 
     public void Output(GameState? state = null)
     {
-        int height = Manager!.Height;
-        int width = Manager.Width;
-        Block[,] map = Manager.Map;
-
-        char type;
-        Clear();
-        for (int i = 0; i < height; i++)
+        if (!state.HasValue)
         {
-            for (int j = 0; j < width; j++)
-            {
-                type = map[i, j].Type;
-                SetColor(type);
-
-                Write(type);
-                ResetColor();
-            }
-
-            Write(CharNewLine);
-        }
-    }
-
-    private static void SetColor(char type)
-    {
-        if (type == CharWallBlock)
-        {
-            ForegroundColor = ConsoleColor.DarkYellow;
+            return;
         }
 
-        if (type == CharEnemy)
+        Block? nullableBlock = state.Value.Data;
+        if (!nullableBlock.HasValue)
         {
-            ForegroundColor = ConsoleColor.Red;
+            return;
         }
 
-        if (type == CharPlayerHead)
-        {
-            ForegroundColor = ConsoleColor.Green;
-        }
+        (int y, int x, _, char type) = nullableBlock.Value;
 
-        if (type == CharPlayerBody)
-        {
-            ForegroundColor = ConsoleColor.DarkGreen;
-        }
+        WriteContentToConsole(y, x, type, GetColorForCharacter(type));
     }
 
     public void Stream(GameState state)
     {
+        Output(state);
     }
 }

@@ -1,6 +1,5 @@
 using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
-using snakeGame.Core.Events.CreateBoard;
 using snakeGame.Core.Events.CreateEnemy;
 using snakeGame.Core.Events.CreatePlayerBody;
 using snakeGame.Core.Events.CreatePlayerHead;
@@ -22,7 +21,6 @@ public class GameStateSubscriber : ISubscribe<GameState>
 
     public GameStateSubscriber(Manager manager)
     {
-        _subscribers.Insert(GameStateEnum.CreateBoard, new CreateBoardSubscriber(manager));
         _subscribers.Insert(GameStateEnum.CreateWall, new CreateWallBlockSubscriber(manager));
         _subscribers.Insert(GameStateEnum.CreateSpace, new CreateSpaceBlockSubscriber(manager));
         _subscribers.Insert(GameStateEnum.CreatePlayerHead, new CreatePlayerHeadSubscriber(manager));

@@ -59,6 +59,30 @@ public class HashMap<K, V>
         Size++;
     }
 
+    public bool TryInsert(K key, V value)
+    {
+        ArgumentNullException.ThrowIfNull(key, nameof(key));
+        if (key.Equals(default))
+        {
+            return false;
+        }
+
+        if (Size / Capacity > LoadFactor)
+        {
+            ReHash();
+        }
+
+        if (TryGetValue(key, out LinkedList<HashNode<K, V>>? bucketValues, out _))
+        {
+            return false;
+        }
+
+        bucketValues!.InsertToEnd(new(key, value));
+        Size++;
+
+        return true;
+    }
+
     public HashNode<K, V> Remove(K key)
     {
         ArgumentNullException.ThrowIfNull(key, nameof(key));

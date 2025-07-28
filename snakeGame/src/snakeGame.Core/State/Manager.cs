@@ -19,6 +19,8 @@ public class Manager
 
     public GameModeEnum GameMode { get; init; }
 
+    public DifficultyLevelEnum DifficultyLevel { get; init; }
+
     public Block Enemy { get; set; }
 
     public required Deque<Block> Player { get; set; }
@@ -29,11 +31,16 @@ public class Manager
 
     public GameStatePublisher? Publisher { get; set; }
 
-    public void Deconstruct(out int height, out int width, out OutputTypeEnum outputType, out GameModeEnum gameMode)
+    public void Deconstruct(out int height, out int width)
     {
         height = Height;
         width = Width;
+    }
+    
+    public void Deconstruct(out OutputTypeEnum outputType, out GameModeEnum gameMode, out DifficultyLevelEnum difficultyLevel)
+    {
         outputType = OutputType;
         gameMode = GameMode;
+        difficultyLevel = DifficultyLevel;
     }
 }

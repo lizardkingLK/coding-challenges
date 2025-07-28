@@ -16,8 +16,10 @@ public class UpdatePlayerTailSubscriber(Manager manager) : ISubscribe<GameState>
         Deque<Block> player = _manager.Player!;
 
         Block oldPlayerTailBlock = player.RemoveFromRear();
+
         UpdateMapBlock(_manager.Map, oldPlayerTailBlock.Cordinates, CharSpaceBlock);
         UpdateSpaceBlockIn(_manager.Spaces, oldPlayerTailBlock);
+        state.Data = _manager.Map[oldPlayerTailBlock.CordinateY, oldPlayerTailBlock.CordinateX];
 
         _manager.Output!.Stream(state);
     }

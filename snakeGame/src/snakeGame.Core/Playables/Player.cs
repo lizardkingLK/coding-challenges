@@ -5,7 +5,6 @@ using snakeGame.Core.Events;
 using snakeGame.Core.Library;
 
 using static snakeGame.Core.Shared.Constants;
-using static snakeGame.Core.Shared.Utility;
 using static snakeGame.Core.Helpers.DirectionHelper;
 using static snakeGame.Core.Helpers.ConsoleHelper;
 using static snakeGame.Core.Enums.GameStateEnum;
@@ -27,11 +26,15 @@ public class Player : IPlayable
 
     public required DynamicArray<Block> Spaces { get; init; }
 
-    private static int _score = 0;
+    private static int _scorePerMeal;
+
+    private static int _stepInterval;
+
+    private int _score = 0;
 
     public void Play()
     {
-        Output.Output();
+        InitializePlay();
 
         if (GameMode == GameModeEnum.Automatic)
         {
@@ -43,20 +46,46 @@ public class Player : IPlayable
         }
     }
 
+    private void InitializePlay()
+    {
+        DifficultyLevelEnum difficultyLevel = Manager.DifficultyLevel;
+        if (Manager.GameMode == GameModeEnum.Manual)
+        {
+            _scorePerMeal = ScorePerMeal;
+        }
+        else if (difficultyLevel == DifficultyLevelEnum.Easy)
+        {
+            _scorePerMeal = ScorePerMeal;
+            _stepInterval = StepInterval;
+        }
+        else if (difficultyLevel == DifficultyLevelEnum.Medium)
+        {
+            _scorePerMeal = ScorePerMeal * 2;
+            _stepInterval = StepInterval / 2;
+        }
+        else if (difficultyLevel == DifficultyLevelEnum.Hard)
+        {
+            _scorePerMeal = ScorePerMeal * 3;
+            _stepInterval = StepInterval / 4;
+        }
+
+        Output.Output();
+    }
+
     private void PlayAutomaticGame()
     {
         DirectionEnum? direction = null;
-        WriteInfo(INFO_AWAITING_KEY_PRESS);
+        WriteContentToConsole(Manager.Height + 1, 0, INFO_AWAITING_KEY_PRESS, ConsoleColor.Cyan);
         while (!ReadKeyPress(direction, out direction))
         {
-            WriteError(ERROR_INVALID_KEY_PRESSED);
+            WriteContentToConsole(Manager.Height + 1, 0, ERROR_INVALID_KEY_PRESSED, ConsoleColor.Red);
         }
 
         do
         {
             if (Console.KeyAvailable && !ReadKeyPress(direction, out direction))
             {
-                WriteError(ERROR_INVALID_KEY_PRESSED);
+                WriteContentToConsole(Manager.Height + 1, 0, ERROR_INVALID_KEY_PRESSED, ConsoleColor.Red);
             }
 
             if (!ValidatePlayerStep(direction!.Value))
@@ -64,7 +93,7 @@ public class Player : IPlayable
                 return;
             }
 
-            Thread.Sleep(StepInterval);
+            Thread.Sleep(_stepInterval);
         }
         while (true);
     }
@@ -72,12 +101,12 @@ public class Player : IPlayable
     private void PlayManualGame()
     {
         DirectionEnum? direction = null;
-        WriteInfo(INFO_AWAITING_KEY_PRESS);
+        WriteContentToConsole(Manager.Height + 1, 0, INFO_AWAITING_KEY_PRESS, ConsoleColor.Cyan);
         while (true)
         {
             if (!ReadKeyPress(direction, out direction))
             {
-                WriteError(ERROR_INVALID_KEY_PRESSED);
+                WriteContentToConsole(Manager.Height + 1, 0, ERROR_INVALID_KEY_PRESSED, ConsoleColor.Red);
                 continue;
             }
 
@@ -95,7 +124,11 @@ public class Player : IPlayable
             out (int, int) newCordinates,
             out StepResultEnum stepResult))
         {
-            WriteInfo(INFO_GAME_OVER, _score);
+            WriteContentToConsoleClearLineFirst(
+                Manager.Height + 1,
+                0,
+                string.Format(INFO_GAME_OVER, _score),
+                ConsoleColor.DarkYellow);
             Publisher.Publish(new(UpdateGameOver, null));
             return false;
         }
@@ -114,14 +147,18 @@ public class Player : IPlayable
             Type = CharPlayerHead,
         }, stepResult == ScoreAteEnemy))
         {
-            WriteSuccess(SUCCESS_GAME_COMPLETE, _score);
+            WriteContentToConsoleClearLineFirst(
+                Manager.Height + 1,
+                0,
+                string.Format(SUCCESS_GAME_COMPLETE, _score),
+                ConsoleColor.Green);
             Publisher.Publish(new(UpdateGameComplete, null));
             return false;
         }
 
         if (stepResult == ScoreAteEnemy)
         {
-            _score += ScorePerMeal;
+            _score += _scorePerMeal;
             Next?.Play();
         }
 
@@ -136,7 +173,7 @@ public class Player : IPlayable
     {
         if (Spaces.Size == 0)
         {
-            _score += ScorePerMeal;
+            _score += _scorePerMeal;
             return false;
         }
 

@@ -17,6 +17,7 @@ public class CreatePlayerHeadSubscriber(Manager manager) : ISubscribe<GameState>
 
         UpdateSpaceBlockOut(spaces, Random.Shared.Next(spaces.Size), out Block playerHead);
         UpdateMapBlock(_manager.Map, playerHead.Cordinates, CharPlayerHead);
+        state.Data = _manager.Map[playerHead.CordinateY, playerHead.CordinateX];
 
         _manager.Player = new(playerHead);
         _manager.Output!.Stream(state);
