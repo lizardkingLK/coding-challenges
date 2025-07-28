@@ -21,10 +21,12 @@ public class UpdatePlayerNewHeadSubscriber(Manager manager) : ISubscribe<GameSta
 
         Block oldHead = player.SeekFront();
         (int, int) oldHeadCordinates = oldHead.Cordinates;
-
+        
         player.InsertToFront(newPlayerHead);
+
         UpdateMapBlock(_manager.Map, newPlayerHead.Cordinates, CharPlayerHead);
         UpdateSpaceBlockOut(spaces, block => AreSameCordinates(block.Cordinates, oldHeadCordinates), out _);
+        state.Data = _manager.Map[newPlayerHead.CordinateY, newPlayerHead.CordinateX];
 
         _manager.Output!.Stream(state);
     }

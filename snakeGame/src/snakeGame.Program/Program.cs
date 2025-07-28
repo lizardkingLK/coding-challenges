@@ -3,7 +3,7 @@
 using snakeGame.Core;
 
 using static snakeGame.Core.Shared.Constants;
-using static snakeGame.Core.Shared.Utility;
+using static snakeGame.Core.Helpers.ConsoleHelper;
 
 class Program
 {
@@ -15,7 +15,7 @@ class Program
         }
         catch (IOException)
         {
-            WriteError(ERROR_INVALID_TERMINAL);
+            WriteContentToConsoleClearFirst(0, 0, ERROR_INVALID_TERMINAL, ConsoleColor.Red);
             throw;
         }
     }

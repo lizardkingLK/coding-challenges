@@ -8,12 +8,12 @@ namespace snakeGame.Core.Helpers;
 public static class GameStateHelper
 {
     public static
-    Result<bool> GetManager(
-        (bool, int, int, OutputTypeEnum, GameModeEnum) managerData,
-        out Manager manager)
+    Result<bool> GetManager(Arguments arguments, out Manager manager)
     {
-        (_, int height, int width, OutputTypeEnum outputType, GameModeEnum gameMode)
-        = managerData;
+        (int height, int width)
+        = arguments;
+        (OutputTypeEnum outputType, GameModeEnum gameMode, DifficultyLevelEnum difficultyLevel)
+        = arguments;
 
         manager = new()
         {
@@ -21,6 +21,7 @@ public static class GameStateHelper
             Width = width,
             OutputType = outputType,
             GameMode = gameMode,
+            DifficultyLevel = difficultyLevel,
             Map = new Block[height, width],
             Spaces = new DynamicArray<Block>(),
             Player = new Deque<Block>(),
@@ -31,7 +32,9 @@ public static class GameStateHelper
 
     public static Result<bool> GetManager(Manager oldManager, out Manager manager)
     {
-        (int height, int width, OutputTypeEnum outputType, GameModeEnum gameMode)
+        (int height, int width)
+        = oldManager;
+        (OutputTypeEnum outputType, GameModeEnum gameMode, DifficultyLevelEnum difficultyLevel)
         = oldManager;
 
         manager = new()
@@ -40,10 +43,10 @@ public static class GameStateHelper
             Width = width,
             OutputType = outputType,
             GameMode = gameMode,
+            DifficultyLevel = difficultyLevel,
             Map = new Block[height, width],
             Spaces = new DynamicArray<Block>(),
             Player = new Deque<Block>(),
-            
         };
 
         return new(true, null);
