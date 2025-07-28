@@ -1,4 +1,3 @@
-using snakeGame.Core.Abstractions;
 using snakeGame.Core.Enums;
 using snakeGame.Core.Library;
 using snakeGame.Core.Shared;
@@ -25,6 +24,26 @@ public static class GameStateHelper
             Map = new Block[height, width],
             Spaces = new DynamicArray<Block>(),
             Player = new Deque<Block>(),
+        };
+
+        return new(true, null);
+    }
+
+    public static Result<bool> GetManager(Manager oldManager, out Manager manager)
+    {
+        (int height, int width, OutputTypeEnum outputType, GameModeEnum gameMode)
+        = oldManager;
+
+        manager = new()
+        {
+            Height = height,
+            Width = width,
+            OutputType = outputType,
+            GameMode = gameMode,
+            Map = new Block[height, width],
+            Spaces = new DynamicArray<Block>(),
+            Player = new Deque<Block>(),
+            
         };
 
         return new(true, null);

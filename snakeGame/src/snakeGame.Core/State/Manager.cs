@@ -28,4 +28,12 @@ public class Manager
     public required DynamicArray<Block> Spaces { get; init; }
 
     public GameStatePublisher? Publisher { get; set; }
+
+    public void Deconstruct(out int height, out int width, out OutputTypeEnum outputType, out GameModeEnum gameMode)
+    {
+        height = Height;
+        width = Width;
+        outputType = OutputType;
+        gameMode = GameMode;
+    }
 }
