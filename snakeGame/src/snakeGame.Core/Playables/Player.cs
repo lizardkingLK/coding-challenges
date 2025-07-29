@@ -65,7 +65,7 @@ public class Player : IPlayable
         }
         else if (difficultyLevel == DifficultyLevelEnum.Hard)
         {
-            _scorePerMeal = ScorePerMeal * 3;
+            _scorePerMeal = ScorePerMeal * 4;
             _stepInterval = StepInterval / 4;
         }
 
@@ -74,24 +74,22 @@ public class Player : IPlayable
 
     private void PlayAutomaticGame()
     {
+        DirectionEnum? previousDirection = null;
         DirectionEnum? direction = null;
         WriteContentToConsole(Manager.Height + 1, 0, INFO_AWAITING_KEY_PRESS, ConsoleColor.Cyan);
-        while (!ReadKeyPress(direction, out direction))
-        {
-            WriteContentToConsole(Manager.Height + 1, 0, ERROR_INVALID_KEY_PRESSED, ConsoleColor.Red);
-        }
-
         do
         {
             if (Console.KeyAvailable && !ReadKeyPress(direction, out direction))
             {
-                WriteContentToConsole(Manager.Height + 1, 0, ERROR_INVALID_KEY_PRESSED, ConsoleColor.Red);
+                direction = previousDirection;
             }
 
-            if (!ValidatePlayerStep(direction!.Value))
+            if (direction.HasValue && !ValidatePlayerStep(direction.Value))
             {
                 return;
             }
+
+            previousDirection = direction;
 
             Thread.Sleep(_stepInterval);
         }
@@ -106,11 +104,10 @@ public class Player : IPlayable
         {
             if (!ReadKeyPress(direction, out direction))
             {
-                WriteContentToConsole(Manager.Height + 1, 0, ERROR_INVALID_KEY_PRESSED, ConsoleColor.Red);
                 continue;
             }
 
-            if (!ValidatePlayerStep(direction!.Value))
+            if (direction.HasValue && !ValidatePlayerStep(direction.Value))
             {
                 return;
             }
@@ -120,9 +117,9 @@ public class Player : IPlayable
     private bool ValidatePlayerStep(in DirectionEnum direction)
     {
         if (!ValidateStepToDirection(
-            direction,
-            out (int, int) newCordinates,
-            out StepResultEnum stepResult))
+                direction,
+                out (int, int) newCordinates,
+                out StepResultEnum stepResult))
         {
             WriteContentToConsoleClearLineFirst(
                 Manager.Height + 1,
