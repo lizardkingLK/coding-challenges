@@ -34,7 +34,7 @@ public static class ConsoleHelper
     {
         value = default;
 
-        ConsoleKeyInfo read = ReadKey();
+        ConsoleKeyInfo read = ReadKey(intercept: true);
         if (!_keyMap.TryGetValue(read.Key, out DirectionEnum readDirection))
         {
             return false;
