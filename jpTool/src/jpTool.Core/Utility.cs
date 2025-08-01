@@ -3,9 +3,9 @@ namespace jpTool.Core;
 using static Constants;
 using static RegularExpressions;
 
-internal static class Utility
+public static class Utility
 {
-    internal static Result<string> ProcessFilePath(string filePath)
+    public static Result<string> ProcessFilePath(string filePath)
     {
         try
         {
@@ -44,7 +44,7 @@ internal static class Utility
         }
     }
 
-    internal static Result<bool> IsValidArguments(string[] args)
+    public static Result<bool> IsValidArguments(string[] args)
     {
         return args.Length > 0
         ? new Result<bool>(true, null)
