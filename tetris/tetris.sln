@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5C694195-707F-4536-BF39-80D3EEFA5759}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tetris.Core", "src\tetris.Core\tetris.Core.csproj", "{F2419C14-6FCF-42E7-A447-D0768A555C4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tetris.Program", "src\tetris.Program\tetris.Program.csproj", "{F10D0514-F956-49FF-A043-D6B6DFA14E0B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4DD299F9-E5F1-4B08-94D8-788A64C479C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tetris.Core.Tests", "tests\tetris.Core.Tests\tetris.Core.Tests.csproj", "{E8FD32ED-96AC-48F0-AA8D-730C360EC3DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tetris.Web", "src\tetris.Web\tetris.Web.csproj", "{27481664-B10B-4D50-8493-F33C67D21399}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tetris.Web.Tests", "tests\tetris.Web.Tests\tetris.Web.Tests.csproj", "{86B55B04-AE02-4677-BCBF-5CD824432402}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F2419C14-6FCF-42E7-A447-D0768A555C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2419C14-6FCF-42E7-A447-D0768A555C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2419C14-6FCF-42E7-A447-D0768A555C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2419C14-6FCF-42E7-A447-D0768A555C4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F10D0514-F956-49FF-A043-D6B6DFA14E0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F10D0514-F956-49FF-A043-D6B6DFA14E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F10D0514-F956-49FF-A043-D6B6DFA14E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F10D0514-F956-49FF-A043-D6B6DFA14E0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8FD32ED-96AC-48F0-AA8D-730C360EC3DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8FD32ED-96AC-48F0-AA8D-730C360EC3DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8FD32ED-96AC-48F0-AA8D-730C360EC3DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8FD32ED-96AC-48F0-AA8D-730C360EC3DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27481664-B10B-4D50-8493-F33C67D21399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27481664-B10B-4D50-8493-F33C67D21399}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27481664-B10B-4D50-8493-F33C67D21399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27481664-B10B-4D50-8493-F33C67D21399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86B55B04-AE02-4677-BCBF-5CD824432402}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86B55B04-AE02-4677-BCBF-5CD824432402}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86B55B04-AE02-4677-BCBF-5CD824432402}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86B55B04-AE02-4677-BCBF-5CD824432402}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F2419C14-6FCF-42E7-A447-D0768A555C4A} = {5C694195-707F-4536-BF39-80D3EEFA5759}
+		{F10D0514-F956-49FF-A043-D6B6DFA14E0B} = {5C694195-707F-4536-BF39-80D3EEFA5759}
+		{E8FD32ED-96AC-48F0-AA8D-730C360EC3DE} = {4DD299F9-E5F1-4B08-94D8-788A64C479C7}
+		{27481664-B10B-4D50-8493-F33C67D21399} = {5C694195-707F-4536-BF39-80D3EEFA5759}
+		{86B55B04-AE02-4677-BCBF-5CD824432402} = {4DD299F9-E5F1-4B08-94D8-788A64C479C7}
+	EndGlobalSection
+EndGlobal
