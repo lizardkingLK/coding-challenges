@@ -1,0 +1,3 @@
+- Add simple web server to host redirect url on authentication
+- Start above web server when not access token was not found or need refresh when expired. 
+- It should be started as a daemon and should be closed once either task is completed
