@@ -1,6 +1,0 @@
-@WorkerWeb_HostAddress = http://localhost:5000
-
-GET {{WorkerWeb_HostAddress}}/
-Accept: application/json
-
-###
