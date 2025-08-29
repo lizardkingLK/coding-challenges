@@ -1,3 +1,4 @@
+using System.Text.Json;
 using lizzy.Core.Configurations;
 using lizzy.Core.Services;
 using lizzy.Core.State;
@@ -13,6 +14,8 @@ internal class Program
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         builder.Host.UseWindowsService();
         builder.Services.AddWindowsService();
+
+        builder.Services.AddSingleton<AuthorizationListenerService>();
 
         builder.Services.Configure<SpotifyOptions>(
             builder.Configuration.GetSection(nameof(SpotifyOptions)));
@@ -32,7 +35,10 @@ internal class Program
             app.MapOpenApi();
         }
 
-        app.MapGet("/", (HttpRequest request, AuthorizationService authorizationService) =>
+        app.MapGet("/", (
+            HttpRequest request,
+            AuthorizationService authorizationService,
+            AuthorizationListenerService authorizationListenerService) =>
         {
             if (!AuthorizationService.ValidateAuthorizationCode(request.QueryString.Value!))
             {
@@ -44,6 +50,8 @@ internal class Program
                 return Results.Redirect(UrlHome + QueryError);
             }
 
+            authorizationListenerService.SetAuthorizeCompleted(accessToken!);
+
             return Results.Redirect(UrlHome);
         });
 
@@ -52,9 +60,26 @@ internal class Program
             return authorizationService.GetAuthorizationCodeURL();
         });
 
-        app.MapGet("collect", (AuthorizationService authorizationService) =>
+        app.MapGet("listen", async (
+            HttpContext httpContext,
+            AuthorizationListenerService authorizationListenerService,
+            CancellationToken cancellationToken) =>
         {
-            return Results.Ok(AuthorizationService.CollectVariables());
+            httpContext.Response.Headers.ContentType = "text/event-stream";
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                AccessTokenDTO accessToken = await authorizationListenerService.WaitForAuthorize();
+
+                await JsonSerializer.SerializeAsync(
+                    httpContext.Response.Body,
+                    accessToken,
+                    cancellationToken: cancellationToken);
+
+                await httpContext.Response.Body.FlushAsync(cancellationToken);
+
+                authorizationListenerService.ResetAuthorizeWait();
+            }
         });
 
         app.UseHttpsRedirection();

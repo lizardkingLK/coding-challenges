@@ -16,7 +16,7 @@ export class Profile {
         const btnUserProfile: HTMLButtonElement = document.querySelector("#btnUserProfile")!;
         // console.log(userProfile, btnUserProfile);
         btnUserProfile.style.backgroundImage = `url(${userProfile.images[1]?.url})`;
-        
+
     }
 
     async #getCurrentUserProfile() {

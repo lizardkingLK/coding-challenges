@@ -6,9 +6,15 @@ using static lizzy.Core.Shared.Values;
 
 namespace lizzy.Core.Services;
 
-public class AuthorizationService(HttpClient httpClient)
+public class AuthorizationService(
+    HttpClient httpClient,
+    AuthorizationListenerService authorizationListenerService)
 {
     private readonly HttpClient _httpClient = httpClient;
+
+    private readonly AuthorizationListenerService _authorizationListenerService = authorizationListenerService;
+
+    private TaskCompletionSource<string> _taskCompletionSource = new();
 
     public string GetAuthorizationCodeURL()
     {
@@ -79,9 +85,9 @@ public class AuthorizationService(HttpClient httpClient)
         return GetAccessToken(accessTokenGrantParams, out accessToken);
     }
 
-    private bool GetAccessToken(Dictionary<string, string> parameters, out AccessTokenDTO? accessToken)
+    private bool GetAccessToken(Dictionary<string, string> parameters, out AccessTokenDTO? accessTokenDTO)
     {
-        accessToken = default;
+        accessTokenDTO = default;
 
         FormUrlEncodedContent httpContent = new(parameters);
         UriBuilder uriBuilder = new(_httpClient.BaseAddress!)
@@ -109,31 +115,48 @@ public class AuthorizationService(HttpClient httpClient)
             return false;
         }
 
-        accessToken = JsonSerializer.Deserialize<AccessTokenDTO>(responseString);
-        if (accessToken == null)
+        accessTokenDTO = JsonSerializer.Deserialize<AccessTokenDTO>(responseString);
+        if (accessTokenDTO == null)
         {
             return false;
         }
 
-        Environment.SetEnvironmentVariable(AccessTokenKey, accessToken.AccessToken);
-        Environment.SetEnvironmentVariable(RefreshTokenKey, accessToken.RefreshToken);
+        // _taskCompletionSource.TrySetResult(new AuthorizationDTO
+        // {
+        //     AccessToken = accessTokenDTO.AccessToken,
+        //     RefreshToken = accessTokenDTO.RefreshToken,
+        // });
 
         return true;
     }
 
-    public static AuthorizationDTO? CollectVariables()
-    {
-        string? accessToken = Environment.GetEnvironmentVariable(AccessTokenKey);
-        string? refreshToken = Environment.GetEnvironmentVariable(RefreshTokenKey);
-        if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
-        {
-            return null;
-        }
+    // public Task<AuthorizationDTO> WaitForAuthorize()
+    // {
+    //     return _taskCompletionSource.Task;
+    // }
 
-        return new AuthorizationDTO
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-        };
+    public Task<string> WaitForAuthorize()
+    {
+        return _taskCompletionSource.Task;
+    }
+
+    public void StopAuthorizeWait()
+    {
+        _taskCompletionSource = new();
+    }
+
+    readonly string setOfChars = string.Join(
+        null,
+        Enumerable.Range(0, 26).Select(item => (char)('a' + item)));
+    public Task<string> DummyPublishARecord()
+    {
+        string randomHash = string.Join(null,
+           Enumerable.Range(0, 32).Select(item => setOfChars[Random.Shared.Next(setOfChars.Length)]));
+
+        // Thread.Sleep(Random.Shared.Next(10_000));
+
+        _taskCompletionSource.TrySetResult(randomHash);
+
+        return _taskCompletionSource.Task;
     }
 }
