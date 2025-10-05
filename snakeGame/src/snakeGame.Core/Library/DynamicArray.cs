@@ -224,7 +224,7 @@ public class DynamicArray<T>
 
     private void ShrinkArray()
     {
-        Capacity = Size * 2;
+        Capacity = Size;
         T?[] tempArray = new T[Capacity];
         for (int i = 0; i < Size; i++)
         {

@@ -1,0 +1,3 @@
+[submodule "tetris/src/data-structures"]
+	path = tetris/src/data-structures
+	url = git@github.com:lizardkingLK/data-structures.git
