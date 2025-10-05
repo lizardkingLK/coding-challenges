@@ -121,42 +121,6 @@ public class AuthorizationService(
             return false;
         }
 
-        // _taskCompletionSource.TrySetResult(new AuthorizationDTO
-        // {
-        //     AccessToken = accessTokenDTO.AccessToken,
-        //     RefreshToken = accessTokenDTO.RefreshToken,
-        // });
-
         return true;
-    }
-
-    // public Task<AuthorizationDTO> WaitForAuthorize()
-    // {
-    //     return _taskCompletionSource.Task;
-    // }
-
-    public Task<string> WaitForAuthorize()
-    {
-        return _taskCompletionSource.Task;
-    }
-
-    public void StopAuthorizeWait()
-    {
-        _taskCompletionSource = new();
-    }
-
-    readonly string setOfChars = string.Join(
-        null,
-        Enumerable.Range(0, 26).Select(item => (char)('a' + item)));
-    public Task<string> DummyPublishARecord()
-    {
-        string randomHash = string.Join(null,
-           Enumerable.Range(0, 32).Select(item => setOfChars[Random.Shared.Next(setOfChars.Length)]));
-
-        // Thread.Sleep(Random.Shared.Next(10_000));
-
-        _taskCompletionSource.TrySetResult(randomHash);
-
-        return _taskCompletionSource.Task;
     }
 }
