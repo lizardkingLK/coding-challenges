@@ -1,9 +1,10 @@
-﻿namespace pong.Program;
+﻿using pong.Core;
+
+namespace pong.Program;
 
 class Program
 {
-    static void Main(string[] args)
-    {
-        Console.WriteLine("Hello, World!");
-    }
+    static void Main(string[] args) => PongGame.Initiate(args);
 }
+        
+    
