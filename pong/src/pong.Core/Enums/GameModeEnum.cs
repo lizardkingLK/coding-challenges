@@ -2,8 +2,8 @@ namespace pong.Core.Enums;
 
 public enum GameModeEnum : byte
 {
-    SinglePlayerInput,
     SinglePlayerCPU,
+    SinglePlayerInput,
     MultiPlayerInput,
     MultiPlayerNetwork,
 }

@@ -1,4 +1,4 @@
-using pong.Core.State;
+using pong.Core.State.Common;
 
 namespace pong.Core.Abstractions;
 

@@ -1,7 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
-using pong.Core.Library.NonLinear.HashMaps;
-using pong.Core.State;
+using pong.Core.Library.DataStructures.NonLinear.HashMaps;
+using pong.Core.State.Common;
 using pong.Core.State.Game;
 using pong.Core.Validators.ArgumentValidators;
 using static pong.Core.Shared.Errors;
@@ -11,7 +11,7 @@ namespace pong.Core.Helpers;
 
 public static class ValidatorHelper
 {
-    public static Result<Arguments> GetValidator(string[] arguments)
+    public static Result<Arguments> GetValidated(string[] arguments)
     {
         Result<HashMap<ArgumentTypeEnum, string?>> argumentsMapResult = GetArgumentsMap(arguments);
         if (argumentsMapResult.Errors != null)
@@ -19,13 +19,13 @@ public static class ValidatorHelper
             return new(null, argumentsMapResult.Errors);
         }
 
-        Result<Arguments> validatedArgumentsResult = GetValidators(argumentsMapResult.Data!).Validate();
-        if (validatedArgumentsResult.Errors != null)
+        Result<Arguments> validatedResult = GetValidators(argumentsMapResult.Data!).Validate();
+        if (validatedResult.Errors != null)
         {
-            return new(null, validatedArgumentsResult.Errors);
+            return new(null, validatedResult.Errors);
         }
 
-        return new(validatedArgumentsResult.Data!);
+        return new(validatedResult.Data!);
     }
 
     private static Validator<HashMap<ArgumentTypeEnum, string?>, Arguments> GetValidators(
@@ -49,6 +49,7 @@ public static class ValidatorHelper
         int length = arguments.Length;
         string argumentKey;
         string? argumentValue;
+        bool moveToNextKeyValue;
         for (int i = 0; i < length; i++)
         {
             argumentKey = arguments[i].ToLower();
@@ -63,11 +64,14 @@ public static class ValidatorHelper
                 return new(null, ErrorDuplicateArguments(argumentKey));
             }
 
-            argumentsMap.Add(argumentType, argumentValue);
-            if (!string.IsNullOrEmpty(argumentValue))
+            moveToNextKeyValue = string.IsNullOrEmpty(argumentValue)
+            || unaryArguments.TryGetValue(item => item == argumentKey, out _, out _);
+            if (moveToNextKeyValue)
             {
-                i++;   
+                continue;
             }
+
+            i++;
         }
 
         return new(argumentsMap);

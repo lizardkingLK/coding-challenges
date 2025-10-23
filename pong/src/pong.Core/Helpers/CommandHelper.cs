@@ -1,8 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Commands.Controllers;
-using pong.Core.State;
+using pong.Core.State.Common;
 using pong.Core.State.Game;
-using static pong.Core.Shared.Errors;
 using static pong.Core.Enums.CommandTypeEnum;
 
 namespace pong.Core.Helpers;
@@ -14,14 +13,10 @@ public static class CommandHelper
         return arguments.CommandType switch
         {
             HelpCommand => new(new HelpController(arguments)),
-            GameCommand => new(new GameController(arguments)),
             InteractiveCommand => new(new InteractiveController(arguments)),
-            _ => new(null, ErrorInvalidCommand()),
+            _ => new(new GameController(arguments)),
         };
     }
 
-    public static void Execute(Command command)
-    {
-
-    }
+    public static void Execute(Command command) => command.Execute();
 }

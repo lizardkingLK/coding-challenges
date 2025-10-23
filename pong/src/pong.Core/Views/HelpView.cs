@@ -4,15 +4,11 @@ namespace pong.Core.Views;
 
 public class HelpView : View
 {
-    public override string? Message => """
-
-    """;
-
     public override string? Data => """
-
+    Help is here
     """;
 
-    public override string? Error => """
-    
-    """;
+    public override string? Message => string.Empty;
+
+    public override string? Error => string.Empty;
 }

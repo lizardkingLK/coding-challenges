@@ -1,7 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
-using pong.Core.Library.NonLinear.HashMaps;
-using pong.Core.State;
+using pong.Core.Library.DataStructures.NonLinear.HashMaps;
+using pong.Core.State.Common;
 using pong.Core.State.Game;
 using static pong.Core.Shared.Errors;
 
@@ -17,7 +17,7 @@ public record DifficultyValidator(
     {
         if (!ArgumentsMap.TryGet(ArgumentTypeEnum.Difficulty, out string? value))
         {
-            return new(Arguments);
+            return Next?.Validate() ?? new (Arguments);
         }
 
         if (!Enum.TryParse(value, out DifficultyLevelEnum difficultyType) || !Enum.IsDefined(difficultyType))

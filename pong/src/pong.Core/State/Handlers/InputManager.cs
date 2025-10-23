@@ -1,6 +1,6 @@
 namespace pong.Core.State.Handlers;
 
-public class ScoreManager
+public class InputManager
 {
-       
+    
 }

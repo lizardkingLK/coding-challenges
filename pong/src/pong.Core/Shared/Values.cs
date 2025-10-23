@@ -1,5 +1,6 @@
 using pong.Core.Enums;
-using pong.Core.Library.NonLinear.HashMaps;
+using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using static pong.Core.Enums.ArgumentTypeEnum;
 
 namespace pong.Core.Shared;
@@ -17,5 +18,9 @@ public static class Values
         new("--output", OutputType),
         new("-d", Difficulty),
         new("--difficulty", Difficulty)
+    );
+
+    public static readonly DynamicallyAllocatedArray<string> unaryArguments = new(
+        "-h", "--help", "-it", "--interactive"
     );
 }

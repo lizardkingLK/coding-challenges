@@ -1,7 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
-using pong.Core.Library.NonLinear.HashMaps;
-using pong.Core.State;
+using pong.Core.Library.DataStructures.NonLinear.HashMaps;
+using pong.Core.State.Common;
 using pong.Core.State.Game;
 
 namespace pong.Core.Validators.ArgumentValidators;

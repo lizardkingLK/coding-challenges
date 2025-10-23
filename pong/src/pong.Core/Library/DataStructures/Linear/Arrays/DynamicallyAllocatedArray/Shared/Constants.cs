@@ -1,4 +1,4 @@
-namespace pong.Core.Library.Linear.Arrays.DynamicallyAllocatedArray.Shared;
+namespace pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray.Shared;
 
 public static class Constants
 {

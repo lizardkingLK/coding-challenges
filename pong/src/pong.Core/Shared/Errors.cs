@@ -6,8 +6,6 @@ public static class Errors
         => new($"error. invalid argument given '{argument}'");
     public static string ErrorDuplicateArguments(string argument)
         => new($"error. duplicate arguments were given '{argument}'");
-    public static string ErrorInvalidCommand()
-        => new("error. invalid command was included");
     public static string ErrorInvalidOutputType()
         => new("error. invalid output type was given");
     public static string ErrorInvalidDifficulty()

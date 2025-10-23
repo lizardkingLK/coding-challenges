@@ -2,7 +2,7 @@ namespace pong.Core.Enums;
 
 public enum CommandTypeEnum : byte
 {
-    HelpCommand,
     GameCommand,
+    HelpCommand,
     InteractiveCommand,
 }

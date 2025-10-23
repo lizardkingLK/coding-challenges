@@ -1,6 +1,6 @@
-using static pong.Core.Library.Linear.Arrays.DynamicallyAllocatedArray.Shared.Constants;
+using static pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray.Shared.Constants;
 
-namespace pong.Core.Library.Linear.Arrays.DynamicallyAllocatedArray.Shared;
+namespace pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray.Shared;
 
 public static class Exceptions
 {

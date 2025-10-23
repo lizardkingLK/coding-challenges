@@ -1,7 +1,7 @@
-using static pong.Core.Library.Linear.Arrays.DynamicallyAllocatedArray.Shared.Constants;
-using static pong.Core.Library.Linear.Arrays.DynamicallyAllocatedArray.Shared.Exceptions;
+using static pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray.Shared.Constants;
+using static pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray.Shared.Exceptions;
 
-namespace pong.Core.Library.Linear.Arrays.DynamicallyAllocatedArray;
+namespace pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 
 public class DynamicallyAllocatedArray<T>
 {
@@ -87,7 +87,7 @@ public class DynamicallyAllocatedArray<T>
         return value;
     }
 
-    
+
 
     public T? Update(int index, T? value)
     {
