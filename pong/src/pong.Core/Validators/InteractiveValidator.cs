@@ -4,9 +4,9 @@ using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.State.Common;
 using pong.Core.State.Game;
 
-namespace pong.Core.Validators.ArgumentValidators;
+namespace pong.Core.Validators;
 
-public record HelpValidator(
+public record InteractiveValidator(
     HashMap<ArgumentTypeEnum, string?> ArgumentsMap,
     Arguments Arguments,
     Validator<HashMap<ArgumentTypeEnum, string?>, Arguments>? Next)
@@ -14,17 +14,12 @@ public record HelpValidator(
 {
     public override Result<Arguments> Validate()
     {
-        if (ArgumentsMap.TryGet(ArgumentTypeEnum.Help, out _))
+        if (ArgumentsMap.TryGet(ArgumentTypeEnum.Interactive, out _))
         {
-            Arguments.CommandType = CommandTypeEnum.HelpCommand;
+            Arguments.CommandType = CommandTypeEnum.InteractiveCommand;
             return new(Arguments);
         }
 
-        if (Next == null)
-        {
-            return new(Arguments);
-        }
-
-        return Next.Validate();
+        return Next?.Validate() ?? new(Arguments);
     }
 }

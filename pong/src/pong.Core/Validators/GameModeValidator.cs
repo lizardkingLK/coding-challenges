@@ -5,9 +5,9 @@ using pong.Core.State.Common;
 using pong.Core.State.Game;
 using static pong.Core.Shared.Errors;
 
-namespace pong.Core.Validators.ArgumentValidators;
+namespace pong.Core.Validators;
 
-public record OutputTypeValidator(
+public record GameModeValidator(
     HashMap<ArgumentTypeEnum, string?> ArgumentsMap,
     Arguments Arguments,
     Validator<HashMap<ArgumentTypeEnum, string?>, Arguments>? Next)
@@ -15,23 +15,18 @@ public record OutputTypeValidator(
 {
     public override Result<Arguments> Validate()
     {
-        if (!ArgumentsMap.TryGet(ArgumentTypeEnum.OutputType, out string? value))
+        if (!ArgumentsMap.TryGet(ArgumentTypeEnum.GameMode, out string? value))
         {
-            return Next?.Validate() ?? new (Arguments);
+            return Next?.Validate() ?? new(Arguments);
         }
 
-        if (!Enum.TryParse(value, out OutputTypeEnum outputType) || !Enum.IsDefined(outputType))
+        if (!Enum.TryParse(value, out GameModeEnum gameMode) || !Enum.IsDefined(gameMode))
         {
-            return new(null, ErrorInvalidOutputType());
+            return new(null, ErrorInvalidGameMode());
         }
 
-        Arguments.OutputType = outputType;
+        Arguments.GameMode = gameMode;
 
-        if (Next == null)
-        {
-            return new(Arguments);
-        }
-
-        return Next.Validate();
+        return Next?.Validate() ?? new(Arguments);
     }
 }

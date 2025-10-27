@@ -5,7 +5,7 @@ using pong.Core.State.Common;
 using pong.Core.State.Game;
 using static pong.Core.Shared.Errors;
 
-namespace pong.Core.Validators.ArgumentValidators;
+namespace pong.Core.Validators;
 
 public record DifficultyValidator(
     HashMap<ArgumentTypeEnum, string?> ArgumentsMap,
@@ -17,7 +17,7 @@ public record DifficultyValidator(
     {
         if (!ArgumentsMap.TryGet(ArgumentTypeEnum.Difficulty, out string? value))
         {
-            return Next?.Validate() ?? new (Arguments);
+            return Next?.Validate() ?? new(Arguments);
         }
 
         if (!Enum.TryParse(value, out DifficultyLevelEnum difficultyType) || !Enum.IsDefined(difficultyType))
@@ -27,11 +27,6 @@ public record DifficultyValidator(
 
         Arguments.DifficultyLevel = difficultyType;
 
-        if (Next == null)
-        {
-            return new(Arguments);
-        }
-
-        return Next.Validate();
+        return Next?.Validate() ?? new(Arguments);
     }
 }

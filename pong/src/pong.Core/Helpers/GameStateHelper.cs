@@ -2,7 +2,7 @@ using static pong.Core.Utilities.ConsoleUtility;
 
 namespace pong.Core.Helpers;
 
-public static class OutputHelper
+public static class GameStateHelper
 {
     public static void HandleInformation(string content)
     {

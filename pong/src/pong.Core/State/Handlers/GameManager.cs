@@ -1,61 +1,63 @@
 using pong.Core.Abstractions;
+using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using pong.Core.Outputs.Console;
+using pong.Core.Outputs.Document;
+using pong.Core.State.Assets;
 using pong.Core.State.Game;
+using static pong.Core.Shared.Errors;
 
 namespace pong.Core.State.Handlers;
 
-public record GameManager : IPublisher, ISubscriber
+public record GameManager : IPublisher
 {
-    public DynamicallyAllocatedArray<ISubscriber> Subscribers { get; } = new();
+    private readonly Output _output;
+    private readonly InputManager _inputManager = new();
 
-    public Arguments Arguments { get; set; }
-    private readonly ConsoleManager _consoleManager;
+    public bool gamePaused = false;
+
+    public record GamePausedNotification : INotification;
+
+    public DynamicallyAllocatedArray<ISubscriber> Subscribers { get; } = new();
 
     public GameManager(Arguments arguments)
     {
-        Arguments = arguments;
-        _consoleManager = new(this);
+        _output = arguments.OutputType switch
+        {
+            OutputTypeEnum.Console => new ConsoleOutput(this),
+            OutputTypeEnum.Text => new DocumentOutput(this),
+            _ => throw new NotImplementedException(ErrorInvalidOutputType()),
+        };
+
+        Subscribers.Add(new BoardManager(_output));
+        Subscribers.Add(new RacketManager(_output));
+        Subscribers.Add(new BallManager(_output));
     }
 
-    public void Initialize()
+    public bool Play()
     {
-        Register();
-        Subscribe();
-        Listen();
-    }
+        while (true)
+        {
+            if (gamePaused)
+            {
+                continue;
+            }
 
-    public void NewGame(Arguments arguments)
-    {
-
-    }
-
-    public void Listen(INotification notification)
-    {
-        throw new NotImplementedException();
+            Publish(new BallManager.BallMoveNotification());
+            
+            Thread.Sleep(10);
+        }
     }
 
     public void Publish(INotification notification)
     {
-        throw new NotImplementedException();
-    }
-
-    public void Register()
-    {
-
-    }
-
-    public void Subscribe()
-    {
-        _consoleManager.Register();
-    }
-
-    public void Listen()
-    {
-        _consoleManager.Publish();
+        foreach (ISubscriber? subscriber in Subscribers.Values)
+        {
+            subscriber?.Listen(notification);
+        }
     }
 
     public void Publish()
     {
-        throw new NotImplementedException();
     }
 }

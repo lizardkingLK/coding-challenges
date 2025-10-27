@@ -2,7 +2,7 @@
 using pong.Core.State.Common;
 using pong.Core.State.Game;
 using static pong.Core.Helpers.CommandHelper;
-using static pong.Core.Helpers.OutputHelper;
+using static pong.Core.Helpers.GameStateHelper;
 using static pong.Core.Helpers.ValidatorHelper;
 
 namespace pong.Core;

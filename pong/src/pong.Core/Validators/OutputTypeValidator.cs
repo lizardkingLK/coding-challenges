@@ -3,10 +3,11 @@ using pong.Core.Enums;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.State.Common;
 using pong.Core.State.Game;
+using static pong.Core.Shared.Errors;
 
-namespace pong.Core.Validators.ArgumentValidators;
+namespace pong.Core.Validators;
 
-public record InteractiveValidator(
+public record OutputTypeValidator(
     HashMap<ArgumentTypeEnum, string?> ArgumentsMap,
     Arguments Arguments,
     Validator<HashMap<ArgumentTypeEnum, string?>, Arguments>? Next)
@@ -14,17 +15,18 @@ public record InteractiveValidator(
 {
     public override Result<Arguments> Validate()
     {
-        if (ArgumentsMap.TryGet(ArgumentTypeEnum.Interactive, out _))
+        if (!ArgumentsMap.TryGet(ArgumentTypeEnum.OutputType, out string? value))
         {
-            Arguments.CommandType = CommandTypeEnum.InteractiveCommand;
-            return new(Arguments);
+            return Next?.Validate() ?? new(Arguments);
         }
 
-        if (Next == null)
+        if (!Enum.TryParse(value, out OutputTypeEnum outputType) || !Enum.IsDefined(outputType))
         {
-            return new(Arguments);
+            return new(null, ErrorInvalidOutputType());
         }
 
-        return Next.Validate();
+        Arguments.OutputType = outputType;
+
+        return Next?.Validate() ?? new(Arguments);
     }
 }

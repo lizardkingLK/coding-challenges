@@ -3,7 +3,7 @@ using pong.Core.Enums;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.State.Common;
 using pong.Core.State.Game;
-using pong.Core.Validators.ArgumentValidators;
+using pong.Core.Validators;
 using static pong.Core.Shared.Errors;
 using static pong.Core.Shared.Values;
 

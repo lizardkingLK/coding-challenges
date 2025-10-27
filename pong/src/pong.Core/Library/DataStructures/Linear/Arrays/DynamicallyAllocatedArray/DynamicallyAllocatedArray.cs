@@ -53,7 +53,7 @@ public class DynamicallyAllocatedArray<T>
         return value;
     }
 
-    public void AddRange(T[] values)
+    public void AddRange(params T[] values)
     {
         foreach (T value in values)
         {

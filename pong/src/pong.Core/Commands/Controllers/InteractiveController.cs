@@ -1,6 +1,6 @@
 using pong.Core.Abstractions;
 using pong.Core.State.Game;
-using static pong.Core.Helpers.OutputHelper;
+using static pong.Core.Helpers.GameStateHelper;
 
 namespace pong.Core.Commands.Controllers;
 
