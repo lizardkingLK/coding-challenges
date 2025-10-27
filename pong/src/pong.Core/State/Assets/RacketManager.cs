@@ -1,4 +1,5 @@
 using pong.Core.Abstractions;
+using pong.Core.Enums;
 using pong.Core.State.Handlers;
 
 namespace pong.Core.State.Assets;
@@ -6,6 +7,9 @@ namespace pong.Core.State.Assets;
 public class RacketManager : ISubscriber
 {
     private readonly Output _output;
+    public record RacketMoveNotification(
+        VerticalDirectionEnum Direction,
+        PlayerSideEnum PlayerSide) : INotification;
 
     public RacketManager(Output output)
     {

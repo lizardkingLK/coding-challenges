@@ -12,7 +12,7 @@ namespace pong.Core.State.Handlers;
 public record GameManager : IPublisher
 {
     private readonly Output _output;
-    private readonly InputManager _inputManager = new();
+    private readonly InputManager _inputManager;
 
     public bool gamePaused = false;
 
@@ -32,10 +32,13 @@ public record GameManager : IPublisher
         Subscribers.Add(new BoardManager(_output));
         Subscribers.Add(new RacketManager(_output));
         Subscribers.Add(new BallManager(_output));
+
+        _inputManager = new(this);
     }
 
     public bool Play()
     {
+        Task.Run(_inputManager.Play);
         while (true)
         {
             if (gamePaused)
@@ -44,8 +47,8 @@ public record GameManager : IPublisher
             }
 
             Publish(new BallManager.BallMoveNotification());
-            
-            Thread.Sleep(10);
+
+            Thread.Sleep(20);
         }
     }
 
