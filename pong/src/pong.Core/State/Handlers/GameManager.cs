@@ -1,43 +1,38 @@
 using pong.Core.Abstractions;
-using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
-using pong.Core.Outputs.Console;
-using pong.Core.Outputs.Document;
 using pong.Core.State.Assets;
-using pong.Core.State.Game;
-using static pong.Core.Shared.Errors;
+using pong.Core.State.Misc;
 
 namespace pong.Core.State.Handlers;
 
 public record GameManager : IPublisher
 {
-    private readonly Output _output;
     private readonly InputManager _inputManager;
+    private readonly StatusManager _statusManager;
 
     public bool gamePaused = false;
 
     public record GamePausedNotification : INotification;
+    public record GameCreateNotification : INotification;
 
     public DynamicallyAllocatedArray<ISubscriber> Subscribers { get; } = new();
 
-    public GameManager(Arguments arguments)
+    public GameManager()
     {
-        _output = arguments.OutputType switch
-        {
-            OutputTypeEnum.Console => new ConsoleOutput(this),
-            OutputTypeEnum.Text => new DocumentOutput(this),
-            _ => throw new NotImplementedException(ErrorInvalidOutputType()),
-        };
+        _statusManager = new(this);
 
-        Subscribers.Add(new BoardManager(_output));
-        Subscribers.Add(new RacketManager(_output));
-        Subscribers.Add(new BallManager(_output));
+        Subscribers.Add(new BoardManager(_statusManager));
+        Subscribers.Add(new RacketManager(_statusManager));
+        Subscribers.Add(new BallManager(_statusManager));
+        Subscribers.Add(_statusManager);
 
         _inputManager = new(this);
     }
 
     public bool Play()
     {
+        Publish(new GameCreateNotification());
+
         Task.Run(_inputManager.Play);
         while (true)
         {

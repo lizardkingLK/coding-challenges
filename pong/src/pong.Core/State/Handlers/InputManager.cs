@@ -1,17 +1,17 @@
-using pong.Core.Library.DataStructures.NonLinear.HashMaps;
+using pong.Core.Enums;
 using pong.Core.State.Assets;
+using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Handlers;
 
 public class InputManager(GameManager gameManager)
 {
-    private GameManager _gameManager = gameManager;
+    private readonly GameManager _gameManager = gameManager;
     private readonly GameManager.GamePausedNotification gamePausedNotification
     = new();
-    private readonly RacketManager.RacketMoveNotification racketMoveUpNotification
-    = new(Enums.VerticalDirectionEnum.Up, Enums.PlayerSideEnum.PlayerOneLeft);
-    private readonly RacketManager.RacketMoveNotification racketMoveDownNotification
-    = new(Enums.VerticalDirectionEnum.Down, Enums.PlayerSideEnum.PlayerOneLeft);
+
+    private int _speed = DefaultSpeed;
+    private VerticalDirectionEnum _previousDirection;
 
     public void Play()
     {
@@ -23,19 +23,28 @@ public class InputManager(GameManager gameManager)
                 continue;
             }
 
-            key = Console.ReadKey();
-            if (key.Key == ConsoleKey.Escape)
+            key = Console.ReadKey(true);
+            ConsoleKey consoleKey = key.Key;
+            if (consoleKey == ConsoleKey.Escape || consoleKey == ConsoleKey.P)
             {
                 _gameManager.gamePaused = !_gameManager.gamePaused;
                 _gameManager.Publish(gamePausedNotification);
+                return;
             }
-            else if (key.Key == ConsoleKey.UpArrow)
+
+            if (consoleKey == ConsoleKey.UpArrow || consoleKey == ConsoleKey.K)
             {
-                _gameManager.Publish(racketMoveUpNotification);
+                _speed = _previousDirection == VerticalDirectionEnum.Up ? _speed + 1 : 1;
+                _gameManager.Publish(new RacketManager.RacketMoveNotification
+                (VerticalDirectionEnum.Up, PlayerSideEnum.PlayerLeft, _speed));
+                _previousDirection = VerticalDirectionEnum.Up;
             }
-            else if (key.Key == ConsoleKey.DownArrow)
+            else if (consoleKey == ConsoleKey.DownArrow || consoleKey == ConsoleKey.J)
             {
-                _gameManager.Publish(racketMoveDownNotification);
+                _speed = _previousDirection == VerticalDirectionEnum.Down ? _speed + 1 : 1;
+                _gameManager.Publish(new RacketManager.RacketMoveNotification
+                (VerticalDirectionEnum.Down, PlayerSideEnum.PlayerLeft, _speed));
+                _previousDirection = VerticalDirectionEnum.Down;
             }
         }
     }

@@ -2,7 +2,7 @@ using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.State.Common;
-using pong.Core.State.Game;
+using pong.Core.State.Misc;
 using static pong.Core.Shared.Errors;
 
 namespace pong.Core.Validators;

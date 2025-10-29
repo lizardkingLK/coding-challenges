@@ -1,7 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Commands.Controllers;
 using pong.Core.State.Common;
-using pong.Core.State.Game;
+using pong.Core.State.Misc;
 using static pong.Core.Enums.CommandTypeEnum;
 
 namespace pong.Core.Helpers;

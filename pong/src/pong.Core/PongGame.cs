@@ -1,6 +1,6 @@
 ﻿using pong.Core.Abstractions;
 using pong.Core.State.Common;
-using pong.Core.State.Game;
+using pong.Core.State.Misc;
 using static pong.Core.Helpers.CommandHelper;
 using static pong.Core.Helpers.GameStateHelper;
 using static pong.Core.Helpers.ValidatorHelper;

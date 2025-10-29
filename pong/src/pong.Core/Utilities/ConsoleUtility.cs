@@ -6,6 +6,8 @@ namespace pong.Core.Utilities;
 
 public static class ConsoleUtility
 {
+    private static readonly Lock _lock = new();
+
     static ConsoleUtility()
     {
         CursorVisible = false;
@@ -21,10 +23,13 @@ public static class ConsoleUtility
 
     public static void WriteSymbolAt(int top, int left, char symbol, ConsoleColor color = White)
     {
-        ForegroundColor = color;
-        SetCursorPosition(left, top);
-        Write(symbol);
-        ResetColor();
+        lock (_lock)
+        {
+            ForegroundColor = color;
+            SetCursorPosition(left, top);
+            Write(symbol);
+            ResetColor();
+        }
     }
 
     public static void WriteInformationLine(int top, int left, object content)

@@ -1,6 +1,6 @@
-namespace pong.Core.Library.DataStructures.Linear.Lists.DoublyLinkedList;
+namespace pong.Core.Library.DataStructures.Linear.Queues.Deque;
 
-public class DoublyLinkedList<T>
+public class Deque<T>
 {
     public record LinkNode(LinkNode? Previous, T Value, LinkNode? Next)
     {
@@ -12,37 +12,43 @@ public class DoublyLinkedList<T>
     }
 
     public LinkNode? Head { get; set; }
-
     public LinkNode? Tail { get; set; }
 
-    public void AddToFront(T value)
+    public IEnumerable<T> FrontToRear => GetValuesFrontToRear();
+    public IEnumerable<T> RearToFront => GetValuesRearToFront();
+
+    public LinkNode InsertToFront(T value)
     {
         LinkNode newNode = new(value);
         if (Head == null)
         {
             Head = newNode;
             Tail = newNode;
-            return;
+            return newNode;
         }
 
         newNode.Next = Head;
         Head.Previous = newNode;
         Head = newNode;
+
+        return newNode;
     }
 
-    public void AddToRear(T value)
+    public LinkNode InsertToRear(T value)
     {
         LinkNode newNode = new(value);
         if (Tail == null)
         {
             Tail = newNode;
             Head = newNode;
-            return;
+            return newNode;
         }
 
         newNode.Previous = Tail;
         Tail.Next = newNode;
         Tail = newNode;
+
+        return newNode;
     }
 
     public LinkNode RemoveFromFront()
@@ -85,5 +91,73 @@ public class DoublyLinkedList<T>
         Tail = previous;
 
         return removed;
+    }
+
+    public T SeekFront()
+    {
+        LinkNode head = Head
+        ?? throw new ApplicationException(
+            "error. list is empty. cannot seek front");
+
+        return head.Value;
+    }
+
+    public bool TrySeekFront(out T? front)
+    {
+        front = default;
+
+        if (Head == null)
+        {
+            return false;
+        }
+
+        front = Head.Value;
+
+        return true;
+    }
+
+    public T SeekRear()
+    {
+        LinkNode tail = Tail
+        ?? throw new ApplicationException(
+            "error. list is empty. cannot seek rear");
+
+        return tail.Value;
+    }
+
+    public bool TrySeekRear(out T? rear)
+    {
+        rear = default;
+
+        if (Tail == null)
+        {
+            return false;
+        }
+
+        rear = Tail.Value;
+
+        return true;
+    }
+
+    private IEnumerable<T> GetValuesFrontToRear()
+    {
+        LinkNode? current = Head;
+        while (current != null)
+        {
+            yield return current.Value;
+
+            current = current.Next;
+        }
+    }
+
+    private IEnumerable<T> GetValuesRearToFront()
+    {
+        LinkNode? current = Tail;
+        while (current != null)
+        {
+            yield return current.Value;
+
+            current = current.Previous;
+        }
     }
 }

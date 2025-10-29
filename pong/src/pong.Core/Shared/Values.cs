@@ -14,8 +14,6 @@ public static class Values
         new("--interactive", Interactive),
         new("-gm", GameMode),
         new("--game-mode", GameMode),
-        new("-o", OutputType),
-        new("--output", OutputType),
         new("-d", Difficulty),
         new("--difficulty", Difficulty)
     );

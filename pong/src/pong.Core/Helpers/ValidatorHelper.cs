@@ -2,7 +2,7 @@ using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.State.Common;
-using pong.Core.State.Game;
+using pong.Core.State.Misc;
 using pong.Core.Validators;
 using static pong.Core.Shared.Errors;
 using static pong.Core.Shared.Values;
@@ -34,8 +34,7 @@ public static class ValidatorHelper
         Arguments arguments = new();
 
         DifficultyValidator difficultyValidator = new(argumentsMap, arguments, null);
-        OutputTypeValidator outputTypeValidator = new(argumentsMap, arguments, difficultyValidator);
-        GameModeValidator gameModeValidator = new(argumentsMap, arguments, outputTypeValidator);
+        GameModeValidator gameModeValidator = new(argumentsMap, arguments, difficultyValidator);
         InteractiveValidator interactiveValidator = new(argumentsMap, arguments, gameModeValidator);
         HelpValidator helpValidator = new(argumentsMap, arguments, interactiveValidator);
 

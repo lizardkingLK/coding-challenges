@@ -1,5 +1,5 @@
 using pong.Core.Abstractions;
-using pong.Core.State.Game;
+using pong.Core.State.Misc;
 using pong.Core.Views;
 using static pong.Core.Helpers.GameStateHelper;
 

@@ -1,9 +1,10 @@
 using pong.Core.Abstractions;
+using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
 using static pong.Core.Utilities.ConsoleUtility;
 
-namespace pong.Core.Outputs.Console;
+namespace pong.Core.State.Outputs;
 
 public record ConsoleOutput : Output
 {
@@ -16,7 +17,9 @@ public record ConsoleOutput : Output
         Task.Run(ListenOnResize);
     }
 
-    public override void Draw(Block block)
+    public override void Draw(
+        Block block,
+        DynamicallyAllocatedArray<DynamicallyAllocatedArray<Block>>? mapGrid = null)
     {
         block.Deconstruct(out int top, out int left, out char symbol, out ConsoleColor color);
 

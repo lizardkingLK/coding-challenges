@@ -4,45 +4,39 @@ using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
 
-public class BoardManager : ISubscriber
+public class BoardManager(StatusManager statusManager) : ISubscriber
 {
     private const ConsoleColor BoardColor = ConsoleColor.Yellow;
-    private readonly Output _output;
-
-    public BoardManager(Output output)
-    {
-        _output = output;
-
-        Create();
-    }
+    private readonly StatusManager _statusManager = statusManager;
 
     private void Create()
     {
-        int rows = _output.Height;
-        int columns = _output.Width;
+        int rows = _statusManager.Height;
+        int columns = _statusManager.Width;
         int i;
         int j;
         for (j = 0; j < columns; j++)
         {
-            _output.Draw(new(0, j, WallBlockSymbol, BoardColor));
+            _statusManager.Create(new(0, j, WallBlockSymbol, BoardColor));
         }
 
         for (i = 1; i < rows - 1; i++)
         {
-            _output.Draw(new(i, 0, WallBlockSymbol, BoardColor));
-            _output.Draw(new(i, columns - 1, WallBlockSymbol, BoardColor));
+            _statusManager.Create(new(i, 0, WallBlockSymbol, BoardColor));
+            _statusManager.CreateRange(i, (1, columns - 1), SpaceBlockSymbol, BoardColor);
+            _statusManager.Create(new(i, columns - 1, WallBlockSymbol, BoardColor));
         }
 
         for (j = 0; j < columns; j++)
         {
-            _output.Draw(new(rows - 1, j, WallBlockSymbol, BoardColor));
+            _statusManager.Create(new(rows - 1, j, WallBlockSymbol, BoardColor));
         }
 
         rows--;
         j = columns / 2;
         for (i = 1; i < rows; i++)
         {
-            _output.Draw(new(i, j, NetBlockSymbol, BoardColor));
+            _statusManager.Create(new(i, j, NetBlockSymbol, BoardColor));
         }
     }
 
@@ -54,8 +48,8 @@ public class BoardManager : ISubscriber
     {
         switch (notification)
         {
-            case GameManager.GamePausedNotification:
-                // Create();
+            case GameManager.GameCreateNotification:
+                Create();
                 break;
             default:
                 break;

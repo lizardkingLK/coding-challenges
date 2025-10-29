@@ -12,6 +12,7 @@ public class DynamicallyAllocatedArray<T>
     public int Size;
 
     public IEnumerable<T?> Values => GetValues();
+    public IEnumerable<T> NonNullValues => GetNonNullValues();
 
     public T? this[int index]
     {
@@ -86,8 +87,6 @@ public class DynamicallyAllocatedArray<T>
 
         return value;
     }
-
-
 
     public T? Update(int index, T? value)
     {
@@ -294,6 +293,19 @@ public class DynamicallyAllocatedArray<T>
     {
         foreach (T? value in _values)
         {
+            yield return value;
+        }
+    }
+
+    private IEnumerable<T> GetNonNullValues()
+    {
+        foreach (T? value in _values)
+        {
+            if (value == null)
+            {
+                continue;
+            }
+            
             yield return value;
         }
     }
