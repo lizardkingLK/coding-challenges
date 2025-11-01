@@ -34,6 +34,21 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         _statusManager.Update(_previous);
     }
 
+    private void Reset()
+    {
+        (int y, int x, _, _) = _previous!;
+        _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
+        Block cleared = new(y, x, symbol, color);
+
+        _dimensions = (_statusManager.Height, _statusManager.Width);
+        InitializeBallPosition(_dimensions, out y, out x);
+        InitializeDirections((y, x), _dimensions, ref _yDirection, ref _xDirection);
+        _previous = new(y, x, BallBlockSymbol, _ballColor);
+
+        _statusManager.Update(cleared);
+        _statusManager.Update(_previous);
+    }
+
     private void Move()
     {
         (int y, int x, _, _) = _previous!;
@@ -68,6 +83,9 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         {
             case GameManager.GameCreateNotification:
                 Create();
+                break;
+            case GameManager.GameRoundEndNotification:
+                Reset();
                 break;
             case BallMoveNotification:
                 Move();

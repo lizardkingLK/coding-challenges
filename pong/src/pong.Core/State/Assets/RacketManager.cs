@@ -76,6 +76,9 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
             case GameManager.GameCreateNotification:
                 Create();
                 break;
+            case GameManager.GameRoundEndNotification:
+                
+                break;
             case RacketMoveNotification:
                 Move((RacketMoveNotification)notification);
                 break;

@@ -109,7 +109,7 @@ public record StatusManager : Status, ISubscriber
         }
     }
 
-    public void EndRound() => _gameManager.Publish(_roundEndNotification);
+    public void EndRound() => _gameManager.gameRoundEnd = true;
 
     public override void Output() => _output.Draw(MapGrid);
 }
