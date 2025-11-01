@@ -29,8 +29,8 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
 
         int count = (_statusManager.Height - 2) / 3;
         int yOffset = (_statusManager.Height / 2) - (count / 2);
-        int xLeftOffset = 1;
-        int xRightOffset = _statusManager.Width - 2;
+        int xLeftOffset = 0;
+        int xRightOffset = _statusManager.Width - 1;
         Block leftPlayerBlock;
         Block rightPlayerBlock;
         for (int i = 0; i < count; i++)
@@ -159,10 +159,10 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
 
     private void InitializeCorners()
     {
-        _leftTop = new(1, 1);
-        _rightTop = new(1, _statusManager.Width - 2);
-        _leftBottom = new(_statusManager.Height - 2, 1);
-        _rightBottom = new(_statusManager.Height - 2, _statusManager.Width - 2);
+        _leftTop = new(1, 0);
+        _rightTop = new(1, _statusManager.Width - 1);
+        _leftBottom = new(_statusManager.Height - 2, 0);
+        _rightBottom = new(_statusManager.Height - 2, _statusManager.Width - 1);
     }
 
     private void InitializeRackets()

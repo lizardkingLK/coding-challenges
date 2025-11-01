@@ -33,8 +33,20 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     private void Move()
     {
         (int y, int x, _, _) = _previous!;
-        char symbol = x == _statusManager.Width / 2 ? NetBlockSymbol : SpaceBlockSymbol;
-        Block cleared = new(y, x, symbol);
+        char symbol;
+        ConsoleColor color;
+        if (x == _statusManager.Width / 2)
+        {
+            symbol = NetBlockSymbol;
+            color = ConsoleColor.Yellow;
+        }
+        else
+        {
+            symbol = SpaceBlockSymbol;
+            color = ConsoleColor.White;
+        }
+
+        Block cleared = new(y, x, symbol, color);
 
         object[] directions = [_yDirection, _xDirection];
         GetNextBallPosition(
@@ -84,10 +96,10 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
         (int y, int x) = cordinates;
         GetInCordinates(directions, ref y, ref x);
-        if (y)
-        {
+        // if (y)
+        // {
             // TODO: check if lost (out of racket) or point (racket hit)
-        }
+        // }
 
         GetOutCordinates(dimensions, directions, (y, x), out nextCordinates);
     }
@@ -140,7 +152,6 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         if (yDirection == VerticalDirectionEnum.Down)
         {
             y++;
-
         }
         else
         {
