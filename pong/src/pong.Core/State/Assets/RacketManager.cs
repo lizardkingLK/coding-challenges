@@ -10,8 +10,12 @@ namespace pong.Core.State.Assets;
 public class RacketManager(StatusManager statusManager) : ISubscriber
 {
     private readonly StatusManager _statusManager = statusManager;
+
+    private readonly ConsoleColor _racketColor = ConsoleColor.Cyan;
+
     private Deque<Block> _leftRacket = new();
     private Deque<Block> _rightRacket = new();
+
     private Position _leftTop;
     private Position _rightTop;
     private Position _leftBottom;
@@ -35,11 +39,11 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
         Block rightPlayerBlock;
         for (int i = 0; i < count; i++)
         {
-            leftPlayerBlock = new(yOffset, xLeftOffset, RacketBlockSymbol, ConsoleColor.Cyan);
+            leftPlayerBlock = new(yOffset, xLeftOffset, RacketBlockSymbol, _racketColor);
             _leftRacket.InsertToRear(leftPlayerBlock);
             _statusManager.Update(leftPlayerBlock);
 
-            rightPlayerBlock = new(yOffset, xRightOffset, RacketBlockSymbol, ConsoleColor.Cyan);
+            rightPlayerBlock = new(yOffset, xRightOffset, RacketBlockSymbol, _racketColor);
             _rightRacket.InsertToRear(rightPlayerBlock);
             _statusManager.Update(rightPlayerBlock);
 
@@ -118,8 +122,11 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
         removedBlock.Symbol = SpaceBlockSymbol;
         _statusManager.Update(removedBlock);
 
-        removedBlock.Symbol = RacketBlockSymbol;
-        removedBlock.Top = playerHeadBlock.Top - 1;
+        removedBlock = new(
+            playerHeadBlock.Top - 1,
+            removedBlock.Left,
+            RacketBlockSymbol,
+            _racketColor);
         player.InsertToFront(removedBlock);
         _statusManager.Update(removedBlock);
     }
@@ -151,8 +158,11 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
         removedBlock.Symbol = SpaceBlockSymbol;
         _statusManager.Update(removedBlock);
 
-        removedBlock.Symbol = RacketBlockSymbol;
-        removedBlock.Top = playerTailBlock.Top + 1;
+        removedBlock = new(
+            playerTailBlock.Top + 1,
+            removedBlock.Left,
+            RacketBlockSymbol,
+            _racketColor);
         player.InsertToRear(removedBlock);
         _statusManager.Update(removedBlock);
     }

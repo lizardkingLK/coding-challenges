@@ -10,12 +10,14 @@ public record GameManager : IPublisher
     private readonly InputManager _inputManager;
     private readonly StatusManager _statusManager;
 
-    public bool gamePaused = false;
-
     public record GamePausedNotification : INotification;
     public record GameCreateNotification : INotification;
+    public record GameRoundEndNotification : INotification;
+    public record GameEndNotification : INotification;
 
     public DynamicallyAllocatedArray<ISubscriber> Subscribers { get; } = new();
+
+    public bool gamePaused = false;
 
     public GameManager()
     {

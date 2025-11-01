@@ -10,10 +10,14 @@ namespace pong.Core.State.Assets;
 public class BallManager(StatusManager statusManager) : ISubscriber
 {
     private readonly StatusManager _statusManager = statusManager;
+
     private readonly ConsoleColor _ballColor = ConsoleColor.Red;
+
     private HorizontalDirectionEnum _xDirection;
     private VerticalDirectionEnum _yDirection;
+
     private (int, int) _dimensions;
+
     private Block? _previous;
 
     public record BallMoveNotification : INotification;
@@ -33,18 +37,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     private void Move()
     {
         (int y, int x, _, _) = _previous!;
-        char symbol;
-        ConsoleColor color;
-        if (x == _statusManager.Width / 2)
-        {
-            symbol = NetBlockSymbol;
-            color = ConsoleColor.Yellow;
-        }
-        else
-        {
-            symbol = SpaceBlockSymbol;
-            color = ConsoleColor.White;
-        }
+        _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
 
         Block cleared = new(y, x, symbol, color);
 
@@ -88,7 +81,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
     }
 
-    private static void GetNextBallPosition(
+    private void GetNextBallPosition(
         in (int, int) dimensions,
         in (int, int) cordinates,
         in object[] directions,
@@ -96,10 +89,17 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
         (int y, int x) = cordinates;
         GetInCordinates(directions, ref y, ref x);
-        // if (y)
-        // {
-            // TODO: check if lost (out of racket) or point (racket hit)
-        // }
+        if (!_statusManager.Validate(y, x, out PlayerSideEnum? playerSide))
+        {
+            nextCordinates = (y, x);
+            _statusManager.EndRound();
+            return;
+        }
+
+        if (playerSide != null)
+        {
+            _statusManager.ScorePoint(playerSide.Value);
+        }
 
         GetOutCordinates(dimensions, directions, (y, x), out nextCordinates);
     }
