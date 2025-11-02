@@ -22,9 +22,9 @@ public class BoardManager(StatusManager statusManager) : ISubscriber
 
         for (i = 1; i < rows - 1; i++)
         {
-            _statusManager.Create(new(i, 0, WallBlockSymbol, BoardColor));
+            _statusManager.Create(new(i, 0, SpaceBlockSymbol));
             _statusManager.CreateRange(i, (1, columns - 1), SpaceBlockSymbol, BoardColor);
-            _statusManager.Create(new(i, columns - 1, WallBlockSymbol, BoardColor));
+            _statusManager.Create(new(i, columns - 1, SpaceBlockSymbol));
         }
 
         for (j = 0; j < columns; j++)

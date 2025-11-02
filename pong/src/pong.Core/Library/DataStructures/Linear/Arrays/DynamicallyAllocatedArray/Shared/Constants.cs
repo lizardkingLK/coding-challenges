@@ -6,7 +6,7 @@ public static class Constants
     public const float SHRINK_FACTOR = .3f;
     public const float GROWTH_FACTOR = .7f;
     public const string ErrorInvalidCapacity = "error. cannot create. invalid capacity";
-    public const string ErrorListEmpty = "error. cannot remove. list is empty";
-    public const string ErrorInvalidIndex = "error. cannot insert. invalid index";
-    public const string ErrorItemDoesNotExist = "error. cannot remove. item does not exist";
+    public const string ErrorListEmpty = "error. cannot modify. list is empty";
+    public const string ErrorInvalidIndex = "error. cannot create. invalid index";
+    public const string ErrorItemDoesNotExist = "error. cannot modify. item does not exist";
 }

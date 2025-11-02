@@ -10,10 +10,14 @@ namespace pong.Core.State.Assets;
 public class BallManager(StatusManager statusManager) : ISubscriber
 {
     private readonly StatusManager _statusManager = statusManager;
+
     private readonly ConsoleColor _ballColor = ConsoleColor.Red;
+
     private HorizontalDirectionEnum _xDirection;
     private VerticalDirectionEnum _yDirection;
+
     private (int, int) _dimensions;
+
     private Block? _previous;
 
     public record BallMoveNotification : INotification;
@@ -30,11 +34,27 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         _statusManager.Update(_previous);
     }
 
+    private void Reset()
+    {
+        (int y, int x, _, _) = _previous!;
+        _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
+        Block cleared = new(y, x, symbol, color);
+
+        _dimensions = (_statusManager.Height, _statusManager.Width);
+        InitializeBallPosition(_dimensions, out y, out x);
+        InitializeDirections((y, x), _dimensions, ref _yDirection, ref _xDirection);
+        _previous = new(y, x, BallBlockSymbol, _ballColor);
+
+        _statusManager.Update(cleared);
+        _statusManager.Update(_previous);
+    }
+
     private void Move()
     {
         (int y, int x, _, _) = _previous!;
-        char symbol = x == _statusManager.Width / 2 ? NetBlockSymbol : SpaceBlockSymbol;
-        Block cleared = new(y, x, symbol);
+        _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
+
+        Block cleared = new(y, x, symbol, color);
 
         object[] directions = [_yDirection, _xDirection];
         GetNextBallPosition(
@@ -64,6 +84,9 @@ public class BallManager(StatusManager statusManager) : ISubscriber
             case GameManager.GameCreateNotification:
                 Create();
                 break;
+            case GameManager.GameRoundEndNotification:
+                Reset();
+                break;
             case BallMoveNotification:
                 Move();
                 break;
@@ -76,7 +99,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
     }
 
-    private static void GetNextBallPosition(
+    private void GetNextBallPosition(
         in (int, int) dimensions,
         in (int, int) cordinates,
         in object[] directions,
@@ -84,9 +107,16 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
         (int y, int x) = cordinates;
         GetInCordinates(directions, ref y, ref x);
-        if (y)
+        if (!_statusManager.Validate(y, x, out PlayerSideEnum? playerSide))
         {
-            // TODO: check if lost (out of racket) or point (racket hit)
+            nextCordinates = (y, x);
+            _statusManager.EndRound();
+            return;
+        }
+
+        if (playerSide != null)
+        {
+            _statusManager.ScorePoint(playerSide.Value);
         }
 
         GetOutCordinates(dimensions, directions, (y, x), out nextCordinates);
@@ -140,7 +170,6 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         if (yDirection == VerticalDirectionEnum.Down)
         {
             y++;
-
         }
         else
         {

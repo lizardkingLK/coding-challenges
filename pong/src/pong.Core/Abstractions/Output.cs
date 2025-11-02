@@ -8,6 +8,7 @@ public abstract record Output(GameManager GameManager)
 {
     public int Height { get; set; }
     public int Width { get; set; }
+
     public void Draw(DynamicallyAllocatedArray<DynamicallyAllocatedArray<Block>> mapGrid)
     {
         foreach (DynamicallyAllocatedArray<Block> mapRow in mapGrid.NonNullValues)
@@ -18,8 +19,10 @@ public abstract record Output(GameManager GameManager)
             }
         }
     }
-    
+
     public abstract void Draw(
         Block block,
         DynamicallyAllocatedArray<DynamicallyAllocatedArray<Block>> mapGrid);
+
+    public abstract void Draw(Position position, string content, ConsoleColor color);
 }

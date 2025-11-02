@@ -26,6 +26,15 @@ public record ConsoleOutput : Output
         WriteSymbolAt(top, left, symbol, color);
     }
 
+    public override void Draw(Position position, string content, ConsoleColor color)
+    {
+        (int y, int x) = position;
+        foreach (char value in content)
+        {
+            WriteSymbolAt(y, x++, value, color);
+        }
+    }
+
     private void ListenOnResize()
     {
         while (ListenToResize(out int height, out int width))
