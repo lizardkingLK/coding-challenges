@@ -3,11 +3,10 @@ namespace pong.Core.Shared;
 public static class Constants
 {
     public const int DefaultSpeed = 2;
-    public const int BallMoveInterval = 50;
+    public const int BallMoveInterval = 20;
     public const int BallSpawnTimeout = 500;
-    public const int CPUWaitTimeout = 200;
+    public const int CPUWaitTimeout = 100;
     public const int GameEndTimeout = 5000;
-
 
     public const char NetBlockSymbol = '|';
     public const char SpaceBlockSymbol = ' ';
