@@ -1,8 +1,11 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using pong.Core.State.Assets;
 using pong.Core.State.Game;
+using pong.Core.State.Misc;
 using pong.Core.State.Outputs;
+using pong.Core.State.Players;
 using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Handlers;
@@ -12,17 +15,21 @@ public record StatusManager : Status, ISubscriber
     private readonly Output _output;
 
     private readonly GameManager _gameManager;
+    private readonly Arguments _arguments;
     private readonly ScoreManager _scoreManager;
 
-    private readonly INotification _roundEndNotification;
-    private readonly INotification _gameEndNotification;
+    private readonly EnemyPlayer _enemyPlayer;
+    private readonly InputPlayer _inputPlayer;
+
+    public Block? ball;
 
     public int Height => _output.Height;
     public int Width => _output.Width;
 
-    public StatusManager(GameManager gameManager)
+    public StatusManager(GameManager gameManager, Arguments arguments)
     {
         _gameManager = gameManager;
+        _arguments = arguments;
         _output = new ConsoleOutput(gameManager);
         _scoreManager = new(_output);
 
@@ -30,8 +37,8 @@ public record StatusManager : Status, ISubscriber
         [.. Enumerable.Range(0, _output.Height).Select(_
             => new DynamicallyAllocatedArray<Block>(_output.Width))]);
 
-        _roundEndNotification = new GameManager.GameRoundEndNotification();
-        _gameEndNotification = new GameManager.GameEndNotification();
+        _enemyPlayer = new(gameManager);
+        _inputPlayer = new(gameManager);
     }
 
     public void Update(Block block)
@@ -55,27 +62,32 @@ public record StatusManager : Status, ISubscriber
         {
             case GameManager.GameCreateNotification:
                 Output();
-                _scoreManager.Output();
+                break;
+            case GameManager.GameEndNotification:
+                Win((GameManager.GameEndNotification)notification);
+                break;
+            case BallManager.BallMoveNotification:
+                _enemyPlayer.Move((BallManager.BallMoveNotification)notification);
                 break;
             default:
                 break;
         }
     }
 
-    public bool Validate(int y, int x, out PlayerSideEnum? playerSide)
+    public MoveTypeEnum Validate(int y, int x, out PlayerSideEnum? playerSide)
     {
         playerSide = default;
 
         bool isAtSides = x == 0 || x == Width - 1;
         if (!isAtSides)
         {
-            return true;
+            return MoveTypeEnum.BallMoving;
         }
 
         bool isTermination = MapGrid![y]![x]!.Symbol == SpaceBlockSymbol;
-        if (isTermination)
+        if (!isTermination)
         {
-            return false;
+            return MoveTypeEnum.RacketHits;
         }
 
         playerSide = PlayerSideEnum.PlayerLeft;
@@ -84,14 +96,14 @@ public record StatusManager : Status, ISubscriber
             playerSide = PlayerSideEnum.PlayerRight;
         }
 
-        return true;
+        return MoveTypeEnum.PointScored;
     }
 
     public void ScorePoint(PlayerSideEnum playerSide)
     {
-        if (_scoreManager.Score(playerSide) == PointsToWin)
+        if (_scoreManager.Score(playerSide) == _arguments.PointsToWin)
         {
-            _gameManager.Publish(_gameEndNotification);
+            _gameManager.Publish(new GameManager.GameEndNotification(playerSide));
         }
     }
 
@@ -111,5 +123,26 @@ public record StatusManager : Status, ISubscriber
 
     public void EndRound() => _gameManager.gameRoundEnd = true;
 
-    public override void Output() => _output.Draw(MapGrid);
+    public override void Output()
+    {
+        _output.Draw(MapGrid);
+
+        _scoreManager.Output();
+
+        Task.Run(_enemyPlayer.Play);
+        Task.Run(_inputPlayer.Play);
+    }
+
+    private void Win(GameManager.GameEndNotification notification)
+    {
+        string content = string.Format(
+            FormatGameOver,
+            notification.PlayerSide == PlayerSideEnum.PlayerLeft
+            ? Player
+            : CPU);
+        Position position = new(Height / 2, Width / 2 - content.Length / 2);
+        _output.Draw(position, content, ConsoleColor.Green);
+        Thread.Sleep(GameEndTimeout);
+        _gameManager.gameEnd = true;
+    }
 }

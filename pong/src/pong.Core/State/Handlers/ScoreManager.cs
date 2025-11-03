@@ -9,7 +9,6 @@ namespace pong.Core.State.Handlers;
 public class ScoreManager(Output output)
 {
     private const string InitialScore = "0";
-
     private readonly Output _output = output;
 
     private readonly HashMap<PlayerSideEnum, int> _scores = new(

@@ -1,8 +1,10 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
+using pong.Core.Library.DataStructures.Linear.Queues.Deque;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
 using static pong.Core.Helpers.DirectionHelper;
+using static pong.Core.Helpers.EnumHelper;
 using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
@@ -18,9 +20,11 @@ public class BallManager(StatusManager statusManager) : ISubscriber
 
     private (int, int) _dimensions;
 
-    private Block? _previous;
-
-    public record BallMoveNotification : INotification;
+    public record BallMoveNotification : INotification
+    {
+        public Position? Position { get; set; }
+        public Deque<Block>? Enemy { get; set; }
+    }
 
     private void Create()
     {
@@ -29,29 +33,29 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         InitializeBallPosition(_dimensions, out int y, out int x);
         InitializeDirections((y, x), _dimensions, ref _yDirection, ref _xDirection);
 
-        _previous = new(y, x, BallBlockSymbol, _ballColor);
+        _statusManager.ball = new(y, x, BallBlockSymbol, _ballColor);
 
-        _statusManager.Update(_previous);
+        _statusManager.Update(_statusManager.ball);
     }
 
     private void Reset()
     {
-        (int y, int x, _, _) = _previous!;
+        (int y, int x, _, _) = _statusManager.ball!;
         _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
         Block cleared = new(y, x, symbol, color);
 
         _dimensions = (_statusManager.Height, _statusManager.Width);
         InitializeBallPosition(_dimensions, out y, out x);
         InitializeDirections((y, x), _dimensions, ref _yDirection, ref _xDirection);
-        _previous = new(y, x, BallBlockSymbol, _ballColor);
+        _statusManager.ball = new(y, x, BallBlockSymbol, _ballColor);
 
         _statusManager.Update(cleared);
-        _statusManager.Update(_previous);
+        _statusManager.Update(_statusManager.ball);
     }
 
-    private void Move()
+    private void Move(BallMoveNotification notification)
     {
-        (int y, int x, _, _) = _previous!;
+        (int y, int x, _, _) = _statusManager.ball!;
         _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
 
         Block cleared = new(y, x, symbol, color);
@@ -67,10 +71,11 @@ public class BallManager(StatusManager statusManager) : ISubscriber
 
         _yDirection = (VerticalDirectionEnum)directions[0];
         _xDirection = (HorizontalDirectionEnum)directions[1];
-        _previous = new(y, x, BallBlockSymbol, _ballColor);
+        _statusManager.ball = new(y, x, BallBlockSymbol, _ballColor);
+        notification.Position = new(y, x);
 
         _statusManager.Update(cleared);
-        _statusManager.Update(_previous);
+        _statusManager.Update(_statusManager.ball);
     }
 
     public void Listen()
@@ -88,7 +93,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
                 Reset();
                 break;
             case BallMoveNotification:
-                Move();
+                Move((BallMoveNotification)notification);
                 break;
             default:
                 break;
@@ -107,16 +112,13 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
         (int y, int x) = cordinates;
         GetInCordinates(directions, ref y, ref x);
-        if (!_statusManager.Validate(y, x, out PlayerSideEnum? playerSide))
+        MoveTypeEnum outcome = _statusManager.Validate(y, x, out PlayerSideEnum? playerSide);
+        if (outcome == MoveTypeEnum.PointScored && TryNextEnum((int?)playerSide, out PlayerSideEnum nextValue))
         {
-            nextCordinates = (y, x);
+            _statusManager.ScorePoint(nextValue);
             _statusManager.EndRound();
+            nextCordinates = (y, x);
             return;
-        }
-
-        if (playerSide != null)
-        {
-            _statusManager.ScorePoint(playerSide.Value);
         }
 
         GetOutCordinates(dimensions, directions, (y, x), out nextCordinates);

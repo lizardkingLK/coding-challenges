@@ -10,7 +10,7 @@ public record GameController : Command
 
     public GameController(Arguments arguments) : base(arguments)
     {
-        _gameManager = new();
+        _gameManager = new(arguments);
     }
 
     public override void Execute()

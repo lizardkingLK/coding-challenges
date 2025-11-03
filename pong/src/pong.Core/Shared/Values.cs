@@ -15,7 +15,9 @@ public static class Values
         new("-gm", GameMode),
         new("--game-mode", GameMode),
         new("-d", Difficulty),
-        new("--difficulty", Difficulty)
+        new("--difficulty", Difficulty),
+        new("-p", PointsToWin),
+        new("--points-to-win", PointsToWin)
     );
 
     public static readonly DynamicallyAllocatedArray<string> unaryArguments = new(

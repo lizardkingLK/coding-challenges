@@ -11,8 +11,7 @@ public class InputPlayer(GameManager gameManager)
     private readonly GameManager.GamePausedNotification gamePausedNotification
     = new();
 
-    private int _speed = DefaultSpeed;
-    private VerticalDirectionEnum _previousDirection;
+    private readonly int _speed = DefaultSpeed;
 
     public void Play()
     {
@@ -35,17 +34,13 @@ public class InputPlayer(GameManager gameManager)
 
             if (consoleKey == ConsoleKey.UpArrow || consoleKey == ConsoleKey.K)
             {
-                _speed = _previousDirection == VerticalDirectionEnum.Up ? _speed + 1 : 1;
                 _gameManager.Publish(new RacketManager.RacketMoveNotification
                 (VerticalDirectionEnum.Up, PlayerSideEnum.PlayerLeft, _speed));
-                _previousDirection = VerticalDirectionEnum.Up;
             }
             else if (consoleKey == ConsoleKey.DownArrow || consoleKey == ConsoleKey.J)
             {
-                _speed = _previousDirection == VerticalDirectionEnum.Down ? _speed + 1 : 1;
                 _gameManager.Publish(new RacketManager.RacketMoveNotification
                 (VerticalDirectionEnum.Down, PlayerSideEnum.PlayerLeft, _speed));
-                _previousDirection = VerticalDirectionEnum.Down;
             }
         }
     }

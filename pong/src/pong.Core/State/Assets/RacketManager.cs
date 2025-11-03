@@ -76,11 +76,11 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
             case GameManager.GameCreateNotification:
                 Create();
                 break;
-            case GameManager.GameRoundEndNotification:
-                
-                break;
             case RacketMoveNotification:
                 Move((RacketMoveNotification)notification);
+                break;
+            case BallManager.BallMoveNotification:
+                Update((BallManager.BallMoveNotification)notification);
                 break;
             default:
                 break;
@@ -182,5 +182,10 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
     {
         _leftRacket = new();
         _rightRacket = new();
+    }
+
+    private void Update(BallManager.BallMoveNotification notification)
+    {
+        notification.Enemy = _rightRacket;
     }
 }
