@@ -63,9 +63,6 @@ public record StatusManager : Status, ISubscriber
             case GameManager.GameCreateNotification:
                 Output();
                 break;
-            case GameManager.GameEndNotification:
-                Win((GameManager.GameEndNotification)notification);
-                break;
             case BallManager.BallMoveNotification:
                 _enemyPlayer.Move((BallManager.BallMoveNotification)notification);
                 break;
@@ -99,12 +96,9 @@ public record StatusManager : Status, ISubscriber
         return MoveTypeEnum.PointScored;
     }
 
-    public void ScorePoint(PlayerSideEnum playerSide)
+    public bool ScorePoint(PlayerSideEnum playerSide)
     {
-        if (_scoreManager.Score(playerSide) == _arguments.PointsToWin)
-        {
-            _gameManager.Publish(new GameManager.GameEndNotification(playerSide));
-        }
+        return _scoreManager.Score(playerSide) == _arguments.PointsToWin;
     }
 
     public void GetBlock(int x, out char symbol, out ConsoleColor color)
@@ -133,16 +127,18 @@ public record StatusManager : Status, ISubscriber
         Task.Run(_inputPlayer.Play);
     }
 
-    private void Win(GameManager.GameEndNotification notification)
+    public void Win(PlayerSideEnum playerSide)
     {
         string content = string.Format(
             FormatGameOver,
-            notification.PlayerSide == PlayerSideEnum.PlayerLeft
+            playerSide == PlayerSideEnum.PlayerLeft
             ? Player
             : CPU);
         Position position = new(Height / 2, Width / 2 - content.Length / 2);
         _output.Draw(position, content, ConsoleColor.Green);
         Thread.Sleep(GameEndTimeout);
+
+        _output.Clear();
         _gameManager.gameEnd = true;
     }
 }

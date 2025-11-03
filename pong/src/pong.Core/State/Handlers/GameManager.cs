@@ -16,7 +16,6 @@ public record GameManager : IPublisher
     public record GamePausedNotification : INotification;
     public record GameCreateNotification : INotification;
     public record GameRoundEndNotification : INotification;
-    public record GameEndNotification(PlayerSideEnum PlayerSide) : INotification;
 
     public DynamicallyAllocatedArray<ISubscriber> Subscribers { get; } = new();
 

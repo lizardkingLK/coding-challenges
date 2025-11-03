@@ -17,6 +17,8 @@ public record ConsoleOutput : Output
         Task.Run(ListenOnResize);
     }
 
+    public override void Clear() => ClearConsole();
+
     public override void Draw(
         Block block,
         DynamicallyAllocatedArray<DynamicallyAllocatedArray<Block>>? mapGrid = null)

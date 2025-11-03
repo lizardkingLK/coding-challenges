@@ -25,4 +25,6 @@ public abstract record Output(GameManager GameManager)
         DynamicallyAllocatedArray<DynamicallyAllocatedArray<Block>> mapGrid);
 
     public abstract void Draw(Position position, string content, ConsoleColor color);
+
+    public abstract void Clear();
 }

@@ -3,12 +3,12 @@ using pong.Core.Enums;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.State.Game;
 using static pong.Core.Enums.PlayerSideEnum;
+using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Handlers;
 
 public class ScoreManager(Output output)
 {
-    private const string InitialScore = "0";
     private readonly Output _output = output;
 
     private readonly HashMap<PlayerSideEnum, int> _scores = new(
@@ -20,6 +20,7 @@ public class ScoreManager(Output output)
            new(PlayerRight, new(0, 3 * output.Width / 4)));
 
     private readonly ConsoleColor _scoreColor = ConsoleColor.Cyan;
+    private readonly ConsoleColor _playerColor = ConsoleColor.DarkCyan;
 
     public int Score(PlayerSideEnum playerSide)
     {
@@ -31,6 +32,9 @@ public class ScoreManager(Output output)
 
     public void Output()
     {
+        _output.Draw(new Position(_output.Height - 1, _output.Width / 4), Player, _playerColor);
+        _output.Draw(new Position(_output.Height - 1, 3 * _output.Width / 4), CPU, _playerColor);
+
         _output.Draw(_positions[PlayerLeft], InitialScore, _scoreColor);
         _output.Draw(_positions[PlayerRight], InitialScore, _scoreColor);
     }

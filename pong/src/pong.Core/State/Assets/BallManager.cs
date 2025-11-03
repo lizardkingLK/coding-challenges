@@ -61,7 +61,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         Block cleared = new(y, x, symbol, color);
 
         object[] directions = [_yDirection, _xDirection];
-        GetNextBallPosition(
+        (bool hasWon, PlayerSideEnum? playerSide) = GetNextBallPosition(
             _dimensions,
             (y, x),
             directions,
@@ -76,6 +76,11 @@ public class BallManager(StatusManager statusManager) : ISubscriber
 
         _statusManager.Update(cleared);
         _statusManager.Update(_statusManager.ball);
+
+        if (hasWon)
+        {
+            _statusManager.Win(playerSide!.Value);
+        }
     }
 
     public void Listen()
@@ -104,7 +109,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
     }
 
-    private void GetNextBallPosition(
+    private (bool, PlayerSideEnum?) GetNextBallPosition(
         in (int, int) dimensions,
         in (int, int) cordinates,
         in object[] directions,
@@ -113,15 +118,17 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         (int y, int x) = cordinates;
         GetInCordinates(directions, ref y, ref x);
         MoveTypeEnum outcome = _statusManager.Validate(y, x, out PlayerSideEnum? playerSide);
-        if (outcome == MoveTypeEnum.PointScored && TryNextEnum((int?)playerSide, out PlayerSideEnum nextValue))
+        if (outcome == MoveTypeEnum.PointScored && TryNextEnum((int?)playerSide, out PlayerSideEnum winningSide))
         {
-            _statusManager.ScorePoint(nextValue);
+            bool hasWon = _statusManager.ScorePoint(winningSide);
             _statusManager.EndRound();
             nextCordinates = (y, x);
-            return;
+            return (hasWon, winningSide);
         }
 
         GetOutCordinates(dimensions, directions, (y, x), out nextCordinates);
+
+        return (false, null);
     }
 
     private static void GetOutCordinates(

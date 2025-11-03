@@ -1,7 +1,8 @@
-using pong.Core.Library.DataStructures.Linear.Queues.Deque;
+using pong.Core.Enums;
 using pong.Core.State.Assets;
-using pong.Core.State.Game;
 using pong.Core.State.Handlers;
+using static pong.Core.Helpers.DistanceHelper;
+using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Players;
 
@@ -13,8 +14,10 @@ public class EnemyPlayer(GameManager gameManager)
 
     public void Play()
     {
-        Position position;
-        Deque<Block> player;
+        int ballTop;
+        int playerTop;
+        int playerBottom;
+        VerticalDirectionEnum direction;
         while (true)
         {
             if (_ballMoveNotification == null)
@@ -22,23 +25,17 @@ public class EnemyPlayer(GameManager gameManager)
                 continue;
             }
 
-            position = _ballMoveNotification.Position!.Value;
-            player = _ballMoveNotification.Enemy!;
-            Console.WriteLine((position.Top, player.Head!.Value.Top, player.Tail!.Value.Top));
-            Thread.Sleep(200);
+            ballTop = _ballMoveNotification.Position!.Value.Top;
+            playerTop = _ballMoveNotification.Enemy!.Head!.Value.Top;
+            playerBottom = _ballMoveNotification.Enemy!.Tail!.Value.Top;
 
-            // if (consoleKey == ConsoleKey.UpArrow || consoleKey == ConsoleKey.K)
-            // {
-            //     _gameManager.Publish(new RacketManager.RacketMoveNotification
-            //     (VerticalDirectionEnum.Up, PlayerSideEnum.PlayerLeft, _speed));
-            // }
-            // else if (consoleKey == ConsoleKey.DownArrow || consoleKey == ConsoleKey.J)
-            // {
-            //     _gameManager.Publish(new RacketManager.RacketMoveNotification
-            //     (VerticalDirectionEnum.Down, PlayerSideEnum.PlayerLeft, _speed));
-            // }
+            direction = GetShorterDistance(ballTop - playerTop, ballTop - playerBottom, out int distance);
+            _gameManager.Publish(new RacketManager.RacketMoveNotification
+            (direction, PlayerSideEnum.PlayerRight, distance));
 
             _ballMoveNotification = null;
+
+            Thread.Sleep(CPUWaitTimeout);
         }
     }
 
