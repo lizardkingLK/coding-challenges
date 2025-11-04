@@ -15,7 +15,7 @@ public record DifficultyValidator(
 {
     public override Result<Arguments> Validate()
     {
-        if (!ArgumentsMap.TryGet(ArgumentTypeEnum.Difficulty, out string? value))
+        if (!ArgumentsMap.TryGet(ArgumentTypeEnum.DifficultyLevel, out string? value))
         {
             return Next?.Validate() ?? new(Arguments);
         }

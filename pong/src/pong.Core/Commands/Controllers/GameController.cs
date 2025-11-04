@@ -1,4 +1,5 @@
 using pong.Core.Abstractions;
+using pong.Core.Builder;
 using pong.Core.State.Handlers;
 using pong.Core.State.Misc;
 
@@ -10,7 +11,7 @@ public record GameController : Command
 
     public GameController(Arguments arguments) : base(arguments)
     {
-        _gameManager = new(arguments);
+        _gameManager = new GameBuilder(arguments).Create();
     }
 
     public override void Execute()

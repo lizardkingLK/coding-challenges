@@ -1,6 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Queues.Deque;
+using pong.Core.Notifications;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
 using static pong.Core.Shared.Constants;
@@ -73,14 +74,14 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
     {
         switch (notification)
         {
-            case GameManager.GameCreateNotification:
+            case GameCreateNotification:
                 Create();
                 break;
             case RacketMoveNotification:
                 Move((RacketMoveNotification)notification);
                 break;
-            case BallManager.BallMoveNotification:
-                Update((BallManager.BallMoveNotification)notification);
+            case BallMoveNotification:
+                Update((BallMoveNotification)notification);
                 break;
             default:
                 break;
@@ -184,7 +185,7 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
         _rightRacket = new();
     }
 
-    private void Update(BallManager.BallMoveNotification notification)
+    private void Update(BallMoveNotification notification)
     {
         notification.Enemy = _rightRacket;
     }

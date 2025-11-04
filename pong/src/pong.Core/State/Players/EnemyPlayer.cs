@@ -1,8 +1,8 @@
 using pong.Core.Enums;
+using pong.Core.Notifications;
 using pong.Core.State.Assets;
 using pong.Core.State.Handlers;
 using static pong.Core.Helpers.DistanceHelper;
-using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Players;
 
@@ -10,7 +10,7 @@ public class EnemyPlayer(GameManager gameManager)
 {
     private readonly GameManager _gameManager = gameManager;
 
-    private BallManager.BallMoveNotification? _ballMoveNotification;
+    private BallMoveNotification? _ballMoveNotification;
 
     public void Play()
     {
@@ -35,11 +35,11 @@ public class EnemyPlayer(GameManager gameManager)
 
             _ballMoveNotification = null;
 
-            Thread.Sleep(CPUWaitTimeout);
+            Thread.Sleep(_gameManager.Difficulty.CPUWaitTimeout);
         }
     }
 
-    public void Move(BallManager.BallMoveNotification notification)
+    public void Move(BallMoveNotification notification)
     {
         _ballMoveNotification = notification;
     }

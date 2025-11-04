@@ -1,6 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Queues.Deque;
+using pong.Core.Notifications;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
 using static pong.Core.Helpers.DirectionHelper;
@@ -19,12 +20,6 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     private VerticalDirectionEnum _yDirection;
 
     private (int, int) _dimensions;
-
-    public record BallMoveNotification : INotification
-    {
-        public Position? Position { get; set; }
-        public Deque<Block>? Enemy { get; set; }
-    }
 
     private void Create()
     {
@@ -91,10 +86,10 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
         switch (notification)
         {
-            case GameManager.GameCreateNotification:
+            case GameCreateNotification:
                 Create();
                 break;
-            case GameManager.GameRoundEndNotification:
+            case GameRoundEndNotification:
                 Reset();
                 break;
             case BallMoveNotification:

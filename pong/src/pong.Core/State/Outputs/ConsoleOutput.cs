@@ -1,5 +1,6 @@
 using pong.Core.Abstractions;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using pong.Core.Notifications;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
 using static pong.Core.Utilities.ConsoleUtility;
@@ -45,7 +46,7 @@ public record ConsoleOutput : Output
 
             GameManager.gamePaused = true;
 
-            GameManager.Publish(new GameManager.GamePausedNotification());
+            GameManager.Publish(new GamePausedNotification());
         }
     }
 }

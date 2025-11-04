@@ -1,39 +1,26 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using pong.Core.Library.DataStructures.NonLinear.HashMaps;
+using pong.Core.Notifications;
 using pong.Core.State.Assets;
 using pong.Core.State.Misc;
-using static pong.Core.Shared.Constants;
+using static pong.Core.Shared.Values;
 
 namespace pong.Core.State.Handlers;
 
 public record GameManager : IPublisher
 {
-    private readonly StatusManager _statusManager;
+    private readonly GameRoundEndNotification _gameRoundEndNotification = new();
 
-    private readonly GameRoundEndNotification _gameRoundEndNotification;
-
-    public record GamePausedNotification : INotification;
-    public record GameCreateNotification : INotification;
-    public record GameRoundEndNotification : INotification;
-
-    public DynamicallyAllocatedArray<ISubscriber> Subscribers { get; } = new();
+    public HashMap<Type, DynamicallyAllocatedArray<ISubscriber>> Subscribers { get; set; } = new();
+    public Difficulty Difficulty { get; set; } = new();
+    public GameModeEnum GameMode { get; set; }
+    public int PointsToWin { get; set; }
 
     public bool gamePaused = false;
     public bool gameEnd = false;
     public bool gameRoundEnd = false;
-
-    public GameManager(Arguments arguments)
-    {
-        _statusManager = new(this, arguments);
-
-        Subscribers.Add(new BoardManager(_statusManager));
-        Subscribers.Add(new RacketManager(_statusManager));
-        Subscribers.Add(new BallManager(_statusManager));
-        Subscribers.Add(_statusManager);
-
-        _gameRoundEndNotification = new();
-    }
 
     public bool Play()
     {
@@ -49,13 +36,13 @@ public record GameManager : IPublisher
             {
                 Publish(_gameRoundEndNotification);
                 gameRoundEnd = false;
-                Thread.Sleep(BallSpawnTimeout);
+                Thread.Sleep(Difficulty.BallSpawnTimeout);
                 continue;
             }
 
-            Publish(new BallManager.BallMoveNotification());
+            Publish(new BallMoveNotification());
 
-            Thread.Sleep(BallMoveInterval);
+            Thread.Sleep(Difficulty.BallMoveInterval);
         }
 
         return gameEnd;
@@ -63,7 +50,7 @@ public record GameManager : IPublisher
 
     public void Publish(INotification notification)
     {
-        foreach (ISubscriber? subscriber in Subscribers.Values)
+        foreach (ISubscriber? subscriber in Subscribers[notification.GetType()].Values)
         {
             subscriber?.Listen(notification);
         }

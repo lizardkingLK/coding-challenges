@@ -1,17 +1,17 @@
 using pong.Core.Enums;
+using pong.Core.Notifications;
 using pong.Core.State.Assets;
 using pong.Core.State.Handlers;
-using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Players;
 
 public class InputPlayer(GameManager gameManager)
 {
     private readonly GameManager _gameManager = gameManager;
-    private readonly GameManager.GamePausedNotification gamePausedNotification
+    private readonly GamePausedNotification gamePausedNotification
     = new();
 
-    private readonly int _speed = DefaultSpeed;
+    private readonly int _speed = gameManager.Difficulty.RacketSpeed;
 
     public void Play()
     {

@@ -1,4 +1,5 @@
 using pong.Core.Abstractions;
+using pong.Core.Notifications;
 using pong.Core.State.Handlers;
 using static pong.Core.Shared.Constants;
 
@@ -48,7 +49,7 @@ public class BoardManager(StatusManager statusManager) : ISubscriber
     {
         switch (notification)
         {
-            case GameManager.GameCreateNotification:
+            case GameCreateNotification:
                 Create();
                 break;
             default:

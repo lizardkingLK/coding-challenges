@@ -14,8 +14,8 @@ public static class Values
         new("--interactive", Interactive),
         new("-gm", GameMode),
         new("--game-mode", GameMode),
-        new("-d", Difficulty),
-        new("--difficulty", Difficulty),
+        new("-d", DifficultyLevel),
+        new("--difficulty", DifficultyLevel),
         new("-p", PointsToWin),
         new("--points-to-win", PointsToWin)
     );

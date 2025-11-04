@@ -1,6 +1,7 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using pong.Core.Notifications;
 using pong.Core.State.Assets;
 using pong.Core.State.Game;
 using pong.Core.State.Misc;
@@ -15,7 +16,6 @@ public record StatusManager : Status, ISubscriber
     private readonly Output _output;
 
     private readonly GameManager _gameManager;
-    private readonly Arguments _arguments;
     private readonly ScoreManager _scoreManager;
 
     private readonly EnemyPlayer _enemyPlayer;
@@ -26,10 +26,9 @@ public record StatusManager : Status, ISubscriber
     public int Height => _output.Height;
     public int Width => _output.Width;
 
-    public StatusManager(GameManager gameManager, Arguments arguments)
+    public StatusManager(GameManager gameManager)
     {
         _gameManager = gameManager;
-        _arguments = arguments;
         _output = new ConsoleOutput(gameManager);
         _scoreManager = new(_output);
 
@@ -60,11 +59,11 @@ public record StatusManager : Status, ISubscriber
     {
         switch (notification)
         {
-            case GameManager.GameCreateNotification:
+            case GameCreateNotification:
                 Output();
                 break;
-            case BallManager.BallMoveNotification:
-                _enemyPlayer.Move((BallManager.BallMoveNotification)notification);
+            case BallMoveNotification:
+                _enemyPlayer.Move((BallMoveNotification)notification);
                 break;
             default:
                 break;
@@ -98,7 +97,7 @@ public record StatusManager : Status, ISubscriber
 
     public bool ScorePoint(PlayerSideEnum playerSide)
     {
-        return _scoreManager.Score(playerSide) == _arguments.PointsToWin;
+        return _scoreManager.Score(playerSide) == _gameManager.PointsToWin;
     }
 
     public void GetBlock(int x, out char symbol, out ConsoleColor color)
