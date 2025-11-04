@@ -1,6 +1,5 @@
 using pong.Core.Enums;
 using pong.Core.Notifications;
-using pong.Core.State.Assets;
 using pong.Core.State.Handlers;
 using static pong.Core.Helpers.DistanceHelper;
 
@@ -30,7 +29,7 @@ public class EnemyPlayer(GameManager gameManager)
             playerBottom = _ballMoveNotification.Enemy!.Tail!.Value.Top;
 
             direction = GetShorterDistance(ballTop - playerTop, ballTop - playerBottom, out int distance);
-            _gameManager.Publish(new RacketManager.RacketMoveNotification
+            _gameManager.Publish(new RacketMoveNotification
             (direction, PlayerSideEnum.PlayerRight, distance));
 
             _ballMoveNotification = null;

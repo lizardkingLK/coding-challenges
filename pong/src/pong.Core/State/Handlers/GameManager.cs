@@ -3,9 +3,7 @@ using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.Notifications;
-using pong.Core.State.Assets;
 using pong.Core.State.Misc;
-using static pong.Core.Shared.Values;
 
 namespace pong.Core.State.Handlers;
 

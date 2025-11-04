@@ -1,6 +1,5 @@
 using pong.Core.Enums;
 using pong.Core.Notifications;
-using pong.Core.State.Assets;
 using pong.Core.State.Handlers;
 
 namespace pong.Core.State.Players;
@@ -12,6 +11,8 @@ public class InputPlayer(GameManager gameManager)
     = new();
 
     private readonly int _speed = gameManager.Difficulty.RacketSpeed;
+
+    
 
     public void Play()
     {
@@ -34,12 +35,12 @@ public class InputPlayer(GameManager gameManager)
 
             if (consoleKey == ConsoleKey.UpArrow || consoleKey == ConsoleKey.K)
             {
-                _gameManager.Publish(new RacketManager.RacketMoveNotification
+                _gameManager.Publish(new RacketMoveNotification
                 (VerticalDirectionEnum.Up, PlayerSideEnum.PlayerLeft, _speed));
             }
             else if (consoleKey == ConsoleKey.DownArrow || consoleKey == ConsoleKey.J)
             {
-                _gameManager.Publish(new RacketManager.RacketMoveNotification
+                _gameManager.Publish(new RacketMoveNotification
                 (VerticalDirectionEnum.Down, PlayerSideEnum.PlayerLeft, _speed));
             }
         }

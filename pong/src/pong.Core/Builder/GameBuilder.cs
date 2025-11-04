@@ -6,7 +6,6 @@ using pong.Core.Notifications;
 using pong.Core.State.Assets;
 using pong.Core.State.Handlers;
 using pong.Core.State.Misc;
-using static pong.Core.State.Assets.RacketManager;
 
 namespace pong.Core.Builder;
 
@@ -34,29 +33,34 @@ public class GameBuilder(Arguments arguments)
         HashMap<Type, DynamicallyAllocatedArray<ISubscriber>> subscribers = new();
         StatusManager statusManager = new(_gameManager);
         BoardManager boardManager = new(statusManager);
-        RacketManager racketManager = new(statusManager);
+        LeftRacketManager leftRacketManager = new(statusManager);
+        RightRacketManager rightRacketManager = new(statusManager);
         BallManager ballManager = new(statusManager);
 
         _gameManager.Subscribers = subscribers;
-        
+
         subscribers.Add(typeof(GamePausedNotification), new(
             boardManager,
-            racketManager,
+            leftRacketManager,
+            rightRacketManager,
             ballManager,
             statusManager));
         subscribers.Add(typeof(GameRoundEndNotification), new(
             ballManager));
         subscribers.Add(typeof(GameCreateNotification), new(
             boardManager,
-            racketManager,
+            leftRacketManager,
+            rightRacketManager,
             ballManager,
             statusManager));
         subscribers.Add(typeof(BallMoveNotification), new(
             ballManager,
-            racketManager,
+            leftRacketManager,
+            rightRacketManager,
             statusManager));
         subscribers.Add(typeof(RacketMoveNotification), new(
-            racketManager));
+            leftRacketManager,
+            rightRacketManager));
 
         _gameManager.Subscribers = subscribers;
 

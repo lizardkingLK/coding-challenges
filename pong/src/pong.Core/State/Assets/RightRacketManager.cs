@@ -8,7 +8,7 @@ using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
 
-public class RacketManager(StatusManager statusManager) : ISubscriber
+public class RightRacketManager(StatusManager statusManager) : ISubscriber
 {
     private readonly StatusManager _statusManager = statusManager;
 
@@ -21,11 +21,6 @@ public class RacketManager(StatusManager statusManager) : ISubscriber
     private Position _rightTop;
     private Position _leftBottom;
     private Position _rightBottom;
-
-    public record RacketMoveNotification(
-        VerticalDirectionEnum Direction,
-        PlayerSideEnum PlayerSide,
-        int Speed) : INotification;
 
     private void Create()
     {
