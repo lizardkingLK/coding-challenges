@@ -2,4 +2,4 @@ using pong.Core.Abstractions;
 
 namespace pong.Core.Notifications;
 
-public record GameRoundEndNotification : INotification;
+public record GameRoundEndNotification : Notification;

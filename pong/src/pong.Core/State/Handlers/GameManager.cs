@@ -1,4 +1,5 @@
 using pong.Core.Abstractions;
+using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.Notifications;
@@ -6,13 +7,14 @@ using pong.Core.State.Misc;
 
 namespace pong.Core.State.Handlers;
 
-public record GameManager : IPublisher
+public record GameManager : Publisher
 {
     private readonly GameRoundEndNotification _gameRoundEndNotification = new();
 
-    public HashMap<Type, DynamicallyAllocatedArray<ISubscriber>> Subscribers { get; set; } = new();
+    public override HashMap<Type, DynamicallyAllocatedArray<Subscriber>> Subscribers { get; set; } = new();
     public Difficulty Difficulty { get; set; } = new();
     public int PointsToWin { get; set; }
+    public GameModeEnum GameMode { get; internal set; }
 
     public bool gamePaused = true;
     public bool gameEnd = false;
@@ -44,15 +46,11 @@ public record GameManager : IPublisher
         return gameEnd;
     }
 
-    public void Publish(INotification notification)
+    public override void Publish(Notification notification)
     {
-        foreach (ISubscriber? subscriber in Subscribers[notification.GetType()].Values)
+        foreach (Subscriber? subscriber in Subscribers[notification.GetType()].Values)
         {
             subscriber?.Listen(notification);
         }
-    }
-
-    public void Publish()
-    {
     }
 }

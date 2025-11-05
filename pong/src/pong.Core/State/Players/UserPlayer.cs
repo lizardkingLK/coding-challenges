@@ -1,20 +1,25 @@
+using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Notifications;
 using pong.Core.State.Handlers;
 
 namespace pong.Core.State.Players;
 
-public class InputPlayer(GameManager gameManager)
+public record UserPlayer : Input
 {
-    private readonly GameManager _gameManager = gameManager;
-    private readonly GamePausedNotification gamePausedNotification
-    = new();
+    private readonly GameManager _gameManager;
+    private readonly GamePausedNotification gamePausedNotification;
 
-    private readonly int _speed = gameManager.Difficulty.RacketSpeed;
+    private readonly int _speed;
 
-    
+    public UserPlayer(GameManager GameManager)
+    {
+        _gameManager = GameManager;
+        _speed = _gameManager.Difficulty.RacketSpeed;
+        gamePausedNotification = new();
+    }
 
-    public void Play()
+    public override void Play()
     {
         ConsoleKeyInfo key;
         while (true)

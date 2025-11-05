@@ -1,3 +1,4 @@
+using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Notifications;
 using pong.Core.State.Handlers;
@@ -5,13 +6,13 @@ using static pong.Core.Helpers.DistanceHelper;
 
 namespace pong.Core.State.Players;
 
-public class EnemyPlayer(GameManager gameManager)
+public record EnemyPlayer(GameManager GameManager) : Input
 {
-    private readonly GameManager _gameManager = gameManager;
+    private readonly GameManager _gameManager = GameManager;
 
     private BallMoveNotification? _ballMoveNotification;
 
-    public void Play()
+    public override void Play()
     {
         int ballTop;
         int playerTop;

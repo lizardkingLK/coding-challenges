@@ -20,8 +20,16 @@ public class GameBuilder(Arguments arguments)
         return WithDifficulty()
         .WithSubscribers()
         .WithPointsToWin()
+        .WithGameMode()
         .WithPlayerSide()
         .Build();
+    }
+
+    private GameBuilder WithGameMode()
+    {
+        _gameManager.GameMode = _arguments.GameMode;
+
+        return this;
     }
 
     private GameBuilder WithPlayerSide()
@@ -40,7 +48,7 @@ public class GameBuilder(Arguments arguments)
 
     private GameBuilder WithSubscribers()
     {
-        HashMap<Type, DynamicallyAllocatedArray<ISubscriber>> subscribers = new();
+        HashMap<Type, DynamicallyAllocatedArray<Subscriber>> subscribers = new();
         StatusManager statusManager = new(_gameManager);
         BoardManager boardManager = new(statusManager);
         LeftRacketManager leftRacketManager = new(statusManager);
@@ -66,8 +74,7 @@ public class GameBuilder(Arguments arguments)
         subscribers.Add(typeof(BallMoveNotification), new(
             ballManager,
             leftRacketManager,
-            rightRacketManager,
-            statusManager));
+            rightRacketManager));
         subscribers.Add(typeof(RacketMoveNotification), new(
             leftRacketManager,
             rightRacketManager));

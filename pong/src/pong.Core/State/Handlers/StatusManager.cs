@@ -9,15 +9,16 @@ using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Handlers;
 
-public record StatusManager : Status, ISubscriber
+public record StatusManager : Status
 {
     private readonly Output _output;
 
-    private readonly GameManager _gameManager;
     private readonly ScoreManager _scoreManager;
 
+    private readonly GameManager _gameManager;
+
+    private readonly UserPlayer _userPlayer;
     private readonly EnemyPlayer _enemyPlayer;
-    private readonly InputPlayer _inputPlayer;
 
     public Block? ball;
 
@@ -27,15 +28,15 @@ public record StatusManager : Status, ISubscriber
     public StatusManager(GameManager gameManager)
     {
         _gameManager = gameManager;
-        _output = new ConsoleOutput(gameManager);
+        _output = new ConsoleOutput(_gameManager);
         _scoreManager = new(_output);
+
+        _userPlayer = new(_gameManager);
+        _enemyPlayer = new(_gameManager);
 
         MapGrid = new(values:
         [.. Enumerable.Range(0, _output.Height).Select(_
             => new DynamicallyAllocatedArray<Block>(_output.Width))]);
-
-        _enemyPlayer = new(gameManager);
-        _inputPlayer = new(gameManager);
     }
 
     public void Map(Block block)
@@ -50,23 +51,12 @@ public record StatusManager : Status, ISubscriber
         _output.Draw(block, MapGrid);
     }
 
-    public void Subscribe()
-    {
-    }
-
-    public void Listen()
-    {
-    }
-
-    public void Listen(INotification notification)
+    public override void Listen(Notification notification)
     {
         switch (notification)
         {
             case GameCreateNotification:
                 Output();
-                break;
-            case BallMoveNotification:
-                _enemyPlayer.Move((BallMoveNotification)notification);
                 break;
             default:
                 break;
@@ -124,9 +114,6 @@ public record StatusManager : Status, ISubscriber
         _output.Draw(MapGrid);
 
         _scoreManager.Output();
-
-        Task.Run(_enemyPlayer.Play);
-        Task.Run(_inputPlayer.Play);
     }
 
     public void Win(PlayerSideEnum playerSide)
@@ -142,5 +129,17 @@ public record StatusManager : Status, ISubscriber
 
         _output.Clear();
         _gameManager.gameEnd = true;
+    }
+
+    public Input GetInput(PlayerSideEnum playerSide)
+    {
+        if (playerSide == PlayerSideEnum.PlayerLeft)
+        {
+            return _userPlayer;
+        }
+        else
+        {
+            return _enemyPlayer;
+        }
     }
 }

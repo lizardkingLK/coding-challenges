@@ -8,16 +8,26 @@ using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
 
-public class RightRacketManager(StatusManager statusManager) : ISubscriber
+public record RightRacketManager : Subscriber
 {
-    private readonly StatusManager _statusManager = statusManager;
+    private readonly StatusManager _statusManager;
 
-    private readonly ConsoleColor _racketColor = ConsoleColor.Cyan;
+    private readonly ConsoleColor _racketColor;
 
-    private readonly Deque<Block> _player = new();
+    private readonly Deque<Block> _player;
 
     private Position _rightTop;
     private Position _rightBottom;
+
+    private readonly Input _input;
+
+    public RightRacketManager(StatusManager statusManager)
+    {
+        _statusManager = statusManager;
+        _racketColor = ConsoleColor.Cyan;
+        _player = new();
+        _input = _statusManager.GetInput(PlayerSideEnum.PlayerRight);
+    }
 
     private void Create()
     {
@@ -36,6 +46,8 @@ public class RightRacketManager(StatusManager statusManager) : ISubscriber
 
             yOffset++;
         }
+
+        Task.Run(_input.Play);
     }
 
     private void Move(RacketMoveNotification racketMove)
@@ -52,11 +64,7 @@ public class RightRacketManager(StatusManager statusManager) : ISubscriber
         }
     }
 
-    public void Listen()
-    {
-    }
-
-    public void Listen(INotification notification)
+    public override void Listen(Notification notification)
     {
         switch (notification)
         {
@@ -69,10 +77,6 @@ public class RightRacketManager(StatusManager statusManager) : ISubscriber
             default:
                 break;
         }
-    }
-
-    public void Subscribe()
-    {
     }
 
     private Action<int> GetMovementAction(VerticalDirectionEnum direction)

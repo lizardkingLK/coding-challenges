@@ -5,10 +5,10 @@ using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
 
-public class BoardManager(StatusManager statusManager) : ISubscriber
+public record BoardManager(StatusManager StatusManager) : Subscriber
 {
     private const ConsoleColor BoardColor = ConsoleColor.Yellow;
-    private readonly StatusManager _statusManager = statusManager;
+    private readonly StatusManager _statusManager = StatusManager;
 
     private void Create()
     {
@@ -41,11 +41,7 @@ public class BoardManager(StatusManager statusManager) : ISubscriber
         }
     }
 
-    public void Listen()
-    {
-    }
-
-    public void Listen(INotification notification)
+    public override void Listen(Notification notification)
     {
         switch (notification)
         {
@@ -57,7 +53,4 @@ public class BoardManager(StatusManager statusManager) : ISubscriber
         }
     }
 
-    public void Subscribe()
-    {
-    }
 }

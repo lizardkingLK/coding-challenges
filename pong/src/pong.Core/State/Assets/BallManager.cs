@@ -1,6 +1,5 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
-using pong.Core.Library.DataStructures.Linear.Queues.Deque;
 using pong.Core.Notifications;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
@@ -10,9 +9,9 @@ using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
 
-public class BallManager(StatusManager statusManager) : ISubscriber
+public record BallManager(StatusManager StatusManager) : Subscriber
 {
-    private readonly StatusManager _statusManager = statusManager;
+    private readonly StatusManager _statusManager = StatusManager;
 
     private readonly ConsoleColor _ballColor = ConsoleColor.Red;
 
@@ -78,11 +77,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         }
     }
 
-    public void Listen()
-    {
-    }
-
-    public void Listen(INotification notification)
+    public override void Listen(Notification notification)
     {
         switch (notification)
         {
@@ -100,9 +95,6 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         }
     }
 
-    public void Subscribe()
-    {
-    }
 
     private (bool, PlayerSideEnum?) GetNextBallPosition(
         in (int, int) dimensions,

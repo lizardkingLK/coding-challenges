@@ -1,3 +1,4 @@
+using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
@@ -17,10 +18,8 @@ public static class Values
         new("-d", DifficultyLevel),
         new("--difficulty", DifficultyLevel),
         new("-p", PointsToWin),
-        new("--points-to-win", PointsToWin)
-    );
+        new("--points-to-win", PointsToWin));
 
     public static readonly DynamicallyAllocatedArray<string> unaryArguments = new(
-        "-h", "--help", "-it", "--interactive"
-    );
+        "-h", "--help", "-it", "--interactive");
 }
