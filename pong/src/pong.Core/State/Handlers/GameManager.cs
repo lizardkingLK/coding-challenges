@@ -1,5 +1,4 @@
 using pong.Core.Abstractions;
-using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using pong.Core.Library.DataStructures.NonLinear.HashMaps;
 using pong.Core.Notifications;
@@ -13,10 +12,9 @@ public record GameManager : IPublisher
 
     public HashMap<Type, DynamicallyAllocatedArray<ISubscriber>> Subscribers { get; set; } = new();
     public Difficulty Difficulty { get; set; } = new();
-    public GameModeEnum GameMode { get; set; }
     public int PointsToWin { get; set; }
 
-    public bool gamePaused = false;
+    public bool gamePaused = true;
     public bool gameEnd = false;
     public bool gameRoundEnd = false;
 

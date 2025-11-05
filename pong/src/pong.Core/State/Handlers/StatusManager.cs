@@ -2,9 +2,7 @@ using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using pong.Core.Notifications;
-using pong.Core.State.Assets;
 using pong.Core.State.Game;
-using pong.Core.State.Misc;
 using pong.Core.State.Outputs;
 using pong.Core.State.Players;
 using static pong.Core.Shared.Constants;
@@ -38,6 +36,11 @@ public record StatusManager : Status, ISubscriber
 
         _enemyPlayer = new(gameManager);
         _inputPlayer = new(gameManager);
+    }
+
+    public void Map(Block block)
+    {
+        MapGrid[block.Top]![block.Left] = block;
     }
 
     public void Update(Block block)

@@ -17,8 +17,18 @@ public class GameBuilder(Arguments arguments)
 
     public GameManager Create()
     {
-        // TODO: when ball moves enemy racket should listen
-        return WithDifficulty().WithSubscribers().WithPointsToWin().Build();
+        return WithDifficulty()
+        .WithSubscribers()
+        .WithPointsToWin()
+        .WithPlayerSide()
+        .Build();
+    }
+
+    private GameBuilder WithPlayerSide()
+    {
+        // TODO: add player side options
+
+        return this;
     }
 
     private GameBuilder WithPointsToWin()

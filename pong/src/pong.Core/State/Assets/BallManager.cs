@@ -30,7 +30,7 @@ public class BallManager(StatusManager statusManager) : ISubscriber
 
         _statusManager.ball = new(y, x, BallBlockSymbol, _ballColor);
 
-        _statusManager.Update(_statusManager.ball);
+        _statusManager.Map(_statusManager.ball);
     }
 
     private void Reset()
