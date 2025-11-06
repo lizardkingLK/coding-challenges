@@ -32,6 +32,8 @@ public record StatusManager : Status
             => new DynamicallyAllocatedArray<Block>(_output.Width))]);
     }
 
+    public void Label(string[] labels) => _scoreManager.Label(labels);
+
     public void Map(Block block)
     {
         MapGrid[block.Top]![block.Left] = block;
@@ -111,16 +113,12 @@ public record StatusManager : Status
 
     public void Win(PlayerSideEnum playerSide)
     {
-        string content = string.Format(
-            FormatGameOver,
-            playerSide == PlayerSideEnum.PlayerLeft
-            ? Player
-            : CPU);
-        Position position = new(Height / 2, Width / 2 - content.Length / 2);
-        _output.Draw(position, content, ConsoleColor.Green);
+        _scoreManager.Win(playerSide);
         Thread.Sleep(GameEndTimeout);
 
-        _output.Clear();
         _gameManager.gameEnd = true;
+        _output.Finish();
     }
+
+    public int GetDistanceThreshold() => _gameManager.Difficulty!.DistanceThreshold;
 }

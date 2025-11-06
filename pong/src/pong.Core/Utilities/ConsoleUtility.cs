@@ -10,8 +10,19 @@ public static class ConsoleUtility
 
     static ConsoleUtility()
     {
+        CancelKeyPress += (sender, _) => ResetConsole();
+    }
+
+    public static void InitializeConsole()
+    {
+        Clear();
         CursorVisible = false;
-        CancelKeyPress += (sender, _) => Clear();
+    }
+
+    public static void ResetConsole()
+    {
+        Clear();
+        CursorVisible = true;
     }
 
     public static void ClearConsole() => Clear();

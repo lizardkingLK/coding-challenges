@@ -16,10 +16,12 @@ public record RightRacketManager : Racket
 
     private readonly Deque<Block> _playerBody;
 
+    private readonly Input _player;
+
     private Position _rightTop;
     private Position _rightBottom;
 
-    private readonly Input _player;
+    private int _distanceThreshold;
 
     public RightRacketManager(StatusManager statusManager, Input player)
     {
@@ -33,6 +35,7 @@ public record RightRacketManager : Racket
     {
         _rightTop = new(1, _statusManager.Width - 1);
         _rightBottom = new(_statusManager.Height - 2, _statusManager.Width - 1);
+        _distanceThreshold = _statusManager.GetDistanceThreshold();
 
         int racketLength = (_statusManager.Height - 2) / 3;
         int yOffset = (_statusManager.Height / 2) - (racketLength / 2);
@@ -53,11 +56,11 @@ public record RightRacketManager : Racket
         racketMove.Deconstruct(
             out VerticalDirectionEnum direction,
             out _,
-            out int speed,
-            out bool shouldBlock);
+            out int distance,
+            out bool useThreshold);
 
         Action<int> Movement = GetMovementAction(direction);
-        for (int i = speed; i > 0; i--)
+        for (int i = useThreshold ? distance + _distanceThreshold : distance; i > 0; i--)
         {
             Movement(i);
         }
@@ -88,7 +91,7 @@ public record RightRacketManager : Racket
         _ => MovePlayerDownIfSatisfies
     };
 
-    public override void MovePlayerUpIfSatisfies(int speed)
+    public override void MovePlayerUpIfSatisfies(int distance)
     {
         Block _playerBodyHeadBlock = _playerBody.Head!.Value;
         bool canProceedWithMove = _rightTop.Top != _playerBodyHeadBlock.Top;
@@ -110,7 +113,7 @@ public record RightRacketManager : Racket
         _statusManager.Update(removedBlock);
     }
 
-    public override void MovePlayerDownIfSatisfies(int speed)
+    public override void MovePlayerDownIfSatisfies(int distance)
     {
         Block _playerBodyTailBlock = _playerBody.Tail!.Value;
         bool canProceedWithMove = _rightBottom.Top != _playerBodyTailBlock.Top;

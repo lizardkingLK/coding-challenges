@@ -16,10 +16,12 @@ public record LeftRacketManager : Racket
 
     private readonly Deque<Block> _playerBody;
 
+    private readonly Input? _player;
+
     private Position _leftTop;
     private Position _leftBottom;
 
-    private readonly Input? _player;
+    private int _distanceThreshold;
 
     public LeftRacketManager(StatusManager statusManager, Input player)
     {
@@ -33,6 +35,7 @@ public record LeftRacketManager : Racket
     {
         _leftTop = new(1, 0);
         _leftBottom = new(_statusManager.Height - 2, 0);
+        _distanceThreshold = _statusManager.GetDistanceThreshold();
 
         int racketLength = (_statusManager.Height - 2) / 3;
         int yOffset = (_statusManager.Height / 2) - (racketLength / 2);
@@ -53,11 +56,11 @@ public record LeftRacketManager : Racket
         racketMove.Deconstruct(
             out VerticalDirectionEnum direction,
             out _,
-            out int speed,
-            out bool shouldBlock);
+            out int distance,
+            out bool useDistance);
 
         Action<int> Movement = GetMovementAction(direction);
-        for (int i = speed; i > 0; i--)
+        for (int i = useDistance ? distance + _distanceThreshold : distance; i > 0; i--)
         {
             Movement(i);
         }
@@ -88,7 +91,7 @@ public record LeftRacketManager : Racket
         _ => MovePlayerDownIfSatisfies
     };
 
-    public override void MovePlayerUpIfSatisfies(int speed)
+    public override void MovePlayerUpIfSatisfies(int distance)
     {
         Block _playerBodyHeadBlock = _playerBody.Head!.Value;
         bool canProceedWithMove = _leftTop.Top != _playerBodyHeadBlock.Top;
@@ -110,7 +113,7 @@ public record LeftRacketManager : Racket
         _statusManager.Update(removedBlock);
     }
 
-    public override void MovePlayerDownIfSatisfies(int speed)
+    public override void MovePlayerDownIfSatisfies(int distance)
     {
         Block _playerBodyTailBlock = _playerBody.Tail!.Value;
         bool canProceedWithMove = _leftBottom.Top != _playerBodyTailBlock.Top;

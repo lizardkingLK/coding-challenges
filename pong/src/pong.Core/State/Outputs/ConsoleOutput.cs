@@ -13,7 +13,7 @@ public record ConsoleOutput : Output
     {
         (Height, Width) = GetWindowDimensions();
 
-        ClearConsole();
+        InitializeConsole();
 
         Task.Run(ListenOnResize);
     }
@@ -37,6 +37,8 @@ public record ConsoleOutput : Output
             WriteSymbolAt(y, x++, value, color);
         }
     }
+
+    public override void Finish() => ResetConsole();
 
     private void ListenOnResize()
     {

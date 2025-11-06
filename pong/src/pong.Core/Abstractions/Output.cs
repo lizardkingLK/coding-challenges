@@ -27,4 +27,6 @@ public abstract record Output(GameManager GameManager)
     public abstract void Draw(Position position, string content, ConsoleColor color);
 
     public abstract void Clear();
+
+    public abstract void Finish();
 }

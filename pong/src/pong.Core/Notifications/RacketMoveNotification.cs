@@ -7,4 +7,4 @@ public record RacketMoveNotification(
     VerticalDirectionEnum Direction,
     PlayerSideEnum PlayerSide,
     int Speed,
-    bool ShouldBlock = false) : Notification;
+    bool UseDistance = false) : Notification;

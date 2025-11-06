@@ -43,36 +43,56 @@ public class GameBuilder
     private GameBuilder WithGameMode()
     {
         GameModeEnum gameMode = _arguments.GameMode;
-        int speed = _gameManager.Difficulty!.RacketSpeed;
+        int distance = _gameManager.Difficulty!.RacketSpeed;
+        string[] labels = new string[2];
         if (gameMode == GameModeEnum.Auto)
         {
-            // TODO: rename player labels
-            EnemyPlayer enemyPlayerLeft = new(speed);
+            EnemyPlayer enemyPlayerLeft = new(distance);
             _leftRacket = new LeftRacketManager(_statusManager, enemyPlayerLeft);
             enemyPlayerLeft.Racket = _leftRacket;
             _gameManager.PlayerLeft = enemyPlayerLeft;
+            labels[0] = CPU1;
 
-            EnemyPlayer enemyPlayerRight = new(speed);
+            EnemyPlayer enemyPlayerRight = new(distance);
             _rightRacket = new RightRacketManager(_statusManager, enemyPlayerRight);
             enemyPlayerRight.Racket = _rightRacket;
             _gameManager.PlayerRight = enemyPlayerRight;
+            labels[1] = CPU2;
         }
-        else if (gameMode == GameModeEnum.Offline)
+        else if (gameMode == GameModeEnum.OfflineSingle)
         {
-            UserPlayer userPlayer = new(speed);
+            UserPlayerA userPlayer = new(distance);
             _leftRacket = new LeftRacketManager(_statusManager, userPlayer);
             userPlayer.Racket = _leftRacket;
             _gameManager.PlayerLeft = userPlayer;
+            labels[0] = Player;
 
-            EnemyPlayer enemyPlayer = new(speed);
+            EnemyPlayer enemyPlayer = new(distance);
             _rightRacket = new RightRacketManager(_statusManager, enemyPlayer);
             enemyPlayer.Racket = _rightRacket;
             _gameManager.PlayerRight = enemyPlayer;
+            labels[1] = CPU;
+        }
+        else if (gameMode == GameModeEnum.OfflineMultiple)
+        {
+            UserPlayerA userPlayerLeft = new(distance);
+            _leftRacket = new LeftRacketManager(_statusManager, userPlayerLeft);
+            userPlayerLeft.Racket = _leftRacket;
+            _gameManager.PlayerLeft = userPlayerLeft;
+            labels[0] = Player1;
+
+            UserPlayerB userPlayerRight = new(distance);
+            _rightRacket = new RightRacketManager(_statusManager, userPlayerRight);
+            userPlayerRight.Racket = _rightRacket;
+            _gameManager.PlayerRight = userPlayerRight;
+            labels[1] = Player2;
         }
         else if (gameMode == GameModeEnum.Online)
         {
-
+            // TODO: add online player
         }
+
+        _statusManager.Label(labels);
 
         return this;
     }
@@ -137,6 +157,7 @@ public class GameBuilder
                 BallMoveInterval = DefaultBallMoveInterval * 2,
                 BallSpawnTimeout = DefaultBallSpawnTimeout * 2,
                 CPUWaitTimeout = DefaultCPUWaitTimeout * 2,
+                DistanceThreshold = DefaultDistanceThreshold * 2,
             },
             DifficultyLevelEnum.Medium => new Difficulty(),
             DifficultyLevelEnum.Hard => new Difficulty
@@ -145,6 +166,7 @@ public class GameBuilder
                 BallMoveInterval = DefaultBallMoveInterval / 2,
                 BallSpawnTimeout = DefaultBallSpawnTimeout / 2,
                 CPUWaitTimeout = DefaultCPUWaitTimeout / 2,
+                DistanceThreshold = DefaultDistanceThreshold / 2,
             },
             _ => throw new NotImplementedException(),
         };

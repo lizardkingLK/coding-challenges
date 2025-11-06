@@ -4,15 +4,20 @@ using pong.Core.Notifications;
 
 namespace pong.Core.State.Players;
 
-public record UserPlayer : Input
+public record UserPlayerA : Input
 {
-    private readonly int _speed;
+    private readonly int _distance;
 
     public Subscriber? Racket { get; set; }
 
-    public UserPlayer(int speed)
+    private readonly ConsoleKey _upKey;
+    private readonly ConsoleKey _downKey;
+
+    public UserPlayerA(int distance)
     {
-        _speed = speed;
+        _distance = distance;
+        _upKey = ConsoleKey.UpArrow;
+        _downKey = ConsoleKey.DownArrow;
     }
 
     public override void Play()
@@ -20,22 +25,17 @@ public record UserPlayer : Input
         ConsoleKeyInfo key;
         while (true)
         {
-            if (!Console.KeyAvailable)
-            {
-                continue;
-            }
-
             key = Console.ReadKey(true);
             ConsoleKey consoleKey = key.Key;
-            if (consoleKey == ConsoleKey.UpArrow || consoleKey == ConsoleKey.K)
+            if (consoleKey == _upKey)
             {
                 Racket?.Listen(new RacketMoveNotification
-                (VerticalDirectionEnum.Up, PlayerSideEnum.PlayerLeft, _speed));
+                (VerticalDirectionEnum.Up, PlayerSideEnum.PlayerLeft, _distance));
             }
-            else if (consoleKey == ConsoleKey.DownArrow || consoleKey == ConsoleKey.J)
+            else if (consoleKey == _downKey)
             {
                 Racket?.Listen(new RacketMoveNotification
-                (VerticalDirectionEnum.Down, PlayerSideEnum.PlayerLeft, _speed));
+                (VerticalDirectionEnum.Down, PlayerSideEnum.PlayerLeft, _distance));
             }
         }
     }
