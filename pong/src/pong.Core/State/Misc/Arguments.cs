@@ -1,11 +1,10 @@
 using pong.Core.Enums;
+using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Misc;
 
 public class Arguments
 {
-    public const int DefaultPointsToWin = 10;
-
     public CommandTypeEnum CommandType { get; set; }
     public GameModeEnum GameMode { get; set; }
     public DifficultyLevelEnum DifficultyLevel { get; set; }

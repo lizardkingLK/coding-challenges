@@ -19,8 +19,8 @@ public class GameBuilder
 
     private readonly StatusManager _statusManager;
 
-    private LeftRacketManager? _leftRacketManager;
-    private RightRacketManager? _rightRacketManager;
+    private Racket? _leftRacket;
+    private Racket? _rightRacket;
 
     public GameBuilder(Arguments arguments)
     {
@@ -46,18 +46,27 @@ public class GameBuilder
         int speed = _gameManager.Difficulty!.RacketSpeed;
         if (gameMode == GameModeEnum.Auto)
         {
+            // TODO: rename player labels
+            EnemyPlayer enemyPlayerLeft = new(speed);
+            _leftRacket = new LeftRacketManager(_statusManager, enemyPlayerLeft);
+            enemyPlayerLeft.Racket = _leftRacket;
+            _gameManager.PlayerLeft = enemyPlayerLeft;
 
+            EnemyPlayer enemyPlayerRight = new(speed);
+            _rightRacket = new RightRacketManager(_statusManager, enemyPlayerRight);
+            enemyPlayerRight.Racket = _rightRacket;
+            _gameManager.PlayerRight = enemyPlayerRight;
         }
         else if (gameMode == GameModeEnum.Offline)
         {
             UserPlayer userPlayer = new(speed);
-            _leftRacketManager = new(_statusManager, userPlayer);
-            userPlayer.Racket = _leftRacketManager;
+            _leftRacket = new LeftRacketManager(_statusManager, userPlayer);
+            userPlayer.Racket = _leftRacket;
             _gameManager.PlayerLeft = userPlayer;
 
             EnemyPlayer enemyPlayer = new(speed);
-            _rightRacketManager = new(_statusManager, enemyPlayer);
-            enemyPlayer.Racket = _rightRacketManager;
+            _rightRacket = new RightRacketManager(_statusManager, enemyPlayer);
+            enemyPlayer.Racket = _rightRacket;
             _gameManager.PlayerRight = enemyPlayer;
         }
         else if (gameMode == GameModeEnum.Online)
@@ -84,7 +93,7 @@ public class GameBuilder
 
     private GameBuilder WithSubscribers()
     {
-        if (_leftRacketManager == null || _rightRacketManager == null)
+        if (_leftRacket == null || _rightRacket == null)
         {
             return this;
         }
@@ -95,25 +104,25 @@ public class GameBuilder
 
         subscribers.Add(typeof(GamePausedNotification), new(
             boardManager,
-            _leftRacketManager,
-            _rightRacketManager,
+            _leftRacket,
+            _rightRacket,
             ballManager,
             _statusManager));
         subscribers.Add(typeof(GameRoundEndNotification), new(
             ballManager));
         subscribers.Add(typeof(GameCreateNotification), new(
             boardManager,
-            _leftRacketManager,
-            _rightRacketManager,
+            _leftRacket,
+            _rightRacket,
             ballManager,
             _statusManager));
         subscribers.Add(typeof(BallMoveNotification), new(
             ballManager,
-            _leftRacketManager,
-            _rightRacketManager));
+            _leftRacket,
+            _rightRacket));
         subscribers.Add(typeof(RacketMoveNotification), new(
-            _leftRacketManager,
-            _rightRacketManager));
+            _leftRacket,
+            _rightRacket));
 
         return this;
     }

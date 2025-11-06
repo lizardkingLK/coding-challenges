@@ -9,6 +9,7 @@ public static class Constants
     public const int DefaultCPUWaitTimeout = 20;
     #endregion
 
+    public const int DefaultPointsToWin = 10;
     public const int GameEndTimeout = 5000;
 
     public const char NetBlockSymbol = '|';

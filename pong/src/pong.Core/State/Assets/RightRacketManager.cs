@@ -8,7 +8,7 @@ using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
 
-public record RightRacketManager : Subscriber
+public record RightRacketManager : Racket
 {
     private readonly StatusManager _statusManager;
 
@@ -29,7 +29,7 @@ public record RightRacketManager : Subscriber
         _playerBody = new();
     }
 
-    private void Create()
+    public override void Create()
     {
         _rightTop = new(1, _statusManager.Width - 1);
         _rightBottom = new(_statusManager.Height - 2, _statusManager.Width - 1);
@@ -48,7 +48,7 @@ public record RightRacketManager : Subscriber
         }
     }
 
-    private void Move(RacketMoveNotification racketMove)
+    public override void Move(RacketMoveNotification racketMove)
     {
         racketMove.Deconstruct(
             out VerticalDirectionEnum direction,
@@ -88,7 +88,7 @@ public record RightRacketManager : Subscriber
         _ => MovePlayerDownIfSatisfies
     };
 
-    private void MovePlayerUpIfSatisfies(int speed)
+    public override void MovePlayerUpIfSatisfies(int speed)
     {
         Block _playerBodyHeadBlock = _playerBody.Head!.Value;
         bool canProceedWithMove = _rightTop.Top != _playerBodyHeadBlock.Top;
@@ -110,7 +110,7 @@ public record RightRacketManager : Subscriber
         _statusManager.Update(removedBlock);
     }
 
-    private void MovePlayerDownIfSatisfies(int speed)
+    public override void MovePlayerDownIfSatisfies(int speed)
     {
         Block _playerBodyTailBlock = _playerBody.Tail!.Value;
         bool canProceedWithMove = _rightBottom.Top != _playerBodyTailBlock.Top;
@@ -132,6 +132,6 @@ public record RightRacketManager : Subscriber
         _statusManager.Update(removedBlock);
     }
 
-    private void Notify(BallMoveNotification notification) => _player?.Notify(
+    public override void Notify(BallMoveNotification notification) => _player?.Notify(
         new BallMoveNotification(notification.Position, _playerBody));
 }
