@@ -1,8 +1,8 @@
 namespace pong.Core.Enums;
 
-public enum GameModeEnum : byte
+public enum GameModeEnum : sbyte
 {
-    Auto,
-    Offline,
-    Online,
+    Auto = -1,
+    Offline = 0,
+    Online = 1,
 }

@@ -16,6 +16,8 @@ public record GameController : Command
 
     public override void Execute()
     {
+        _gameManager.Create();
+        
         _ = _gameManager.Play();
     }
 }

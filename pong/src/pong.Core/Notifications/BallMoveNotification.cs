@@ -4,8 +4,8 @@ using pong.Core.State.Game;
 
 namespace pong.Core.Notifications;
 
-public record BallMoveNotification : Notification
+public record BallMoveNotification(Position? Position = null, Deque<Block>? Player = null) : Notification
 {
-    public Position? Position { get; set; }
-    public Deque<Block>? Enemy { get; set; }
+    public Position? Position { get; set; } = Position;
+    public Deque<Block>? Player { get; set; } = Player;
 }

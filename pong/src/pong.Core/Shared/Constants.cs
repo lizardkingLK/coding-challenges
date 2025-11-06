@@ -2,6 +2,13 @@ namespace pong.Core.Shared;
 
 public static class Constants
 {
+    #region Difficulty
+    public const int DefaultSpeed = 4;
+    public const int DefaultBallMoveInterval = 20;
+    public const int DefaultBallSpawnTimeout = 500;
+    public const int DefaultCPUWaitTimeout = 20;
+    #endregion
+
     public const int GameEndTimeout = 5000;
 
     public const char NetBlockSymbol = '|';

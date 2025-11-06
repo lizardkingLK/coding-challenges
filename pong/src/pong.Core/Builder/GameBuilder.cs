@@ -6,28 +6,64 @@ using pong.Core.Notifications;
 using pong.Core.State.Assets;
 using pong.Core.State.Handlers;
 using pong.Core.State.Misc;
+using pong.Core.State.Players;
+using static pong.Core.Shared.Constants;
 
 namespace pong.Core.Builder;
 
-public class GameBuilder(Arguments arguments)
+public class GameBuilder
 {
-    private readonly GameManager _gameManager = new();
+    private readonly Arguments _arguments;
 
-    private readonly Arguments _arguments = arguments;
+    private readonly GameManager _gameManager;
+
+    private readonly StatusManager _statusManager;
+
+    private LeftRacketManager? _leftRacketManager;
+    private RightRacketManager? _rightRacketManager;
+
+    public GameBuilder(Arguments arguments)
+    {
+        _arguments = arguments;
+
+        _gameManager = new();
+        _statusManager = new(_gameManager);
+    }
 
     public GameManager Create()
     {
         return WithDifficulty()
+        .WithGameMode()
         .WithSubscribers()
         .WithPointsToWin()
-        .WithGameMode()
         .WithPlayerSide()
         .Build();
     }
 
     private GameBuilder WithGameMode()
     {
-        _gameManager.GameMode = _arguments.GameMode;
+        GameModeEnum gameMode = _arguments.GameMode;
+        int speed = _gameManager.Difficulty!.RacketSpeed;
+        if (gameMode == GameModeEnum.Auto)
+        {
+
+        }
+        else if (gameMode == GameModeEnum.Offline)
+        {
+            UserPlayer userPlayer = new(speed);
+            _leftRacketManager = new(_statusManager, userPlayer);
+            userPlayer.Racket = _leftRacketManager;
+            _gameManager.PlayerLeft = userPlayer;
+
+            EnemyPlayer enemyPlayer = new(speed);
+            _rightRacketManager = new(_statusManager, enemyPlayer);
+            enemyPlayer.Racket = _rightRacketManager;
+            _gameManager.PlayerRight = enemyPlayer;
+        }
+        else if (gameMode == GameModeEnum.Online)
+        {
+
+        }
 
         return this;
     }
@@ -48,42 +84,36 @@ public class GameBuilder(Arguments arguments)
 
     private GameBuilder WithSubscribers()
     {
-        HashMap<Type, DynamicallyAllocatedArray<Subscriber>> subscribers = new();
-        StatusManager statusManager = new(_gameManager);
-        BoardManager boardManager = new(statusManager);
-        LeftRacketManager leftRacketManager = new(statusManager);
-        // RightRacketManager rightRacketManager = new(statusManager);
-        BallManager ballManager = new(statusManager);
+        if (_leftRacketManager == null || _rightRacketManager == null)
+        {
+            return this;
+        }
 
-        _gameManager.Subscribers = subscribers;
+        HashMap<Type, DynamicallyAllocatedArray<Subscriber>> subscribers = _gameManager.Subscribers;
+        BoardManager boardManager = new(_statusManager);
+        BallManager ballManager = new(_statusManager);
 
         subscribers.Add(typeof(GamePausedNotification), new(
             boardManager,
-            leftRacketManager,
-            // rightRacketManager,
+            _leftRacketManager,
+            _rightRacketManager,
             ballManager,
-            statusManager));
+            _statusManager));
         subscribers.Add(typeof(GameRoundEndNotification), new(
             ballManager));
         subscribers.Add(typeof(GameCreateNotification), new(
             boardManager,
-            leftRacketManager,
-            // rightRacketManager,
+            _leftRacketManager,
+            _rightRacketManager,
             ballManager,
-            statusManager));
+            _statusManager));
         subscribers.Add(typeof(BallMoveNotification), new(
             ballManager,
-            leftRacketManager
-            // ,
-            // rightRacketManager
-            ));
+            _leftRacketManager,
+            _rightRacketManager));
         subscribers.Add(typeof(RacketMoveNotification), new(
-            leftRacketManager
-            // ,
-            // rightRacketManager
-            ));
-
-        _gameManager.Subscribers = subscribers;
+            _leftRacketManager,
+            _rightRacketManager));
 
         return this;
     }
@@ -94,18 +124,18 @@ public class GameBuilder(Arguments arguments)
         {
             DifficultyLevelEnum.Easy => new Difficulty
             {
-                RacketSpeed = Difficulty.DefaultSpeed * 2,
-                BallMoveInterval = Difficulty.DefaultBallMoveInterval * 2,
-                BallSpawnTimeout = Difficulty.DefaultBallSpawnTimeout * 2,
-                CPUWaitTimeout = Difficulty.DefaultCPUWaitTimeout * 2,
+                RacketSpeed = DefaultSpeed * 2,
+                BallMoveInterval = DefaultBallMoveInterval * 2,
+                BallSpawnTimeout = DefaultBallSpawnTimeout * 2,
+                CPUWaitTimeout = DefaultCPUWaitTimeout * 2,
             },
             DifficultyLevelEnum.Medium => new Difficulty(),
             DifficultyLevelEnum.Hard => new Difficulty
             {
-                RacketSpeed = Difficulty.DefaultSpeed / 2,
-                BallMoveInterval = Difficulty.DefaultBallMoveInterval / 2,
-                BallSpawnTimeout = Difficulty.DefaultBallSpawnTimeout / 2,
-                CPUWaitTimeout = Difficulty.DefaultCPUWaitTimeout / 2,
+                RacketSpeed = DefaultSpeed / 2,
+                BallMoveInterval = DefaultBallMoveInterval / 2,
+                BallSpawnTimeout = DefaultBallSpawnTimeout / 2,
+                CPUWaitTimeout = DefaultCPUWaitTimeout / 2,
             },
             _ => throw new NotImplementedException(),
         };

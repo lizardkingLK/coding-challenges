@@ -1,16 +1,19 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
 using pong.Core.Notifications;
-using pong.Core.State.Handlers;
 using static pong.Core.Helpers.DistanceHelper;
 
 namespace pong.Core.State.Players;
 
-public record EnemyPlayer(GameManager GameManager) : Input
+public record EnemyPlayer : Input
 {
-    private readonly GameManager _gameManager = GameManager;
-
     private BallMoveNotification? _ballMoveNotification;
+
+    public Subscriber? Racket { get; set; }
+
+    public EnemyPlayer(int _)
+    {
+    }
 
     public override void Play()
     {
@@ -26,21 +29,22 @@ public record EnemyPlayer(GameManager GameManager) : Input
             }
 
             ballTop = _ballMoveNotification.Position!.Value.Top;
-            playerTop = _ballMoveNotification.Enemy!.Head!.Value.Top;
-            playerBottom = _ballMoveNotification.Enemy!.Tail!.Value.Top;
+            playerTop = _ballMoveNotification.Player!.Head!.Value.Top;
+            playerBottom = _ballMoveNotification.Player!.Tail!.Value.Top;
+            if (ballTop >= playerTop && ballTop <= playerBottom)
+            {
+                continue;
+            }
 
             direction = GetShorterDistance(ballTop - playerTop, ballTop - playerBottom, out int distance);
-            _gameManager.Publish(new RacketMoveNotification
-            (direction, PlayerSideEnum.PlayerRight, distance));
+            Racket?.Listen(new RacketMoveNotification(direction, PlayerSideEnum.PlayerRight, distance, true));
 
             _ballMoveNotification = null;
-
-            Thread.Sleep(_gameManager.Difficulty.CPUWaitTimeout);
         }
     }
 
-    public void Move(BallMoveNotification notification)
+    public override void Notify(BallMoveNotification ballMoveNotification)
     {
-        _ballMoveNotification = notification;
+        _ballMoveNotification = ballMoveNotification;
     }
 }

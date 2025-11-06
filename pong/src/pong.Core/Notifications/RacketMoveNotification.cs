@@ -6,4 +6,5 @@ namespace pong.Core.Notifications;
 public record RacketMoveNotification(
     VerticalDirectionEnum Direction,
     PlayerSideEnum PlayerSide,
-    int Speed) : Notification;
+    int Speed,
+    bool ShouldBlock = false) : Notification;

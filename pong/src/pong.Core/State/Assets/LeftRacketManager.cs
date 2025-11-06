@@ -14,19 +14,19 @@ public record LeftRacketManager : Subscriber
 
     private readonly ConsoleColor _racketColor;
 
-    private readonly Deque<Block> _player;
+    private readonly Deque<Block> _playerBody;
 
     private Position _leftTop;
     private Position _leftBottom;
 
-    private readonly Input _input;
+    private readonly Input? _player;
 
-    public LeftRacketManager(StatusManager statusManager)
+    public LeftRacketManager(StatusManager statusManager, Input player)
     {
         _statusManager = statusManager;
         _racketColor = ConsoleColor.Cyan;
-        _player = new();
-        _input = _statusManager.GetInput(PlayerSideEnum.PlayerLeft);
+        _playerBody = new();
+        _player = player;
     }
 
     private void Create()
@@ -41,13 +41,11 @@ public record LeftRacketManager : Subscriber
         for (int i = 0; i < racketLength; i++)
         {
             appendBlock = new(yOffset, xLeftOffset, RacketBlockSymbol, _racketColor);
-            _player.InsertToRear(appendBlock);
+            _playerBody.InsertToRear(appendBlock);
             _statusManager.Map(appendBlock);
 
             yOffset++;
         }
-
-        Task.Run(_input.Play);
     }
 
     private void Move(RacketMoveNotification racketMove)
@@ -55,7 +53,8 @@ public record LeftRacketManager : Subscriber
         racketMove.Deconstruct(
             out VerticalDirectionEnum direction,
             out _,
-            out int speed);
+            out int speed,
+            out bool shouldBlock);
 
         Action<int> Movement = GetMovementAction(direction);
         for (int i = speed; i > 0; i--)
@@ -74,11 +73,13 @@ public record LeftRacketManager : Subscriber
             case RacketMoveNotification:
                 Move((RacketMoveNotification)notification);
                 break;
+            case BallMoveNotification:
+                Notify((BallMoveNotification)notification);
+                break;
             default:
                 break;
         }
     }
-
 
     private Action<int> GetMovementAction(VerticalDirectionEnum direction)
     => direction switch
@@ -89,45 +90,48 @@ public record LeftRacketManager : Subscriber
 
     private void MovePlayerUpIfSatisfies(int speed)
     {
-        Block _playerHeadBlock = _player.Head!.Value;
-        bool canProceedWithMove = _leftTop.Top != _playerHeadBlock.Top;
+        Block _playerBodyHeadBlock = _playerBody.Head!.Value;
+        bool canProceedWithMove = _leftTop.Top != _playerBodyHeadBlock.Top;
         if (!canProceedWithMove)
         {
             return;
         }
 
-        Block removedBlock = _player.RemoveFromRear().Value;
+        Block removedBlock = _playerBody.RemoveFromRear().Value;
         removedBlock.Symbol = SpaceBlockSymbol;
         _statusManager.Update(removedBlock);
 
         removedBlock = new(
-            _playerHeadBlock.Top - 1,
+            _playerBodyHeadBlock.Top - 1,
             removedBlock.Left,
             RacketBlockSymbol,
             _racketColor);
-        _player.InsertToFront(removedBlock);
+        _playerBody.InsertToFront(removedBlock);
         _statusManager.Update(removedBlock);
     }
 
     private void MovePlayerDownIfSatisfies(int speed)
     {
-        Block _playerTailBlock = _player.Tail!.Value;
-        bool canProceedWithMove = _leftBottom.Top != _playerTailBlock.Top;
+        Block _playerBodyTailBlock = _playerBody.Tail!.Value;
+        bool canProceedWithMove = _leftBottom.Top != _playerBodyTailBlock.Top;
         if (!canProceedWithMove)
         {
             return;
         }
 
-        Block removedBlock = _player.RemoveFromFront().Value;
+        Block removedBlock = _playerBody.RemoveFromFront().Value;
         removedBlock.Symbol = SpaceBlockSymbol;
         _statusManager.Update(removedBlock);
 
         removedBlock = new(
-            _playerTailBlock.Top + 1,
+            _playerBodyTailBlock.Top + 1,
             removedBlock.Left,
             RacketBlockSymbol,
             _racketColor);
-        _player.InsertToRear(removedBlock);
+        _playerBody.InsertToRear(removedBlock);
         _statusManager.Update(removedBlock);
     }
+
+    private void Notify(BallMoveNotification notification) => _player?.Notify(
+        new BallMoveNotification(notification.Position, _playerBody));
 }

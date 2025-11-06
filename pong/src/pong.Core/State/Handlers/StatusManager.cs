@@ -4,7 +4,6 @@ using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using pong.Core.Notifications;
 using pong.Core.State.Game;
 using pong.Core.State.Outputs;
-using pong.Core.State.Players;
 using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Handlers;
@@ -17,9 +16,6 @@ public record StatusManager : Status
 
     private readonly GameManager _gameManager;
 
-    private readonly UserPlayer _userPlayer;
-    private readonly EnemyPlayer _enemyPlayer;
-
     public Block? ball;
 
     public int Height => _output.Height;
@@ -30,9 +26,6 @@ public record StatusManager : Status
         _gameManager = gameManager;
         _output = new ConsoleOutput(_gameManager);
         _scoreManager = new(_output);
-
-        _userPlayer = new(_gameManager);
-        _enemyPlayer = new(_gameManager);
 
         MapGrid = new(values:
         [.. Enumerable.Range(0, _output.Height).Select(_
@@ -129,17 +122,5 @@ public record StatusManager : Status
 
         _output.Clear();
         _gameManager.gameEnd = true;
-    }
-
-    public Input GetInput(PlayerSideEnum playerSide)
-    {
-        if (playerSide == PlayerSideEnum.PlayerLeft)
-        {
-            return _userPlayer;
-        }
-        else
-        {
-            return _enemyPlayer;
-        }
     }
 }
