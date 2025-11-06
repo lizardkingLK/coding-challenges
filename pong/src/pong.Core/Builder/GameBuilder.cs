@@ -52,7 +52,7 @@ public class GameBuilder(Arguments arguments)
         StatusManager statusManager = new(_gameManager);
         BoardManager boardManager = new(statusManager);
         LeftRacketManager leftRacketManager = new(statusManager);
-        RightRacketManager rightRacketManager = new(statusManager);
+        // RightRacketManager rightRacketManager = new(statusManager);
         BallManager ballManager = new(statusManager);
 
         _gameManager.Subscribers = subscribers;
@@ -60,7 +60,7 @@ public class GameBuilder(Arguments arguments)
         subscribers.Add(typeof(GamePausedNotification), new(
             boardManager,
             leftRacketManager,
-            rightRacketManager,
+            // rightRacketManager,
             ballManager,
             statusManager));
         subscribers.Add(typeof(GameRoundEndNotification), new(
@@ -68,16 +68,20 @@ public class GameBuilder(Arguments arguments)
         subscribers.Add(typeof(GameCreateNotification), new(
             boardManager,
             leftRacketManager,
-            rightRacketManager,
+            // rightRacketManager,
             ballManager,
             statusManager));
         subscribers.Add(typeof(BallMoveNotification), new(
             ballManager,
-            leftRacketManager,
-            rightRacketManager));
+            leftRacketManager
+            // ,
+            // rightRacketManager
+            ));
         subscribers.Add(typeof(RacketMoveNotification), new(
-            leftRacketManager,
-            rightRacketManager));
+            leftRacketManager
+            // ,
+            // rightRacketManager
+            ));
 
         _gameManager.Subscribers = subscribers;
 

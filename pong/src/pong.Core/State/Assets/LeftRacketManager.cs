@@ -123,11 +123,11 @@ public record LeftRacketManager : Subscriber
         _statusManager.Update(removedBlock);
 
         removedBlock = new(
-            _playerTailBlock.Top - 1,
+            _playerTailBlock.Top + 1,
             removedBlock.Left,
             RacketBlockSymbol,
             _racketColor);
-        _player.InsertToFront(removedBlock);
+        _player.InsertToRear(removedBlock);
         _statusManager.Update(removedBlock);
     }
 }

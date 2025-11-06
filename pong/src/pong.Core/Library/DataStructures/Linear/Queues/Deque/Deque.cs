@@ -17,6 +17,8 @@ public class Deque<T>
     public IEnumerable<T> FrontToRear => GetValuesFrontToRear();
     public IEnumerable<T> RearToFront => GetValuesRearToFront();
 
+    public int Size { get; set; }
+
     public LinkNode InsertToFront(T value)
     {
         LinkNode newNode = new(value);
@@ -24,12 +26,14 @@ public class Deque<T>
         {
             Head = newNode;
             Tail = newNode;
+            Size++;
             return newNode;
         }
 
         newNode.Next = Head;
         Head.Previous = newNode;
         Head = newNode;
+        Size++;
 
         return newNode;
     }
@@ -41,12 +45,14 @@ public class Deque<T>
         {
             Tail = newNode;
             Head = newNode;
+            Size++;
             return newNode;
         }
 
         newNode.Previous = Tail;
         Tail.Next = newNode;
         Tail = newNode;
+        Size++;
 
         return newNode;
     }
@@ -68,6 +74,7 @@ public class Deque<T>
 
         Head.Next = null;
         Head = next;
+        Size--;
 
         return removed;
     }
@@ -89,6 +96,7 @@ public class Deque<T>
 
         Tail.Previous = null;
         Tail = previous;
+        Size--;
 
         return removed;
     }
