@@ -4,7 +4,7 @@ using pong.Core.Notifications;
 
 namespace pong.Core.State.Players;
 
-public record UserPlayerB : Input
+public record UserPlayerSecondary : Input
 {
     private readonly int _distance;
 
@@ -13,7 +13,7 @@ public record UserPlayerB : Input
     private readonly ConsoleKey _upKey;
     private readonly ConsoleKey _downKey;
 
-    public UserPlayerB(int distance)
+    public UserPlayerSecondary(int distance)
     {
         _distance = distance;
         _upKey = ConsoleKey.K;

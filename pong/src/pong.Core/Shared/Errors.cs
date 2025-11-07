@@ -12,6 +12,8 @@ public static class Errors
         => new("error. invalid game mode was given");
     public static string ErrorInvalidDifficulty()
         => new("error. invalid difficulty level was given");
+    public static string ErrorInvalidPlayerSide()
+        => new("error. invalid player side was given");
     public static string ErrorInvalidPointsToWin()
         => new("error. invalid points to win was given");
 }

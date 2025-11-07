@@ -15,9 +15,12 @@ public class GameBuilder
 {
     private readonly Arguments _arguments;
 
+
     private readonly GameManager _gameManager;
 
     private readonly StatusManager _statusManager;
+
+    public PlayerSideEnum _playerSide;
 
     private Racket? _leftRacket;
     private Racket? _rightRacket;
@@ -33,10 +36,10 @@ public class GameBuilder
     public GameManager Create()
     {
         return WithDifficulty()
+        .WithPlayerSide()
         .WithGameMode()
         .WithSubscribers()
         .WithPointsToWin()
-        .WithPlayerSide()
         .Build();
     }
 
@@ -61,27 +64,43 @@ public class GameBuilder
         }
         else if (gameMode == GameModeEnum.OfflineSingle)
         {
-            UserPlayerA userPlayer = new(distance);
-            _leftRacket = new LeftRacketManager(_statusManager, userPlayer);
-            userPlayer.Racket = _leftRacket;
-            _gameManager.PlayerLeft = userPlayer;
-            labels[0] = Player;
-
+            // TODO: add player side options
+            UserPlayerPrimary userPlayer = new(distance);
             EnemyPlayer enemyPlayer = new(distance);
-            _rightRacket = new RightRacketManager(_statusManager, enemyPlayer);
-            enemyPlayer.Racket = _rightRacket;
-            _gameManager.PlayerRight = enemyPlayer;
-            labels[1] = CPU;
+            if (_playerSide == PlayerSideEnum.PlayerLeft)
+            {
+                _leftRacket = new LeftRacketManager(_statusManager, userPlayer);
+                userPlayer.Racket = _leftRacket;
+                _gameManager.PlayerLeft = userPlayer;
+                labels[0] = Player;
+
+                _rightRacket = new RightRacketManager(_statusManager, enemyPlayer);
+                enemyPlayer.Racket = _rightRacket;
+                _gameManager.PlayerRight = enemyPlayer;
+                labels[1] = CPU;
+            }
+            else
+            {
+                _leftRacket = new LeftRacketManager(_statusManager, enemyPlayer);
+                enemyPlayer.Racket = _leftRacket;
+                _gameManager.PlayerLeft = enemyPlayer;
+                labels[0] = CPU;
+
+                _rightRacket = new RightRacketManager(_statusManager, userPlayer);
+                userPlayer.Racket = _rightRacket;
+                _gameManager.PlayerRight = userPlayer;
+                labels[1] = Player;
+            }
         }
         else if (gameMode == GameModeEnum.OfflineMultiple)
         {
-            UserPlayerA userPlayerLeft = new(distance);
+            UserPlayerPrimary userPlayerLeft = new(distance);
             _leftRacket = new LeftRacketManager(_statusManager, userPlayerLeft);
             userPlayerLeft.Racket = _leftRacket;
             _gameManager.PlayerLeft = userPlayerLeft;
             labels[0] = Player1;
 
-            UserPlayerB userPlayerRight = new(distance);
+            UserPlayerSecondary userPlayerRight = new(distance);
             _rightRacket = new RightRacketManager(_statusManager, userPlayerRight);
             userPlayerRight.Racket = _rightRacket;
             _gameManager.PlayerRight = userPlayerRight;
@@ -99,7 +118,7 @@ public class GameBuilder
 
     private GameBuilder WithPlayerSide()
     {
-        // TODO: add player side options
+        _playerSide = _arguments.PlayerSide;
 
         return this;
     }
