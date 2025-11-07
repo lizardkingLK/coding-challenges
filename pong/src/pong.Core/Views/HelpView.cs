@@ -5,7 +5,44 @@ namespace pong.Core.Views;
 public class HelpView : View
 {
     public override string? Data => """
-    Help is here
+
+    ------------------
+    |      PONG      |
+    ------------------
+
+    USAGE       = pong [OPTIONS] 
+
+    OPTIONS
+    
+    help          = -h    | --help
+    interactive   = -it   | --interactive
+
+    game-mode     = [-gm  | --game-mode]     <Game-Mode>
+    difficulty    = [-d   | --difficulty]    <Difficulty-Level>
+    player-side   = [-ps  | --player-side]   <Player-Side>
+    points-to-win = [-ptw | --points-to-win] <Points-To-Win>
+    
+
+    Game Modes
+    
+    -1  - Automatic
+    0   - Offline Single Player
+    1   - Offline Multi Player
+    2   - Online (TBA)    
+
+
+    Difficulty Levels
+    
+    -1 - Easy
+    0  - Medium
+    1  - Hard
+
+
+    Player Side
+
+    0 - Left Player Side
+    1 - Right Player Side
+    
     """;
 
     public override string? Message => string.Empty;
