@@ -3,7 +3,7 @@ using pong.Core.State.Game;
 
 namespace pong.Core.Abstractions;
 
-public abstract record Status
+public abstract record Status : Subscriber
 {
     public DynamicallyAllocatedArray<DynamicallyAllocatedArray<Block>> MapGrid { get; set; } = new();
 

@@ -1,3 +1,3 @@
 namespace pong.Core.Abstractions;
 
-public interface INotification;
+public record Notification;

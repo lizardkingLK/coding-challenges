@@ -1,49 +1,39 @@
 using pong.Core.Abstractions;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
-using pong.Core.State.Assets;
-using pong.Core.State.Players;
+using pong.Core.Library.DataStructures.NonLinear.HashMaps;
+using pong.Core.Notifications;
+using pong.Core.State.Misc;
 
 namespace pong.Core.State.Handlers;
 
-public record GameManager : IPublisher
+public record GameManager : Publisher
 {
-    private readonly InputPlayer _inputPlayer;
-    private readonly StatusManager _statusManager;
+    private readonly GameRoundEndNotification _gameRoundEndNotification = new();
+    private readonly BallMoveNotification _ballMoveNotification = new();
 
-    private readonly GameRoundEndNotification _gameRoundEndNotification;
-    private readonly BallManager.BallMoveNotification _ballMoveNotification;
+    public override HashMap<Type, DynamicallyAllocatedArray<Subscriber>> Subscribers { get; set; } = new();
+    public Difficulty? Difficulty { get; set; }
 
-    public record GamePausedNotification : INotification;
-    public record GameCreateNotification : INotification;
-    public record GameRoundEndNotification : INotification;
-    public record GameEndNotification : INotification;
-
-    public DynamicallyAllocatedArray<ISubscriber> Subscribers { get; } = new();
+    public Input? PlayerLeft { get; set; }
+    public Input? PlayerRight { get; set; }
 
     public bool gamePaused = false;
+    public bool gameEnd = false;
     public bool gameRoundEnd = false;
 
-    public GameManager()
+    public int PointsToWin { get; set; }
+
+    public void Create()
     {
-        _statusManager = new(this);
-
-        Subscribers.Add(new BoardManager(_statusManager));
-        Subscribers.Add(new RacketManager(_statusManager));
-        Subscribers.Add(new BallManager(_statusManager));
-        Subscribers.Add(_statusManager);
-
-        _inputPlayer = new(this);
-
-        _gameRoundEndNotification = new();
-        _ballMoveNotification = new();
+        Publish(new GameCreateNotification());
     }
 
     public bool Play()
     {
-        Publish(new GameCreateNotification());
+        Task.Run(PlayerLeft!.Play);
+        Task.Run(PlayerRight!.Play);
 
-        Task.Run(_inputPlayer.Play);
-        while (true)
+        while (!gameEnd)
         {
             if (gamePaused)
             {
@@ -54,24 +44,22 @@ public record GameManager : IPublisher
             {
                 Publish(_gameRoundEndNotification);
                 gameRoundEnd = false;
+                Thread.Sleep(Difficulty!.BallSpawnTimeout);
                 continue;
             }
 
             Publish(_ballMoveNotification);
-
-            Thread.Sleep(20);
+            Thread.Sleep(Difficulty!.BallMoveInterval);
         }
+
+        return gameEnd;
     }
 
-    public void Publish(INotification notification)
+    public override void Publish(Notification notification)
     {
-        foreach (ISubscriber? subscriber in Subscribers.Values)
+        foreach (Subscriber? subscriber in Subscribers[notification.GetType()].Values)
         {
             subscriber?.Listen(notification);
         }
-    }
-
-    public void Publish()
-    {
     }
 }

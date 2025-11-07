@@ -16,7 +16,7 @@ public record InteractiveValidator(
     {
         if (ArgumentsMap.TryGet(ArgumentTypeEnum.Interactive, out _))
         {
-            Arguments.CommandType = CommandTypeEnum.InteractiveCommand;
+            Arguments.ControllerType = ControllerTypeEnum.InteractiveController;
             return new(Arguments);
         }
 

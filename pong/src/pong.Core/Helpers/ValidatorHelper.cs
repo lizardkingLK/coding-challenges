@@ -33,7 +33,9 @@ public static class ValidatorHelper
     {
         Arguments arguments = new();
 
-        DifficultyValidator difficultyValidator = new(argumentsMap, arguments, null);
+        PointsToWinValidator pointsToWinValidator = new(argumentsMap, arguments, null);
+        PlayerSideValidator playerSideValidator = new(argumentsMap, arguments, pointsToWinValidator);
+        DifficultyValidator difficultyValidator = new(argumentsMap, arguments, playerSideValidator);
         GameModeValidator gameModeValidator = new(argumentsMap, arguments, difficultyValidator);
         InteractiveValidator interactiveValidator = new(argumentsMap, arguments, gameModeValidator);
         HelpValidator helpValidator = new(argumentsMap, arguments, interactiveValidator);

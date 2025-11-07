@@ -1,5 +1,6 @@
 using pong.Core.Abstractions;
 using pong.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using pong.Core.Notifications;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
 using static pong.Core.Utilities.ConsoleUtility;
@@ -12,10 +13,12 @@ public record ConsoleOutput : Output
     {
         (Height, Width) = GetWindowDimensions();
 
-        ClearConsole();
+        InitializeConsole();
 
         Task.Run(ListenOnResize);
     }
+
+    public override void Clear() => ClearConsole();
 
     public override void Draw(
         Block block,
@@ -35,6 +38,8 @@ public record ConsoleOutput : Output
         }
     }
 
+    public override void Finish() => ResetConsole();
+
     private void ListenOnResize()
     {
         while (ListenToResize(out int height, out int width))
@@ -43,7 +48,7 @@ public record ConsoleOutput : Output
 
             GameManager.gamePaused = true;
 
-            GameManager.Publish(new GameManager.GamePausedNotification());
+            GameManager.Publish(new GamePausedNotification());
         }
     }
 }

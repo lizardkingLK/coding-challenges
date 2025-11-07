@@ -1,15 +1,17 @@
 using pong.Core.Abstractions;
 using pong.Core.Enums;
+using pong.Core.Notifications;
 using pong.Core.State.Game;
 using pong.Core.State.Handlers;
 using static pong.Core.Helpers.DirectionHelper;
+using static pong.Core.Helpers.EnumHelper;
 using static pong.Core.Shared.Constants;
 
 namespace pong.Core.State.Assets;
 
-public class BallManager(StatusManager statusManager) : ISubscriber
+public record BallManager(StatusManager StatusManager) : Subscriber
 {
-    private readonly StatusManager _statusManager = statusManager;
+    private readonly StatusManager _statusManager = StatusManager;
 
     private readonly ConsoleColor _ballColor = ConsoleColor.Red;
 
@@ -18,10 +20,6 @@ public class BallManager(StatusManager statusManager) : ISubscriber
 
     private (int, int) _dimensions;
 
-    private Block? _previous;
-
-    public record BallMoveNotification : INotification;
-
     private void Create()
     {
         _dimensions = (_statusManager.Height, _statusManager.Width);
@@ -29,35 +27,35 @@ public class BallManager(StatusManager statusManager) : ISubscriber
         InitializeBallPosition(_dimensions, out int y, out int x);
         InitializeDirections((y, x), _dimensions, ref _yDirection, ref _xDirection);
 
-        _previous = new(y, x, BallBlockSymbol, _ballColor);
+        _statusManager.ball = new(y, x, BallBlockSymbol, _ballColor);
 
-        _statusManager.Update(_previous);
+        _statusManager.Map(_statusManager.ball);
     }
 
     private void Reset()
     {
-        (int y, int x, _, _) = _previous!;
+        (int y, int x, _, _) = _statusManager.ball!;
         _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
         Block cleared = new(y, x, symbol, color);
 
         _dimensions = (_statusManager.Height, _statusManager.Width);
         InitializeBallPosition(_dimensions, out y, out x);
         InitializeDirections((y, x), _dimensions, ref _yDirection, ref _xDirection);
-        _previous = new(y, x, BallBlockSymbol, _ballColor);
+        _statusManager.ball = new(y, x, BallBlockSymbol, _ballColor);
 
         _statusManager.Update(cleared);
-        _statusManager.Update(_previous);
+        _statusManager.Update(_statusManager.ball);
     }
 
-    private void Move()
+    private void Move(BallMoveNotification notification)
     {
-        (int y, int x, _, _) = _previous!;
+        (int y, int x, _, _) = _statusManager.ball!;
         _statusManager.GetBlock(x, out char symbol, out ConsoleColor color);
 
         Block cleared = new(y, x, symbol, color);
 
         object[] directions = [_yDirection, _xDirection];
-        GetNextBallPosition(
+        (bool hasWon, PlayerSideEnum? playerSide) = GetNextBallPosition(
             _dimensions,
             (y, x),
             directions,
@@ -67,39 +65,38 @@ public class BallManager(StatusManager statusManager) : ISubscriber
 
         _yDirection = (VerticalDirectionEnum)directions[0];
         _xDirection = (HorizontalDirectionEnum)directions[1];
-        _previous = new(y, x, BallBlockSymbol, _ballColor);
+        _statusManager.ball = new(y, x, BallBlockSymbol, _ballColor);
+        notification.Position = new(y, x);
 
         _statusManager.Update(cleared);
-        _statusManager.Update(_previous);
+        _statusManager.Update(_statusManager.ball);
+
+        if (hasWon)
+        {
+            _statusManager.Win(playerSide!.Value);
+        }
     }
 
-    public void Listen()
-    {
-    }
-
-    public void Listen(INotification notification)
+    public override void Listen(Notification notification)
     {
         switch (notification)
         {
-            case GameManager.GameCreateNotification:
+            case GameCreateNotification:
                 Create();
                 break;
-            case GameManager.GameRoundEndNotification:
+            case GameRoundEndNotification:
                 Reset();
                 break;
             case BallMoveNotification:
-                Move();
+                Move((BallMoveNotification)notification);
                 break;
             default:
                 break;
         }
     }
 
-    public void Subscribe()
-    {
-    }
 
-    private void GetNextBallPosition(
+    private (bool, PlayerSideEnum?) GetNextBallPosition(
         in (int, int) dimensions,
         in (int, int) cordinates,
         in object[] directions,
@@ -107,19 +104,18 @@ public class BallManager(StatusManager statusManager) : ISubscriber
     {
         (int y, int x) = cordinates;
         GetInCordinates(directions, ref y, ref x);
-        if (!_statusManager.Validate(y, x, out PlayerSideEnum? playerSide))
+        MoveTypeEnum outcome = _statusManager.Validate(y, x, out PlayerSideEnum? playerSide);
+        if (outcome == MoveTypeEnum.PointScored && TryNextEnum((int?)playerSide, out PlayerSideEnum winningSide))
         {
-            nextCordinates = (y, x);
+            bool hasWon = _statusManager.ScorePoint(winningSide);
             _statusManager.EndRound();
-            return;
-        }
-
-        if (playerSide != null)
-        {
-            _statusManager.ScorePoint(playerSide.Value);
+            nextCordinates = (y, x);
+            return (hasWon, winningSide);
         }
 
         GetOutCordinates(dimensions, directions, (y, x), out nextCordinates);
+
+        return (false, null);
     }
 
     private static void GetOutCordinates(

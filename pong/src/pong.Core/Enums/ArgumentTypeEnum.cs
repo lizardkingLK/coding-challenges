@@ -5,5 +5,7 @@ public enum ArgumentTypeEnum : byte
     Help,
     Interactive,
     GameMode,
-    Difficulty,
+    DifficultyLevel,
+    PlayerSide,
+    PointsToWin,
 }

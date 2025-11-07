@@ -1,6 +1,5 @@
 using static System.Console;
 using static System.ConsoleColor;
-using static pong.Core.Shared.Constants;
 
 namespace pong.Core.Utilities;
 
@@ -10,18 +9,26 @@ public static class ConsoleUtility
 
     static ConsoleUtility()
     {
-        CursorVisible = false;
-        CancelKeyPress += (sender, _) => Clear();
+        CancelKeyPress += (sender, _) => ResetConsole();
     }
 
-    public static void ClearConsole() => Clear();
-
-    public static (int, int) GetWindowDimensions()
+    public static void InitializeConsole()
     {
-        return (WindowHeight, WindowWidth);
+        Clear();
+        CursorVisible = false;
     }
 
-    public static void WriteSymbolAt(int top, int left, char symbol, ConsoleColor color = White)
+    public static void ResetConsole()
+    {
+        Clear();
+        CursorVisible = true;
+    }
+
+    public static void WriteSymbolAt(
+        int top,
+        int left,
+        char symbol,
+        ConsoleColor color = White)
     {
         lock (_lock)
         {
@@ -30,17 +37,6 @@ public static class ConsoleUtility
             Write(symbol);
             ResetColor();
         }
-    }
-
-    public static void WriteInformationLine(int top, int left, object content)
-    {
-        SetCursorPosition(left, top);
-        WriteLine(new string(SpaceBlockSymbol, BufferWidth));
-
-        SetCursorPosition(left, top);
-        ForegroundColor = Cyan;
-        WriteLine(content);
-        ResetColor();
     }
 
     public static void WriteInformation(object content)
@@ -71,4 +67,12 @@ public static class ConsoleUtility
             }
         }
     }
+
+    public static void ClearConsole() => Clear();
+
+    public static (int, int) GetWindowDimensions() => (WindowHeight, WindowWidth);
+
+    public static void WritePrompt() => Write("> ");
+
+    public static string? ReadInput() => ReadLine();
 }
