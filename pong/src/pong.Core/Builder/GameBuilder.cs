@@ -106,7 +106,7 @@ public class GameBuilder
         }
         else if (gameMode == GameModeEnum.Online)
         {
-            // TODO: add online player
+            // TODO: add online multiplayer game mode
         }
 
         _statusManager.Label(labels);
