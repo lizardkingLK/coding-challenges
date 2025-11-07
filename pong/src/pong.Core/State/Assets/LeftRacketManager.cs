@@ -73,6 +73,9 @@ public record LeftRacketManager : Racket
             case GameCreateNotification:
                 Create();
                 break;
+            case GamePausedNotification:
+                Toggle();
+                break;
             case RacketMoveNotification:
                 Move((RacketMoveNotification)notification);
                 break;
@@ -137,4 +140,6 @@ public record LeftRacketManager : Racket
 
     public override void Notify(BallMoveNotification notification) => _player?.Notify(
         new BallMoveNotification(notification.Position, _playerBody));
+
+    public override void Toggle() => _player?.Toggle();
 }

@@ -11,6 +11,8 @@ public record EnemyPlayer : Input
 
     public Subscriber? Racket { get; set; }
 
+    private bool _isPaused;
+
     public EnemyPlayer(int _)
     {
     }
@@ -23,7 +25,7 @@ public record EnemyPlayer : Input
         VerticalDirectionEnum direction;
         while (true)
         {
-            if (_ballMoveNotification == null)
+            if (_ballMoveNotification == null || _isPaused)
             {
                 continue;
             }
@@ -47,4 +49,6 @@ public record EnemyPlayer : Input
     {
         _ballMoveNotification = ballMoveNotification;
     }
+
+    public override void Toggle() => _isPaused = !_isPaused;
 }

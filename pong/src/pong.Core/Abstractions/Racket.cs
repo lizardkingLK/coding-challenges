@@ -9,4 +9,5 @@ public abstract record Racket : Subscriber
     public abstract void MovePlayerUpIfSatisfies(int distance);
     public abstract void MovePlayerDownIfSatisfies(int distance);
     public abstract void Notify(BallMoveNotification notification);
+    public abstract void Toggle();
 }

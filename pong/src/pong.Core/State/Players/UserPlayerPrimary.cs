@@ -13,6 +13,8 @@ public record UserPlayerPrimary : Input
     private readonly ConsoleKey _upKey;
     private readonly ConsoleKey _downKey;
 
+    private bool _isPaused;
+
     public UserPlayerPrimary(int distance)
     {
         _distance = distance;
@@ -25,6 +27,11 @@ public record UserPlayerPrimary : Input
         ConsoleKeyInfo key;
         while (true)
         {
+            if (_isPaused)
+            {
+                continue;
+            }
+
             key = Console.ReadKey(true);
             ConsoleKey consoleKey = key.Key;
             if (consoleKey == _upKey)
@@ -43,4 +50,6 @@ public record UserPlayerPrimary : Input
     public override void Notify(BallMoveNotification ballMoveNotification)
     {
     }
+
+    public override void Toggle() => _isPaused = !_isPaused;
 }
