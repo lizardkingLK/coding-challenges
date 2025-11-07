@@ -16,7 +16,7 @@ public record HelpValidator(
     {
         if (ArgumentsMap.TryGet(ArgumentTypeEnum.Help, out _))
         {
-            Arguments.CommandType = CommandTypeEnum.HelpCommand;
+            Arguments.ControllerType = ControllerTypeEnum.HelpController;
             return new(Arguments);
         }
 

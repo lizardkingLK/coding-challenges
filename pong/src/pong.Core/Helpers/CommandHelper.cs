@@ -1,22 +1,21 @@
 using pong.Core.Abstractions;
-using pong.Core.Commands.Controllers;
+using pong.Core.Controllers;
+using pong.Core.Enums;
 using pong.Core.State.Common;
 using pong.Core.State.Misc;
-using static pong.Core.Enums.CommandTypeEnum;
 
 namespace pong.Core.Helpers;
 
-public static class CommandHelper
+public static class ControllerHelper
 {
-    public static Result<Command> GetCommand(Arguments arguments)
+    public static Result<Controller> GetController(Arguments arguments)
+    => arguments.ControllerType switch
     {
-        return arguments.CommandType switch
-        {
-            HelpCommand => new(new HelpController(arguments)),
-            InteractiveCommand => new(new InteractiveController(arguments)),
-            _ => new(new GameController(arguments)),
-        };
-    }
+        ControllerTypeEnum.HelpController => new(new HelpController(arguments)),
+        ControllerTypeEnum.InteractiveController => new(new InteractiveController(arguments)),
+        _ => new(new GameController(arguments)),
+    };
 
-    public static void Execute(Command command) => command.Execute();
+    public static void Execute(Controller controller)
+    => controller.Execute();
 }

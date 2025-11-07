@@ -1,7 +1,7 @@
 ﻿using pong.Core.Abstractions;
 using pong.Core.State.Common;
 using pong.Core.State.Misc;
-using static pong.Core.Helpers.CommandHelper;
+using static pong.Core.Helpers.ControllerHelper;
 using static pong.Core.Helpers.GameStateHelper;
 using static pong.Core.Helpers.ValidatorHelper;
 
@@ -17,12 +17,12 @@ public static class PongGame
             HandleError(validatedResult.Errors);
         }
 
-        Result<Command> commandResult = GetCommand(validatedResult.Data!);
-        if (commandResult.Errors != null)
+        Result<Controller> controllerResult = GetController(validatedResult.Data!);
+        if (controllerResult.Errors != null)
         {
-            HandleError(commandResult.Errors);
+            HandleError(controllerResult.Errors);
         }
 
-        Execute(commandResult.Data!);
+        Execute(controllerResult.Data!);
     }
 }

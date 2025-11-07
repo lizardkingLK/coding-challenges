@@ -26,8 +26,8 @@ public class HelpView : View
     Game Modes
     
     -1  - Automatic
-    0   - Offline Single Player
-    1   - Offline Multi Player
+    0   - Offline SinglePlayer
+    1   - Offline MultiPlayer
     2   - Online (TBA)    
 
 

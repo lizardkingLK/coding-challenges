@@ -29,4 +29,10 @@ public record PlayerSideValidator(
 
         return Next?.Validate() ?? new(Arguments);
     }
+
+    public static bool TryValidate(
+        string? value,
+        out PlayerSideEnum playerSide)
+        => Enum.TryParse(value, out playerSide)
+        && Enum.IsDefined(playerSide);
 }

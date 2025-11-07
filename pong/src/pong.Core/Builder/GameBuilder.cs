@@ -15,12 +15,11 @@ public class GameBuilder
 {
     private readonly Arguments _arguments;
 
-
     private readonly GameManager _gameManager;
 
     private readonly StatusManager _statusManager;
 
-    public PlayerSideEnum _playerSide;
+    private PlayerSideEnum _playerSide;
 
     private Racket? _leftRacket;
     private Racket? _rightRacket;

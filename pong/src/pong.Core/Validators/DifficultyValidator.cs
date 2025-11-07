@@ -20,13 +20,19 @@ public record DifficultyValidator(
             return Next?.Validate() ?? new(Arguments);
         }
 
-        if (!Enum.TryParse(value, out DifficultyLevelEnum difficultyType) || !Enum.IsDefined(difficultyType))
+        if (!Enum.TryParse(value, out DifficultyLevelEnum difficultyLevel) || !Enum.IsDefined(difficultyLevel))
         {
             return new(null, ErrorInvalidDifficulty());
         }
 
-        Arguments.DifficultyLevel = difficultyType;
+        Arguments.DifficultyLevel = difficultyLevel;
 
         return Next?.Validate() ?? new(Arguments);
     }
+
+    public static bool TryValidate(
+        string? value,
+        out DifficultyLevelEnum difficultyLevel)
+        => Enum.TryParse(value, out difficultyLevel)
+        && Enum.IsDefined(difficultyLevel);
 }

@@ -29,4 +29,10 @@ public record PointsToWinValidator(
 
         return Next?.Validate() ?? new(Arguments);
     }
+
+    public static bool TryValidate(
+        string? value,
+        out int pointsToWin)
+        => int.TryParse(value, out pointsToWin)
+        && pointsToWin > 0;
 }

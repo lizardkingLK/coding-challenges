@@ -1,8 +1,8 @@
 namespace pong.Core.Enums;
 
-public enum CommandTypeEnum : byte
+public enum ControllerTypeEnum : byte
 {
-    GameCommand,
-    HelpCommand,
-    InteractiveCommand,
+    GameController,
+    HelpController,
+    InteractiveController,
 }
