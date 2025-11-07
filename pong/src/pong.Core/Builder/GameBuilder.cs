@@ -63,7 +63,6 @@ public class GameBuilder
         }
         else if (gameMode == GameModeEnum.OfflineSingle)
         {
-            // TODO: add player side options
             UserPlayerPrimary userPlayer = new(distance);
             EnemyPlayer enemyPlayer = new(distance);
             if (_playerSide == PlayerSideEnum.PlayerLeft)

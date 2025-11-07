@@ -17,11 +17,11 @@ public record GameManager : Publisher
     public Input? PlayerLeft { get; set; }
     public Input? PlayerRight { get; set; }
 
-    public int PointsToWin { get; set; }
-
     public bool gamePaused = false;
     public bool gameEnd = false;
     public bool gameRoundEnd = false;
+
+    public int PointsToWin { get; set; }
 
     public void Create()
     {
