@@ -18,7 +18,7 @@ public static class Values
         new("-d", DifficultyLevel),
         new("--difficulty", DifficultyLevel),
         new("-ps", PlayerSide),
-        new("--playerside", PlayerSide),
+        new("--player-side", PlayerSide),
         new("-ptw", PointsToWin),
         new("--points-to-win", PointsToWin));
 
