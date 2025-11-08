@@ -9,6 +9,12 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
     private int _capacity;
     public int Size { get; private set; }
 
+    public T? this[int index]
+    {
+        get => GetValue(index);
+        set => Update(value, index);
+    }
+
     public DynamicallyAllocatedArray(int capacity = InitialCapacity)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
@@ -70,6 +76,33 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
         return true;
     }
 
+    public void Update(T? value, int index)
+    {
+        if (IsEmpty())
+        {
+            throw new ApplicationException("error. cannot update. list is empty");
+        }
+
+        if (IsInvalidIndex(index))
+        {
+            throw new IndexOutOfRangeException("error. cannot updated. invalid index");
+        }
+
+        _values[index] = value;
+    }
+
+    public bool TryUpdate(T? value, int index)
+    {
+        if (IsEmpty() || IsInvalidIndex(index))
+        {
+            return false;
+        }
+
+        _values[index] = value;
+
+        return true;
+    }
+
     public T? Remove()
     {
         if (IsEmpty())
@@ -124,6 +157,35 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
         return true;
     }
 
+    public T? GetValue(int index)
+    {
+        if (IsEmpty())
+        {
+            throw new ApplicationException("error. cannot find. list is empty");
+        }
+
+        if (IsInvalidIndex(index))
+        {
+            throw new IndexOutOfRangeException("error. cannot find. invalid index");
+        }
+
+        return _values[index];
+    }
+
+    public bool TryGetValue(int index, out T? value)
+    {
+        value = default;
+
+        if (IsEmpty() || IsInvalidIndex(index))
+        {
+            return false;
+        }
+
+        value = _values[index];
+
+        return true;
+    }
+
     public bool Exists(Predicate<T?> lookup, out int? index, out T? value)
     {
         index = default;
@@ -147,7 +209,7 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
 
     public IEnumerator<T?> GetEnumerator()
     {
-        for (int i = 0; i < Size; i++)
+        for (int i = 0; i < _capacity; i++)
         {
             yield return _values[i];
         }
@@ -169,13 +231,13 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
             return;
         }
 
-        _capacity *= 2;
-        T?[] newValues = new T[_capacity];
-        for (int i = 0; i < Size; i++)
+        T?[] newValues = new T[_capacity * 2];
+        for (int i = 0; i < _capacity; i++)
         {
             newValues[i] = _values[i];
         }
 
+        _capacity *= 2;
         _values = newValues;
     }
 
