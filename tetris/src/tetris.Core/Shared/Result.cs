@@ -1,3 +1,3 @@
 namespace tetris.Core.Shared;
 
-public record Result<T>(T? Data, string? Errors);
+public record Result<T>(T? Data = default, string? Error = null);

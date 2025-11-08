@@ -11,7 +11,7 @@ public static class Tetris
 {
     public static void Play(string[] args)
     {
-        Result<bool> validatorResult = GetValidator(args, out IValidate validator);
+        Result<bool> validatorResult = GetValidated(args);
         if (!validatorResult.Data)
         {
             WriteError(ERROR_INVALID_ARGUMENTS, 0, 0, ConsoleColor.Red);

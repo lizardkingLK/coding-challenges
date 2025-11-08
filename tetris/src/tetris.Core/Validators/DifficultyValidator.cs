@@ -9,6 +9,6 @@ public class DifficultyValidator : IValidate
 
     public Result<bool> Validate()
     {
-        throw new NotImplementedException();
+        return new(true);
     }
 }
