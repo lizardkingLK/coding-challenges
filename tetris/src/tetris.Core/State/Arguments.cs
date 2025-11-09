@@ -6,4 +6,5 @@ public record Arguments
 {
     public ControllerTypeEnum ControllerType { get; set; }
     public DifficultyLevelEnum DifficultyLevel { get; set; }
+    public GameModeEnum GameMode { get; set; }
 }

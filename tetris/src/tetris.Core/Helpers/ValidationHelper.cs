@@ -5,6 +5,7 @@ using tetris.Core.Enums;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
 using tetris.Core.State;
+using tetris.Core.Validators;
 
 namespace tetris.Core.Helpers;
 
@@ -27,9 +28,16 @@ public static class ValidationHelper
         return new(validatorResult.Data);
     }
 
-    private static IValidator<ArgumentTypeEnum, Arguments> GetValidator(HashMap<ArgumentTypeEnum, string> data)
+    private static IValidator<ArgumentTypeEnum, Arguments> GetValidator(HashMap<ArgumentTypeEnum, string> values)
     {
-        throw new NotImplementedException();
+        Arguments value = new();
+
+        IValidator<ArgumentTypeEnum, Arguments> difficultyValidator = new DifficultyValidator(value, values);
+        IValidator<ArgumentTypeEnum, Arguments> gameModeValidator = new GameModeValidator(value, values, difficultyValidator);
+        IValidator<ArgumentTypeEnum, Arguments> interactiveValidator = new InteractiveValidator(value, values, gameModeValidator);
+        IValidator<ArgumentTypeEnum, Arguments> helpValidator = new HelpValidator(value, values, interactiveValidator);
+
+        return helpValidator;
     }
 
     private static Result<HashMap<ArgumentTypeEnum, string>> GetArgumentMap(string[] arguments)

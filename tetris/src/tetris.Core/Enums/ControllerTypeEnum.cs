@@ -6,7 +6,7 @@ namespace tetris.Core.Enums;
 [Argument(Prefix = "-it", Name = "--interactive", Type = ArgumentTypeEnum.Interactive, IsSwitch = true)]
 public enum ControllerTypeEnum
 {
-    Help,
     Game,
+    Help,
     Interactive,
 }
