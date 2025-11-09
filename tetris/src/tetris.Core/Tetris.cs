@@ -1,6 +1,6 @@
 ﻿using tetris.Core.Abstractions;
 using tetris.Core.Shared;
-using tetris.Core.State;
+using tetris.Core.State.Misc;
 using static tetris.Core.Helpers.CommandHelper;
 using static tetris.Core.Helpers.ControllerHelper;
 using static tetris.Core.Helpers.ValidationHelper;

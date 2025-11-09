@@ -1,8 +1,8 @@
 using tetris.Core.Abstractions;
 using tetris.Core.Controllers;
-using tetris.Core.Enums;
+using tetris.Core.Enums.Arguments;
 using tetris.Core.Shared;
-using tetris.Core.State;
+using tetris.Core.State.Misc;
 
 namespace tetris.Core.Helpers;
 

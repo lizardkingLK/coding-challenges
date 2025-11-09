@@ -1,10 +1,10 @@
 using System.Reflection;
 using tetris.Core.Abstractions;
 using tetris.Core.Attributes;
-using tetris.Core.Enums;
+using tetris.Core.Enums.Game;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
-using tetris.Core.State;
+using tetris.Core.State.Misc;
 using tetris.Core.Validators;
 
 namespace tetris.Core.Helpers;

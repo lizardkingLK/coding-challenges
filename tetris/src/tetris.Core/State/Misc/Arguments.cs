@@ -1,6 +1,6 @@
-using tetris.Core.Enums;
+using tetris.Core.Enums.Arguments;
 
-namespace tetris.Core.State;
+namespace tetris.Core.State.Misc;
 
 public record Arguments
 {

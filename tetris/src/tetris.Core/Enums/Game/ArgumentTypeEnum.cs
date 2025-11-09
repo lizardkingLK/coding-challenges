@@ -1,4 +1,4 @@
-namespace tetris.Core.Enums;
+namespace tetris.Core.Enums.Game;
 
 public enum ArgumentTypeEnum
 {
