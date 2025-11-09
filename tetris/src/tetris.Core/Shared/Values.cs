@@ -1,5 +1,5 @@
 namespace tetris.Core.Shared;
 
-public static class Constants
+public static class Values
 {
 }

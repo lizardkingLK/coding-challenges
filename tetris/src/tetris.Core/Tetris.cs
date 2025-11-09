@@ -1,28 +1,28 @@
 ﻿using tetris.Core.Abstractions;
 using tetris.Core.Shared;
-
-using static tetris.Core.Helpers.ChainingHelper;
-using static tetris.Core.Helpers.ConsoleHelper;
-using static tetris.Core.Shared.Constants;
+using tetris.Core.State;
+using static tetris.Core.Helpers.CommandHelper;
+using static tetris.Core.Helpers.ControllerHelper;
+using static tetris.Core.Helpers.ValidationHelper;
 
 namespace tetris.Core;
 
 public static class Tetris
 {
-    public static void Play(string[] args)
+    public static void Play(string[] arguments)
     {
-        Result<bool> validatorResult = GetValidator(args, out IValidate validator);
-        if (!validatorResult.Data)
+        Result<Arguments> validatorResult = GetValidated(arguments);
+        if (validatorResult.Errors != null)
         {
-            WriteError(ERROR_INVALID_ARGUMENTS, 0, 0, ConsoleColor.Red);
-            Environment.Exit(1);
+            HandleError(validatorResult.Errors!);
         }
 
-        Result<bool> validationResult = validator.Validate();
-        if (!validatorResult.Data)
+        Result<IController> controllerResult = GetController(validatorResult.Data!);
+        if (controllerResult.Errors != null)
         {
-            WriteError(ERROR_INVALID_ARGUMENTS, 0, 0, ConsoleColor.Red);
-            Environment.Exit(1);
+            HandleError(controllerResult.Errors!);
         }
+
+        controllerResult.Data!.Execute();
     }
 }

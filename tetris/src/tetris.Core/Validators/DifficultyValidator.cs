@@ -1,14 +1,21 @@
 using tetris.Core.Abstractions;
+using tetris.Core.Enums;
+using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
+using tetris.Core.State;
 
 namespace tetris.Core.Validators;
 
-public class DifficultyValidator : IValidate
+public class DifficultyValidator : IValidator<ArgumentTypeEnum, Arguments>
 {
-    public IValidate? Next { get; init; }
+    public required Arguments Value { get; init; }
 
-    public Result<bool> Validate()
+    public required HashMap<ArgumentTypeEnum, string> Values { get; init; }
+
+    public IValidator<ArgumentTypeEnum, Arguments>? Next { get; init; }
+
+    public Result<Arguments> Validate()
     {
-        throw new NotImplementedException();
+        return default!;
     }
 }
