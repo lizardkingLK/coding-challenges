@@ -1,20 +1,28 @@
-﻿using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
+﻿using tetris.Core.Abstractions;
 using tetris.Core.Shared;
 using tetris.Core.State;
 using static tetris.Core.Helpers.CommandHelper;
+using static tetris.Core.Helpers.ControllerHelper;
 using static tetris.Core.Helpers.ValidationHelper;
 
 namespace tetris.Core;
 
 public static class Tetris
 {
-    public static void Play(string[] args)
+    public static void Play(string[] arguments)
     {
-        Result<Arguments> validatorResult = GetValidated(args);
+        Result<Arguments> validatorResult = GetValidated(arguments);
         if (validatorResult.Errors != null)
         {
             HandleError(validatorResult.Errors!);
         }
 
+        Result<IController> controllerResult = GetController(validatorResult.Data!);
+        if (controllerResult.Errors != null)
+        {
+            HandleError(controllerResult.Errors!);
+        }
+
+        controllerResult.Data!.Execute();
     }
 }

@@ -13,9 +13,9 @@ public class HashMap<K, V> : IEnumerable<KeyValuePair<K, V>> where K : notnull
         public bool IsActive { get; set; } = IsActive;
     }
 
-    private readonly float _growthFactor;
-
     private DynamicallyAllocatedArray<HashNode> _buckets;
+
+    private readonly float _growthFactor;
 
     public int Size { get; private set; }
 
@@ -38,7 +38,7 @@ public class HashMap<K, V> : IEnumerable<KeyValuePair<K, V>> where K : notnull
 
     public HashMap(params KeyValuePair<K, V>[] keyValues) : this() => AddRange(keyValues);
 
-    public HashMap(params (K, V)[] keyValues) : this() => AddRange(keyValues);
+    public HashMap(params (K, V?)[] keyValues) : this() => AddRange(keyValues);
 
     public void AddRange(KeyValuePair<K, V>[] keyValues)
     {
@@ -48,9 +48,9 @@ public class HashMap<K, V> : IEnumerable<KeyValuePair<K, V>> where K : notnull
         }
     }
 
-    public void AddRange((K, V)[] keyValues)
+    public void AddRange((K, V?)[] keyValues)
     {
-        foreach ((K key, V value) in keyValues)
+        foreach ((K key, V? value) in keyValues)
         {
             Add(key, value);
         }

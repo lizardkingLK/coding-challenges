@@ -1,4 +1,6 @@
+using System.Reflection;
 using tetris.Core.Abstractions;
+using tetris.Core.Attributes;
 using tetris.Core.Enums;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
@@ -32,14 +34,68 @@ public static class ValidationHelper
 
     private static Result<HashMap<ArgumentTypeEnum, string>> GetArgumentMap(string[] arguments)
     {
-        HashMap<ArgumentTypeEnum, string> argumentMap = new();
+        HashMap<string, (ArgumentTypeEnum, bool)> allArgumentsMap = GetAllArguments();
+
+        HashMap<ArgumentTypeEnum, string> argumentsMap = [];
 
         int length = arguments.Length;
+        string argumentKey;
+        string? argumentValue;
+        bool moveToNextKeyValue;
         for (int i = 0; i < length; i++)
         {
-            
+            argumentKey = arguments[i].ToLower();
+            argumentValue = arguments.ElementAtOrDefault(i + 1);
+            if (!allArgumentsMap.TryGetValue(argumentKey, out (ArgumentTypeEnum, bool) argumentTypeValue))
+            {
+                return new(null, $"error. invalid arguments given: {argumentKey}");
+            }
+
+            (ArgumentTypeEnum argumentType, bool isSwitch) = argumentTypeValue;
+            if (!argumentsMap.TryAdd(argumentType, argumentValue))
+            {
+                return new(null, $"error. duplicate arguments were given: {argumentKey}");
+            }
+
+            moveToNextKeyValue = string.IsNullOrEmpty(argumentValue) || isSwitch;
+            if (moveToNextKeyValue)
+            {
+                continue;
+            }
+
+            i++;
         }
 
-        return new(argumentMap);
+        return new(argumentsMap);
+    }
+
+    private static HashMap<string, (ArgumentTypeEnum, bool)> GetAllArguments()
+    {
+        HashMap<string, (ArgumentTypeEnum, bool)> allArgumentMap = [];
+
+        IEnumerable<Type> declarations = Assembly
+        .GetExecutingAssembly()
+        .GetTypes()
+        .Where(item => item.IsDefined(typeof(ArgumentAttribute)));
+
+        string prefix;
+        string name;
+        ArgumentTypeEnum type;
+        bool isSwitch;
+        foreach (Type item in declarations)
+        {
+            IEnumerable<ArgumentAttribute> attributes = item.GetCustomAttributes<ArgumentAttribute>()!;
+            foreach (ArgumentAttribute attribute in attributes)
+            {
+                prefix = attribute.Prefix;
+                name = attribute.Name;
+                type = attribute.Type;
+                isSwitch = attribute.IsSwitch;
+
+                allArgumentMap.AddRange([(prefix, (type, isSwitch)), (name, (type, isSwitch))]);
+            }
+        }
+
+        return allArgumentMap;
     }
 }
