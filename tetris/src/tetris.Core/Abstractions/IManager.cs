@@ -1,10 +1,18 @@
+using tetris.Core.Players;
+using tetris.Core.Shared;
+using tetris.Core.State.Misc;
+
 namespace tetris.Core.Abstractions;
 
 public interface IManager
 {
-    public void New();
-    public void Play();
+    public Arguments? Arguments { get; set; }
+    public IPlayable? Playable { get; set; }
+    public Player? Player { get; set; }
+    public IOutput? Output { get; set; }
+    
+    public Result<bool> New();
+    public Result<bool> Play();
     public void Pause();
-    public void Reset();
     public void Quit();
 }

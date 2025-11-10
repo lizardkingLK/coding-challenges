@@ -1,21 +1,31 @@
 using tetris.Core.Abstractions;
+using tetris.Core.Players;
+using tetris.Core.Shared;
 using tetris.Core.State.Misc;
-using static tetris.Core.Helpers.PlayableHelper;
 
 namespace tetris.Core.Handlers.Managers;
 
-public class ClassicGameManager(Arguments arguments) : IManager
+public class ClassicGameManager : IManager
 {
-    private readonly IPlayable _playable = GetPlayable(arguments);
+    public Arguments? Arguments { get; set; }
+    public Player? Player { get; set; }
+    public IPlayable? Playable { get; set; }
+    public IOutput? Output { get; set; }
 
-    public void New()
+    public Result<bool> New()
     {
-        _playable.Create();
+        Result<bool> dimensionResult = Output!.Create(Arguments!.MapSize);
+        if (dimensionResult.Errors != null)
+        {
+            return dimensionResult;
+        }
+
+        return Playable!.Create(Output.Height, Output.Width);
     }
 
-    public void Play()
+    public Result<bool> Play()
     {
-        throw new NotImplementedException();
+        return new(true);
     }
 
     public void Pause()

@@ -2,7 +2,9 @@ namespace tetris.Core.Enums.Game;
 
 public enum GameStateEnum
 {
-    Win,
+    New,
+    Restart,
+    Won,
     Lose,
     Quit,
 }

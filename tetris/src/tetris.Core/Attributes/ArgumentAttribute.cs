@@ -1,4 +1,4 @@
-using tetris.Core.Enums.Game;
+using tetris.Core.Enums.Misc;
 
 namespace tetris.Core.Attributes;
 

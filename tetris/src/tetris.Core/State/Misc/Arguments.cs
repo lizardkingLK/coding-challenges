@@ -7,4 +7,6 @@ public record Arguments
     public ControllerTypeEnum ControllerType { get; set; }
     public DifficultyLevelEnum DifficultyLevel { get; set; }
     public GameModeEnum GameMode { get; set; }
+    public OutputTypeEnum OutputType { get; set; }
+    public MapSizeEnum MapSize { get; set; }
 }

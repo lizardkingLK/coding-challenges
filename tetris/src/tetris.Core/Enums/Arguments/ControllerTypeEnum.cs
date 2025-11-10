@@ -1,5 +1,5 @@
 using tetris.Core.Attributes;
-using tetris.Core.Enums.Game;
+using tetris.Core.Enums.Misc;
 
 namespace tetris.Core.Enums.Arguments;
 
