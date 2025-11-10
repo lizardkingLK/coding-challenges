@@ -6,13 +6,13 @@ public static class CommandHelper
 {
     public static void HandleError(string content)
     {
-        WriteError(content, 0, 0, ConsoleColor.Red);
+        WriteAt(content, 0, 0, ConsoleColor.Red);
         Environment.Exit(1);
     }
 
     public static void HandleSuccess(string content)
     {
-        WriteError(content, 0, 0, ConsoleColor.Green);
+        WriteAt(content, 0, 0, ConsoleColor.Green);
         Environment.Exit(0);
     }
 }

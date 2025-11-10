@@ -34,19 +34,36 @@ public class GameManager : IManager
         _game = _gameSelector[arguments.GameMode]!;
         _game.Arguments = Arguments;
 
+        Output = GetOutput(arguments.OutputType);
+        _game.Output = Output;
+
         Playable = GetPlayable();
         _game.Playable = Playable;
 
         Player = GetPlayer();
         _game.Player = Player;
-
-        Output = GetOutput(arguments.OutputType);
-        _game.Output = Output;
     }
 
-    public Result<bool> New() => _game.New();
+    public Result<bool> New()
+    {
+        Result<bool> newGameResult = _game.New();
+        if (newGameResult.Errors != null)
+        {
+            return newGameResult;
+        }
 
-    public Result<bool> Play() => _game.Play();
+        return new(true);
+    }
+
+    public Result<bool> Play()
+    {
+        Result<bool> result = _game.Play();
+
+
+        // Output!.Clear();
+
+        return result;
+    }
 
     public void Pause() => _game.Pause();
 
@@ -62,8 +79,8 @@ public class GameManager : IManager
 
     public IPlayable GetPlayable()
     {
-        IPlayable dropPlayable = new DropPlayable(Arguments!, null);
-        IPlayable mapPlayable = new MapPlayable(Arguments!, dropPlayable);
+        IPlayable dropPlayable = new DropPlayable(Arguments!, Output!, null);
+        IPlayable mapPlayable = new MapPlayable(Arguments!, Output!, dropPlayable);
 
         return mapPlayable;
     }

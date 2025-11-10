@@ -1,6 +1,9 @@
 using tetris.Core.Abstractions;
+using tetris.Core.Enums.Cordinates;
+using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Players;
 using tetris.Core.Shared;
+using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
 
 namespace tetris.Core.Handlers.Managers;
@@ -14,13 +17,21 @@ public class ClassicGameManager : IManager
 
     public Result<bool> New()
     {
-        Result<bool> dimensionResult = Output!.Create(Arguments!.MapSize);
-        if (dimensionResult.Errors != null)
+        Result<bool> dimensionCreateResult = Output!.Create(Arguments!.MapSize);
+        if (dimensionCreateResult.Errors != null)
         {
-            return dimensionResult;
+            return dimensionCreateResult;
         }
 
-        return Playable!.Create(Output.Height, Output.Width);
+        Result<bool> playableCreateResult = Playable!.Create();
+        if (playableCreateResult.Errors != null)
+        {
+            return playableCreateResult;
+        }
+
+        Output!.Flush();
+
+        return new(true);
     }
 
     public Result<bool> Play()

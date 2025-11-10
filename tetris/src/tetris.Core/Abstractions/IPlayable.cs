@@ -5,12 +5,10 @@ namespace tetris.Core.Abstractions;
 
 public interface IPlayable
 {
-    public int Height { get; set; }
-    public int Width { get; set; }
-
     public IPlayable? Next { get; init; }
     public Arguments Arguments { get; init; }
+    public IOutput Output { get; init; }
 
-    public Result<bool> Create(int height, int width);
+    Result<bool> Create();
     public Result<bool> Play();
 }

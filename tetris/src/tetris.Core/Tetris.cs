@@ -23,6 +23,10 @@ public static class Tetris
             HandleError(controllerResult.Errors!);
         }
 
-        controllerResult.Data!.Execute();
+        Result<bool> executionResult = controllerResult.Data!.Execute();
+        if (executionResult.Errors != null)
+        {
+            HandleError(executionResult.Errors!);
+        }
     }
 }
