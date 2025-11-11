@@ -12,8 +12,9 @@ public class DocumentOutput : IOutput
     public int Height { get; set; }
 
     public int Width { get; set; }
-    public HashMap<CornerEnum, Position?>? Corners { get; set; }
+    public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
+    public Position Root { get; set; }
 
     public Result<bool> Create()
     {

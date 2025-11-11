@@ -10,10 +10,11 @@ public interface IOutput
 {
     public int Height { get; set; }
     public int Width { get; set; }
-    public HashMap<CornerEnum, Position?>? Corners { get; set; }
+    public Position Root { get; set; }
+    public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
 
-    Result<bool> Create(MapSizeEnum mapSize);
+    public Result<bool> Create(MapSizeEnum mapSize);
     public void Update(Block block);
     public void Flush();
     public void Listen();

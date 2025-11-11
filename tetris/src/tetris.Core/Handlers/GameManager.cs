@@ -59,7 +59,6 @@ public class GameManager : IManager
     {
         Result<bool> result = _game.Play();
 
-
         // Output!.Clear();
 
         return result;

@@ -16,13 +16,9 @@ public class DropPlayable(
     public IPlayable? Next { get; init; } = Next;
     public IOutput Output { get; init; } = Output;
 
-    public int Height { get; set; }
-    public int Width { get; set; }
-
-    public HashMap<CornerEnum, Position?>? Corners { get; set; }
-
     public Result<bool> Create()
     {
+
 
         return new(true);
     }

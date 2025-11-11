@@ -20,22 +20,17 @@ public class MapPlayable(
 
     public Result<bool> Create()
     {
-        Position root = Output.Corners![CornerEnum.LeftTop]!.Value;
         Output.Map = new Block[Output.Height, Output.Width];
         int length = Output.Height * Output.Width;
         int y;
         int x;
-        Position blockPosition;
+        Position block;
         for (int i = 0; i < length; i++)
         {
-            y = i / Output.Height;
+            y = i / Output.Width;
             x = i % Output.Width;
-            blockPosition = root + new Position(y, x);
-            Output.Map[y, x] = new Block(
-                blockPosition.Y,
-                blockPosition.X,
-                SymbolWallBlock,
-                _wallColor);
+            block = Output.Root + new Position(y, x);
+            Output.Map[y, x] = GetMapBlock(block.Y, block.X);
         }
 
         return new(true);
@@ -45,4 +40,14 @@ public class MapPlayable(
     {
         return new(true);
     }
+
+    private Block GetMapBlock(int y, int x) => IsNonWallBlock(y, x)
+    ? new(y, x) { Symbol = SymbolSpaceBlock }
+    : new(y, x) { Symbol = SymbolWallBlock, Color = _wallColor, IsFree = false };
+
+    private bool IsNonWallBlock(int y, int x)
+    => x > Output.Borders![DirectionEnum.Left]
+    && x < Output.Borders[DirectionEnum.Right]
+    && y > Output.Borders[DirectionEnum.Up]
+    && y < Output.Borders[DirectionEnum.Down];
 }

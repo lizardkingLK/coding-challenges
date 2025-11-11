@@ -15,8 +15,9 @@ public class ConsoleOutput : IOutput
 
     public int Width { get; set; }
 
-    public HashMap<CornerEnum, Position?>? Corners { get; set; }
     public Block[,]? Map { get; set; }
+    public HashMap<DirectionEnum, int>? Borders { get; set; }
+    public Position Root { get; set; }
 
     public ConsoleOutput()
     {
@@ -31,15 +32,15 @@ public class ConsoleOutput : IOutput
             return dimensionResult;
         }
 
-        Position root = new(
-            Console.WindowHeight / 2 - Height / 4,
+        Root = new(
+            Console.WindowHeight / 2 - Height / 2,
             Console.WindowWidth / 2 - Width / 2);
 
-        Corners = new(
-            (CornerEnum.LeftTop, root),
-            (CornerEnum.RightTop, root + new Position(0, Width)),
-            (CornerEnum.LeftBottom, root + new Position(Height, 0)),
-            (CornerEnum.RightBottom, root + new Position(Height, Width)));
+        Borders = new(
+            (DirectionEnum.Up, Root.Y),
+            (DirectionEnum.Right, Root.X + Width - 1),
+            (DirectionEnum.Down, Root.Y + Height - 1),
+            (DirectionEnum.Left, Root.X));
 
         Toggle(isOn: true);
 
@@ -93,14 +94,8 @@ public class ConsoleOutput : IOutput
 
     public void Flush()
     {
-        int length = Height * Width;
-        int y;
-        int x;
-        for (int i = 0; i < length; i++)
+        foreach (((int y, int x), char symbol, ConsoleColor color, _) in Map!)
         {
-            y = i / Height;
-            x = i % Width;
-            (y, x, char symbol, ConsoleColor color) = Map![y, x];
             WriteAt(symbol, y, x, color);
         }
     }
