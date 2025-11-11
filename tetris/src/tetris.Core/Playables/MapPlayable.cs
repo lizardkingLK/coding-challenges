@@ -16,7 +16,7 @@ public class MapPlayable(
     public IPlayable? Next { get; init; } = Next;
     public IOutput Output { get; init; } = Output;
 
-    private readonly ConsoleColor _wallColor = ConsoleColor.DarkYellow;
+    private readonly ConsoleColor _wallColor = ConsoleColor.Gray;
 
     public Result<bool> Create()
     {

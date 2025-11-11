@@ -4,6 +4,7 @@ using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
+using tetris.Core.State.Tetrominos;
 
 namespace tetris.Core.Playables;
 
@@ -18,7 +19,8 @@ public class DropPlayable(
 
     public Result<bool> Create()
     {
-
+        ITetromino tetromino1 = new TetrominoL();// selected
+        
 
         return new(true);
     }
