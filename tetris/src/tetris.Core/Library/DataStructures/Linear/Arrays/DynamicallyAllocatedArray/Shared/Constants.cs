@@ -1,4 +1,4 @@
-namespace tetris.Core.Library.DataStructures.Linear.Shared;
+namespace tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray.Shared;
 
 public static class Constants
 {

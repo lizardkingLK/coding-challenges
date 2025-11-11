@@ -9,4 +9,7 @@ public static class Constants
     public const float AspectRatio = .5f;
     public const char SymbolWallBlock = '@';
     public const char SymbolSpaceBlock = ' ';
+    public const char SymbolTetrominoBlock = '#';
+    public const char SymbolNewLine = '\n';
+    public const string FileName = "output.txt";
 }

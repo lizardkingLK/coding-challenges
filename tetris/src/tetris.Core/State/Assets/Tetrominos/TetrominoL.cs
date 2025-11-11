@@ -1,10 +1,8 @@
-using tetris.Core.Abstractions;
-using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 
-namespace tetris.Core.State.Tetrominos;
+namespace tetris.Core.State.Assets.Tetrominos;
 
-public record TetrominoL : ITetromino
+public record TetrominoL : Tetromino
 {
     private readonly bool[,] _variantA = new bool[,]
     {
@@ -34,26 +32,23 @@ public record TetrominoL : ITetromino
         { true, true, false },
     };
 
-    private readonly HashMap<int, bool[,]> _variants;
+    public override int Size { get; }
+    public override int Width { get; }
+    protected override int Height { get; }
+    protected override HashMap<int, bool[,]> Variants { get; }
+    protected override ConsoleColor Color { get; }
 
-    public TetrominoL() => _variants = new(
-        (0, _variantA),
-        (1, _variantB),
-        (2, _variantC),
-        (3, _variantD));
-
-    public void Get()
+    public TetrominoL()
     {
-        
-    }
+        Variants = new(
+            (0, _variantA),
+            (1, _variantB),
+            (2, _variantC),
+            (3, _variantD));
 
-    public void Move(DirectionEnum direction)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Rotate()
-    {
-        throw new NotImplementedException();
+        Color = ConsoleColor.Blue;
+        Size = Variants.Count();
+        Height = 3;
+        Width = 3;
     }
 }

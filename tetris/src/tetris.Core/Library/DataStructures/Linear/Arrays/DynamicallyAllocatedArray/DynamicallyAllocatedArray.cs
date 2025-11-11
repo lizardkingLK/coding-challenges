@@ -1,5 +1,5 @@
 using System.Collections;
-using static tetris.Core.Library.DataStructures.Linear.Shared.Constants;
+using static tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray.Shared.Constants;
 
 namespace tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 

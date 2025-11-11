@@ -2,28 +2,23 @@ using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.State.Cordinates;
 
-public record struct Block(
-    int Y,
-    int X)
+public record struct Block
 {
-    public int Y { get; set; } = Y;
-    public int X { get; set; } = X;
-
+    public int Y { get; set; }
+    public int X { get; set; }
     public char Symbol { get; set; } = SymbolSpaceBlock;
-
     public ConsoleColor Color { get; set; } = ConsoleColor.White;
 
-    public bool IsFree { get; set; } = true;
+    public Block(int y, int x) => (Y, X) = (y, x);
+    public Block(Position position) => (Y, X) = position;
+    public Block(Position position, Block block) : this(position)
+    => (Symbol, Color) = (block.Symbol, block.Color);
 
-    public readonly void Destruct(out int y, out int x)
-    => (y, x) = (Y, X);
-    public readonly void Destruct(out char symbol, out ConsoleColor color)
-    => (symbol, color) = (Symbol, Color);
-
+    public readonly Position Position => new(Y, X);
+    
     public readonly void Deconstruct(
         out Position position,
         out char symbol,
-        out ConsoleColor color,
-        out bool isFree)
-    => (position, symbol, color, isFree) = (new Position(Y, X), Symbol, Color, IsFree);
+        out ConsoleColor color)
+    => (position, symbol, color) = (new Position(Y, X), Symbol, Color);
 }

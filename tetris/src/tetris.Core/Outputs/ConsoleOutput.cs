@@ -94,7 +94,7 @@ public class ConsoleOutput : IOutput
 
     public void Flush()
     {
-        foreach (((int y, int x), char symbol, ConsoleColor color, _) in Map!)
+        foreach (((int y, int x), char symbol, ConsoleColor color) in Map!)
         {
             WriteAt(symbol, y, x, color);
         }

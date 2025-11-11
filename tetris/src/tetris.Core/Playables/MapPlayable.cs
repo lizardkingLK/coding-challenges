@@ -33,7 +33,7 @@ public class MapPlayable(
             Output.Map[y, x] = GetMapBlock(block.Y, block.X);
         }
 
-        return new(true);
+        return Next?.Create() ?? new(true);
     }
 
     public Result<bool> Play()
@@ -43,7 +43,7 @@ public class MapPlayable(
 
     private Block GetMapBlock(int y, int x) => IsNonWallBlock(y, x)
     ? new(y, x) { Symbol = SymbolSpaceBlock }
-    : new(y, x) { Symbol = SymbolWallBlock, Color = _wallColor, IsFree = false };
+    : new(y, x) { Symbol = SymbolWallBlock, Color = _wallColor };
 
     private bool IsNonWallBlock(int y, int x)
     => x > Output.Borders![DirectionEnum.Left]
