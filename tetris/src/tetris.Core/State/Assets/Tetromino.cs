@@ -51,17 +51,4 @@ public abstract record Tetromino
 
         return transformed;
     }
-
-    public static void Update(Block[,] tetrominoMap, Block[,] fullMap, Position center)
-    {
-        Position spawn;
-        int y;
-        int x;
-        foreach (Block block in tetrominoMap)
-        {
-            ((y, x), _, _) = block;
-            spawn = fullMap![center.Y, center.X].Position + block.Position;
-            tetrominoMap[center.Y + block.Y, center.X + block.X] = new Block(spawn, block);
-        }
-    }
 }

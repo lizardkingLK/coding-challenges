@@ -20,13 +20,47 @@ public class DropPlayable(
 
     public Result<bool> Create()
     {
-        SetTetrominoes();
+        _tetrominoes = [];
+
+        int i;
+        int length;
+        int width;
+        Position center;
+        Block[,] map;
+        foreach (Tetromino? tetromino in Tetromino.allTetrominoes)
+        {
+            if (tetromino == null)
+            {
+                continue;
+            }
+
+            length = tetromino.Size;
+            width = tetromino.Width;
+            center = new(1, Output.Width / 2 - width / 2);
+            for (i = 0; i < length; i++)
+            {
+                map = tetromino.Get(i);
+                _tetrominoes!.Add((map, center));
+            }
+        }
 
         // TODO: queue first three tetrominos
+        Drop();
 
-        (Block[,] map, Position origin) = _tetrominoes![Random.Shared.Next(_tetrominoes!.Size)];
+        return Next?.Create() ?? new(true);
+    }
 
-        // Tetromino.Update(map, Output.Map!, center);
+
+    public Result<bool> Play()
+    {
+        return new(true);
+    }
+
+    private void Drop()
+    {
+        int index = Random.Shared.Next(_tetrominoes!.Size);
+        (Block[,] map, Position origin) = _tetrominoes![index];
+
         Position previous;
         Position spawn;
         Block newBlock;
@@ -37,43 +71,6 @@ public class DropPlayable(
             previous = Output.Map![spawn.Y, spawn.X].Position;
             newBlock = new(previous, block);
             Output.Map![spawn.Y, spawn.X] = newBlock;
-        }
-
-        return Next?.Create() ?? new(true);
-    }
-
-    public Result<bool> Play()
-    {
-        return new(true);
-    }
-
-    private void SetTetrominoes()
-    {
-        _tetrominoes = [];
-
-        foreach (Tetromino? tetromino in Tetromino.allTetrominoes)
-        {
-            if (tetromino == null)
-            {
-                continue;
-            }
-
-            CreateTetrominoes(tetromino);
-        }
-    }
-
-    private void CreateTetrominoes(Tetromino tetromino)
-    {
-
-        int i;
-        int length = tetromino.Size;
-        int width = tetromino.Width;
-        Position center = new(1, Output.Width / 2 - width / 2);
-        Block[,] map;
-        for (i = 0; i < length; i++)
-        {
-            map = tetromino.Get(i);
-            _tetrominoes!.Add((map, center));
         }
     }
 }

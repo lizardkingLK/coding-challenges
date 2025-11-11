@@ -20,9 +20,9 @@ public record TetrominoL : Tetromino
 
     private readonly bool[,] _variantC = new bool[,]
     {
-        { false, false, false },
         { true, true, true },
         { false, false, true },
+        { false, false, false },
     };
 
     private readonly bool[,] _variantD = new bool[,]
