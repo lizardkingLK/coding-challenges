@@ -1,5 +1,6 @@
 using tetris.Core.Abstractions;
 using tetris.Core.Enums.Arguments;
+using tetris.Core.Enums.Commands;
 using tetris.Core.Handlers.Managers;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Outputs;
@@ -21,8 +22,6 @@ public class GameManager : IManager
     public Player? Player { get; set; }
     public IPlayable? Playable { get; set; }
     public IOutput? Output { get; set; }
-
-    // TODO: initialize output that handles game outputs. output means the display for game
     //
     // TODO: timed game mode means countdown of a 10 minutes and should score high scores
     //
@@ -44,24 +43,31 @@ public class GameManager : IManager
         _game.Player = Player;
     }
 
-    public Result<bool> New()
-    {
-        Result<bool> newGameResult = _game.New();
-        if (newGameResult.Errors != null)
-        {
-            return newGameResult;
-        }
-
-        return new(true);
-    }
+    public Result<bool> New() => _game.New();
 
     public Result<bool> Play()
     {
-        Result<bool> result = _game.Play();
+        // TODO: setTimeout of three seconds
+        Task.Run(Player!.Input);
 
-        // Output!.Clear();
+        // TODO: if paused continue , if dropping continue dropping
+        // if not dropping drop new
+        Result<bool> result;
+        while (true)
+        {
+            result = _game.Play();
+        }
+    }
 
-        return result;
+    public void Input(InputTypeEnum inputType)
+    {
+        if (inputType == InputTypeEnum.PauseGame)
+        {
+            Pause();
+            return;
+        }
+
+        _game.Input(inputType);
     }
 
     public void Pause() => _game.Pause();
@@ -76,7 +82,7 @@ public class GameManager : IManager
         throw new NotImplementedException();
     }
 
-    public IPlayable GetPlayable()
+    private IPlayable GetPlayable()
     {
         IPlayable dropPlayable = new DropPlayable(Arguments!, Output!, null);
         IPlayable mapPlayable = new MapPlayable(Arguments!, Output!, dropPlayable);
@@ -84,7 +90,7 @@ public class GameManager : IManager
         return mapPlayable;
     }
 
-    public static IOutput GetOutput(OutputTypeEnum outputType)
+    private static IOutput GetOutput(OutputTypeEnum outputType)
     {
         return outputType switch
         {
@@ -94,5 +100,5 @@ public class GameManager : IManager
         };
     }
 
-    private static Player? GetPlayer() => new();
+    private Player? GetPlayer() => new(this);
 }

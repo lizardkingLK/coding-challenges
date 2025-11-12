@@ -1,3 +1,4 @@
+using tetris.Core.Enums.Commands;
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
 
@@ -9,6 +10,8 @@ public interface IPlayable
     public Arguments Arguments { get; init; }
     public IOutput Output { get; init; }
 
-    Result<bool> Create();
+    public Result<bool> Create();
+    public void Input(InputTypeEnum inputType);
     public Result<bool> Play();
+    public void Pause();
 }

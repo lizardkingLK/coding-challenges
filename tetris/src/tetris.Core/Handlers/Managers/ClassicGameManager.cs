@@ -1,9 +1,7 @@
 using tetris.Core.Abstractions;
-using tetris.Core.Enums.Cordinates;
-using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
+using tetris.Core.Enums.Commands;
 using tetris.Core.Players;
 using tetris.Core.Shared;
-using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
 
 namespace tetris.Core.Handlers.Managers;
@@ -36,13 +34,12 @@ public class ClassicGameManager : IManager
 
     public Result<bool> Play()
     {
+        Playable!.Play();
+
         return new(true);
     }
 
-    public void Pause()
-    {
-        throw new NotImplementedException();
-    }
+    public void Pause() => Playable!.Pause();
 
     public void Reset()
     {
@@ -53,4 +50,7 @@ public class ClassicGameManager : IManager
     {
         throw new NotImplementedException();
     }
+
+    public void Input(InputTypeEnum inputType)
+    => Playable!.Input(inputType);
 }

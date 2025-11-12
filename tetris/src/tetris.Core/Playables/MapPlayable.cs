@@ -1,4 +1,5 @@
 using tetris.Core.Abstractions;
+using tetris.Core.Enums.Commands;
 using tetris.Core.Enums.Cordinates;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
@@ -21,6 +22,8 @@ public class MapPlayable(
     public Result<bool> Create()
     {
         Output.Map = new Block[Output.Height, Output.Width];
+        Output.Availability = new bool[Output.Height, Output.Width];
+
         int length = Output.Height * Output.Width;
         int y;
         int x;
@@ -30,7 +33,11 @@ public class MapPlayable(
             y = i / Output.Width;
             x = i % Output.Width;
             block = Output.Root + new Position(y, x);
-            Output.Map[y, x] = GetMapBlock(block.Y, block.X);
+            Output.Map[y, x] = GetMapBlock(
+                block.Y,
+                block.X,
+                out bool isAvailable);
+            Output.Availability[y, x] = isAvailable;
         }
 
         return Next?.Create() ?? new(true);
@@ -38,12 +45,28 @@ public class MapPlayable(
 
     public Result<bool> Play()
     {
-        return new(true);
+        // TODO: check if droppable or blocked
+
+        return Next?.Play()!;
     }
 
-    private Block GetMapBlock(int y, int x) => IsNonWallBlock(y, x)
-    ? new(y, x) { Symbol = SymbolSpaceBlock }
-    : new(y, x) { Symbol = SymbolWallBlock, Color = _wallColor };
+    public void Input(InputTypeEnum inputType)
+    {
+        // TODO: check if blocked or continue move/rotate
+
+        Console.WriteLine(inputType);
+    }
+
+    public void Pause() => Next?.Pause();
+
+    private Block GetMapBlock(int y, int x, out bool isAvailable)
+    {
+        isAvailable = IsNonWallBlock(y, x);
+
+        return isAvailable
+            ? new(y, x) { Symbol = SymbolSpaceBlock }
+            : new(y, x) { Symbol = SymbolWallBlock, Color = _wallColor };
+    }
 
     private bool IsNonWallBlock(int y, int x)
     => x > Output.Borders![DirectionEnum.Left]
