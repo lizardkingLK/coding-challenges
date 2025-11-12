@@ -4,14 +4,14 @@ using static System.Console;
 
 public static class ConsoleHelper
 {
-    public static void WriteError(
-        string content,
+    public static void WriteAt(
+        object content,
         int y,
         int x,
         ConsoleColor color)
     {
         ForegroundColor = color;
-        SetCursorPosition(y, x);
+        SetCursorPosition(x, y);
         WriteLine(content);
         ResetColor();
     }

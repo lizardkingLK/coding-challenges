@@ -1,6 +1,7 @@
 ﻿using tetris.Core.Abstractions;
+using tetris.Core.Library.DataStructures.Linear.Queues.ArrayQueue;
 using tetris.Core.Shared;
-using tetris.Core.State;
+using tetris.Core.State.Misc;
 using static tetris.Core.Helpers.CommandHelper;
 using static tetris.Core.Helpers.ControllerHelper;
 using static tetris.Core.Helpers.ValidationHelper;
@@ -23,6 +24,10 @@ public static class Tetris
             HandleError(controllerResult.Errors!);
         }
 
-        controllerResult.Data!.Execute();
+        Result<bool> executionResult = controllerResult.Data!.Execute();
+        if (executionResult.Errors != null)
+        {
+            HandleError(executionResult.Errors!);
+        }
     }
 }

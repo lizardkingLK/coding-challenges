@@ -7,7 +7,7 @@ using tetris.Core.State.Misc;
 
 namespace tetris.Core.Validators;
 
-public class DifficultyValidator(
+public class GameModeValidator(
     Arguments Value,
     HashMap<ArgumentTypeEnum, string> Values,
     IValidator<ArgumentTypeEnum, Arguments>? Next = null)
@@ -21,17 +21,17 @@ public class DifficultyValidator(
 
     public Result<Arguments> Validate()
     {
-        if (!Values.TryGetValue(ArgumentTypeEnum.DifficultyLevel, out string? input))
+        if (!Values.TryGetValue(ArgumentTypeEnum.GameMode, out string? input))
         {
             return Next?.Validate() ?? new(Value);
         }
 
-        if (!Enum.TryParse(input, out DifficultyLevelEnum value) || !Enum.IsDefined(value))
+        if (!Enum.TryParse(input, out GameModeEnum value) || !Enum.IsDefined(value))
         {
-            return new(null, $"error. invalid difficulty value provided: {input}");
+            return new(null, $"error. invalid game mode value provided: {input}");
         }
 
-        Value.DifficultyLevel = value;
+        Value.GameMode = value;
 
         return Next?.Validate() ?? new(Value);
     }

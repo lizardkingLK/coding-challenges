@@ -1,4 +1,4 @@
-using tetris.Core.Enums;
+using tetris.Core.Enums.Misc;
 
 namespace tetris.Core.Attributes;
 
@@ -7,9 +7,6 @@ public class ArgumentAttribute : Attribute
 {
     public required string Prefix { get; init; }
     public required string Name { get; init; }
-    public object? Default { get; init; }
     public ArgumentTypeEnum Type { get; init; }
     public bool IsSwitch { get; init; }
-
-
 }

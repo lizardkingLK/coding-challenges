@@ -1,10 +1,11 @@
 using System.Reflection;
 using tetris.Core.Abstractions;
 using tetris.Core.Attributes;
-using tetris.Core.Enums;
+using tetris.Core.Enums.Misc;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
-using tetris.Core.State;
+using tetris.Core.State.Misc;
+using tetris.Core.Validators;
 
 namespace tetris.Core.Helpers;
 
@@ -27,9 +28,18 @@ public static class ValidationHelper
         return new(validatorResult.Data);
     }
 
-    private static IValidator<ArgumentTypeEnum, Arguments> GetValidator(HashMap<ArgumentTypeEnum, string> data)
+    private static IValidator<ArgumentTypeEnum, Arguments> GetValidator(HashMap<ArgumentTypeEnum, string> values)
     {
-        throw new NotImplementedException();
+        Arguments value = new();
+
+        IValidator<ArgumentTypeEnum, Arguments> mapSizeValidator = new MapSizeValidator(value, values);
+        IValidator<ArgumentTypeEnum, Arguments> outputTypeValidator = new OutputTypeValidator(value, values, mapSizeValidator);
+        IValidator<ArgumentTypeEnum, Arguments> difficultyValidator = new DifficultyValidator(value, values, outputTypeValidator);
+        IValidator<ArgumentTypeEnum, Arguments> gameModeValidator = new GameModeValidator(value, values, difficultyValidator);
+        IValidator<ArgumentTypeEnum, Arguments> interactiveValidator = new InteractiveValidator(value, values, gameModeValidator);
+        IValidator<ArgumentTypeEnum, Arguments> helpValidator = new HelpValidator(value, values, interactiveValidator);
+
+        return helpValidator;
     }
 
     private static Result<HashMap<ArgumentTypeEnum, string>> GetArgumentMap(string[] arguments)

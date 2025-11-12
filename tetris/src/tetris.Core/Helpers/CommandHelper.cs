@@ -4,9 +4,15 @@ namespace tetris.Core.Helpers;
 
 public static class CommandHelper
 {
-    public static void HandleError(string errors)
+    public static void HandleError(string content)
     {
-        WriteError(errors, 0, 0, ConsoleColor.Red);
+        WriteAt(content, 0, 0, ConsoleColor.Red);
         Environment.Exit(1);
+    }
+
+    public static void HandleSuccess(string content)
+    {
+        WriteAt(content, 0, 0, ConsoleColor.Green);
+        Environment.Exit(0);
     }
 }
