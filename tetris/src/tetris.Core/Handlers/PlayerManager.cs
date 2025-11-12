@@ -7,14 +7,14 @@ namespace tetris.Core.Handlers;
 public class PlayerManager(IManager gameManager)
 {
     private readonly IManager _gameManager = gameManager;
-    private readonly HashMap<ConsoleKey, InputTypeEnum> _keyAndInputs
+    private readonly HashMap<ConsoleKey, CommandTypeEnum> _keyAndInputs
     = new(
-        (ConsoleKey.Escape, InputTypeEnum.PauseGame),
-        (ConsoleKey.Z, InputTypeEnum.RotateIt),
-        (ConsoleKey.LeftArrow, InputTypeEnum.GoLeft),
-        (ConsoleKey.RightArrow, InputTypeEnum.GoRight),
-        (ConsoleKey.DownArrow, InputTypeEnum.GoDown),
-        (ConsoleKey.Spacebar, InputTypeEnum.SlamDown));
+        (ConsoleKey.Escape, CommandTypeEnum.PauseGame),
+        (ConsoleKey.Z, CommandTypeEnum.RotateIt),
+        (ConsoleKey.LeftArrow, CommandTypeEnum.GoLeft),
+        (ConsoleKey.RightArrow, CommandTypeEnum.GoRight),
+        (ConsoleKey.DownArrow, CommandTypeEnum.GoDown),
+        (ConsoleKey.Spacebar, CommandTypeEnum.SlamDown));
 
     public void Input()
     {
@@ -27,9 +27,9 @@ public class PlayerManager(IManager gameManager)
 
             if (_keyAndInputs.TryGetValue(
                 Console.ReadKey().Key,
-                out InputTypeEnum inputType))
+                out CommandTypeEnum commandType))
             {
-                _gameManager.Input(inputType);
+                _gameManager.Input(commandType);
             }
         }
     }

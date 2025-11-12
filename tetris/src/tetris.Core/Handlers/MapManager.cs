@@ -1,7 +1,9 @@
 using tetris.Core.Abstractions;
+using tetris.Core.Enums.Commands;
 using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Library.DataStructures.Linear.Queues.ArrayQueue;
+using tetris.Core.Library.DataStructures.Linear.Queues.DoublyEndedQueue;
 using tetris.Core.Shared;
 using tetris.Core.State.Assets;
 using tetris.Core.State.Cordinates;
@@ -13,8 +15,9 @@ public class MapManager(IOutput output)
 {
     private readonly IOutput _output = output;
     private readonly ConsoleColor _wallColor = ConsoleColor.Gray;
-    private readonly ArrayQueue<(Block[,], Position)>? _tetrominoQueue = new(QueuedTetrominoCount);
-    private DynamicallyAllocatedArray<(Block[,], Position)>? _tetrominoes = [];
+    private readonly ArrayQueue<(Block[,], Position)> _tetrominoQueue = new(QueuedTetrominoCount);
+    private readonly Deque<(Block[,], Position, CommandTypeEnum)> _actionsQueue = new();
+    private readonly DynamicallyAllocatedArray<(Block[,], Position)> _tetrominoes = [];
 
     public Result<bool> Create()
     {
@@ -37,22 +40,28 @@ public class MapManager(IOutput output)
             return new(false);
         }
 
-        if (TryStoreTetromino())
-        {
-            return new(false);
-        }
-
         return new(true);
-    }
-
-    private bool TryStoreTetromino()
-    {
-        throw new NotImplementedException();
     }
 
     private bool TryTravelTetromino()
     {
-        throw new NotImplementedException();
+        while (!_actionsQueue.IsEmpty())
+        {
+            (Block[,] map, Position position, CommandTypeEnum commandType) = _actionsQueue.RemoveFromFront();
+            (map, position, commandType) = HandleTetrominoAction(map, position, commandType);
+            if (commandType == CommandTypeEnum.StoredIt)
+            {
+                break;
+            }
+
+            _actionsQueue.AddToRear((map, position, commandType));
+
+            Thread.Sleep(1000);
+        }
+
+        _actionsQueue.Purge();
+
+        return true;
     }
 
     private bool TryChooseTetromino()
@@ -64,21 +73,7 @@ public class MapManager(IOutput output)
             return false;
         }
 
-        Position previous;
-        Position spawn;
-        Block newBlock;
-        foreach (Block block in map!)
-        {
-            ((int y, int x), _, _) = block;
-            spawn = origin + block.Position;
-            previous = _output.Map![spawn.Y, spawn.X].Position;
-            newBlock = new(previous, block);
-            _output.Map![spawn.Y, spawn.X] = newBlock;
-            _output.Stream(newBlock);
-        }
-
-        _tetrominoQueue!.Enqueue(
-            _tetrominoes![Random.Shared.Next(_tetrominoes!.Size)]);
+        _actionsQueue.AddToRear((map, origin, CommandTypeEnum.SpawnIt));
 
         return true;
     }
@@ -94,8 +89,6 @@ public class MapManager(IOutput output)
 
     private void CreateList()
     {
-        _tetrominoes = [];
-
         int i;
         int length;
         int width;
@@ -144,6 +137,40 @@ public class MapManager(IOutput output)
                 _output.Availability[y, x] = false;
             }
         }
+    }
+
+    private (Block[,], Position, CommandTypeEnum) HandleTetrominoAction(
+        Block[,] map,
+        Position position,
+        CommandTypeEnum commandType)
+    {
+        if (commandType == CommandTypeEnum.SpawnIt)
+        {
+            position = SpawnIt(map, position);
+        }
+
+        return (map, position, CommandTypeEnum.GoDown);
+    }
+
+    private Position SpawnIt(Block[,] map, Position origin)
+    {
+        Position previous;
+        Position spawn;
+        Block newBlock;
+        foreach (Block block in map!)
+        {
+            ((int y, int x), _, _) = block;
+            spawn = origin + block.Position;
+            previous = _output.Map![spawn.Y, spawn.X].Position;
+            newBlock = new(previous, block);
+            _output.Map![spawn.Y, spawn.X] = newBlock;
+            _output.Stream(newBlock);
+        }
+
+        _tetrominoQueue!.Enqueue(
+            _tetrominoes![Random.Shared.Next(_tetrominoes!.Size)]);
+
+        return origin;
     }
 
     private bool IsNonWallBlock(int y, int x)

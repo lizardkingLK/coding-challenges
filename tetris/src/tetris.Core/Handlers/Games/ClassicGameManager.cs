@@ -63,7 +63,7 @@ public class ClassicGameManager : IManager
         throw new NotImplementedException();
     }
 
-    public void Input(InputTypeEnum inputType)
+    public void Input(CommandTypeEnum commandType)
     {
         throw new NotImplementedException();
     }

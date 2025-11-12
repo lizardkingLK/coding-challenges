@@ -1,8 +1,10 @@
 namespace tetris.Core.Enums.Commands;
 
-public enum InputTypeEnum
+public enum CommandTypeEnum
 {
     PauseGame,
+    SpawnIt,
+    StoredIt,
     RotateIt,
     GoRight,
     GoLeft,
