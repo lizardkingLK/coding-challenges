@@ -33,7 +33,7 @@ public class Deque<T> : IEnumerable<T>
         if (_head == null)
         {
             _head = newNode;
-            _tail = newNode;
+            _tail = _head;
             _size++;
             return;
         }
@@ -56,7 +56,7 @@ public class Deque<T> : IEnumerable<T>
         if (_tail == null)
         {
             _tail = newNode;
-            _head = newNode;
+            _head = _tail;
             _size++;
             return;
         }
@@ -81,6 +81,11 @@ public class Deque<T> : IEnumerable<T>
         }
 
         LinkNode removed = _head;
+        if (removed == _tail)
+        {
+            _tail = null;
+        }
+
         LinkNode? next = _head.Next;
         if (next != null)
         {
@@ -104,6 +109,11 @@ public class Deque<T> : IEnumerable<T>
         }
 
         LinkNode removed = _head;
+        if (removed == _tail)
+        {
+            _tail = null;
+        }
+
         LinkNode? next = _head.Next;
         if (next != null)
         {
@@ -126,6 +136,11 @@ public class Deque<T> : IEnumerable<T>
         }
 
         LinkNode removed = _tail;
+        if (removed == _head)
+        {
+            _head = null;
+        }
+
         LinkNode? previous = _tail.Previous;
         if (previous != null)
         {
@@ -149,6 +164,11 @@ public class Deque<T> : IEnumerable<T>
         }
 
         LinkNode removed = _tail;
+        if (removed == _head)
+        {
+            _head = null;
+        }
+
         LinkNode? previous = _tail.Previous;
         if (previous != null)
         {

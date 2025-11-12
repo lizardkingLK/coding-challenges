@@ -43,6 +43,15 @@ public class MapManager(IOutput output)
         return new(true);
     }
 
+
+    public void Input(CommandTypeEnum commandType)
+    {
+        if (commandType == CommandTypeEnum.RotateIt)
+        {
+            // TODO: rotate it. make map global state
+        }
+    }
+
     private bool TryTravelTetromino()
     {
         while (!_actionsQueue.IsEmpty())
@@ -171,6 +180,11 @@ public class MapManager(IOutput output)
             _tetrominoes![Random.Shared.Next(_tetrominoes!.Size)]);
 
         return origin;
+    }
+
+    private void RotateIt()
+    {
+        throw new NotImplementedException();
     }
 
     private bool IsNonWallBlock(int y, int x)

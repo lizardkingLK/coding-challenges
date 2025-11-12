@@ -9,10 +9,10 @@ namespace tetris.Core.Handlers.Games;
 
 public class ClassicGameManager : IManager
 {
+    private readonly MapSizeEnum _mapSize;
     public IOutput? Output { get; set; }
     public PlayerManager? PlayerManager { get; set; }
     public MapManager? MapManager { get; set; }
-    private MapSizeEnum _mapSize;
 
     public ClassicGameManager(Arguments arguments)
     {
@@ -50,6 +50,8 @@ public class ClassicGameManager : IManager
 
     public Result<bool> Play()
     {
+        Task.Run(PlayerManager!.Input);
+
         return MapManager!.Play();
     }
 
@@ -65,6 +67,11 @@ public class ClassicGameManager : IManager
 
     public void Input(CommandTypeEnum commandType)
     {
-        throw new NotImplementedException();
+        if (commandType == CommandTypeEnum.PauseGame)
+        {
+            return;
+        }
+        
+        MapManager!.Input(commandType);
     }
 }
