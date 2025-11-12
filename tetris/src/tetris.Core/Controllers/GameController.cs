@@ -1,13 +1,23 @@
 using tetris.Core.Abstractions;
-using tetris.Core.Handlers;
+using tetris.Core.Enums.Arguments;
+using tetris.Core.Handlers.Games;
+using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
 
 namespace tetris.Core.Controllers;
 
-public class GameController(Arguments arguments) : IController
+public class GameController : IController
 {
-    private readonly GameManager _gameManager = new(arguments);
+    private readonly HashMap<GameModeEnum, IManager> _gameSelector;
+
+    private readonly IManager _gameManager;
+
+    public GameController(Arguments arguments)
+    {
+        _gameSelector = new((GameModeEnum.Classic, new ClassicGameManager(arguments)));
+        _gameManager = _gameSelector[arguments.GameMode]!;
+    }
 
     public Result<bool> Execute()
     {

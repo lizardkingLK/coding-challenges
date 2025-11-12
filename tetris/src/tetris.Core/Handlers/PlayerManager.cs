@@ -1,13 +1,14 @@
+using tetris.Core.Abstractions;
 using tetris.Core.Enums.Commands;
-using tetris.Core.Handlers;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 
-namespace tetris.Core.Players;
+namespace tetris.Core.Handlers;
 
-public class Player(GameManager gameManager)
+public class PlayerManager(IManager gameManager)
 {
-    private readonly GameManager _gameManager = gameManager;
-    private readonly HashMap<ConsoleKey, InputTypeEnum> _keyAndInputs = new(
+    private readonly IManager _gameManager = gameManager;
+    private readonly HashMap<ConsoleKey, InputTypeEnum> _keyAndInputs
+    = new(
         (ConsoleKey.Escape, InputTypeEnum.PauseGame),
         (ConsoleKey.Z, InputTypeEnum.RotateIt),
         (ConsoleKey.LeftArrow, InputTypeEnum.GoLeft),
