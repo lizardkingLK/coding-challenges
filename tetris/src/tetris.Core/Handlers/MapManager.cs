@@ -9,6 +9,8 @@ using tetris.Core.State.Assets;
 using tetris.Core.State.Assets.Tetrominoes;
 using tetris.Core.State.Cordinates;
 using static tetris.Core.Shared.Constants;
+using static tetris.Core.Shared.Values;
+using static tetris.Core.Helpers.BlockHelper;
 
 namespace tetris.Core.Handlers;
 
@@ -25,7 +27,6 @@ public class MapManager(IOutput output)
         new TetrominoZ());
 
     private readonly IOutput _output = output;
-    private readonly ConsoleColor _wallColor = ConsoleColor.Gray;
     private readonly Deque<CommandTypeEnum> _actionsQueue = new();
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(_tetrominoes.Count());
 
@@ -41,17 +42,18 @@ public class MapManager(IOutput output)
 
     public Result<bool> Play()
     {
-        if (!TryChooseTetromino())
+        while (true)
         {
-            return new(false);
-        }
+            if (!TryChooseTetromino())
+            {
+                return new(false);
+            }
 
-        if (!TryTravelTetromino())
-        {
-            return new(false);
+            if (!TryTravelTetromino())
+            {
+                return new(false);
+            }
         }
-
-        return new(true);
     }
 
     public void Input(CommandTypeEnum commandType)
@@ -71,7 +73,7 @@ public class MapManager(IOutput output)
             }
 
             HandleTetrominoAction(commandType);
-            Thread.Sleep(1000);
+            Thread.Sleep(durationMoveInterval);
         }
 
         _actionsQueue.Purge();
@@ -113,12 +115,12 @@ public class MapManager(IOutput output)
             position = _output.Root + new Position(y, x);
             if (IsNonWallBlock(position.Y, position.X))
             {
-                _output.Map[y, x] = new(position) { Symbol = SymbolSpaceBlock };
+                _output.Map[y, x] = CreateBlock(position);
                 _output.Availability[y, x] = true;
             }
             else
             {
-                _output.Map[y, x] = new(position) { Symbol = SymbolWallBlock, Color = _wallColor };
+                _output.Map[y, x] = CreateBlock(position, SymbolWallBlock, ColorWall);
                 _output.Availability[y, x] = false;
             }
         }
@@ -151,11 +153,12 @@ public class MapManager(IOutput output)
         }
 
         // TODO: add to queue of go down if not stored it if touched bottom
+        _actionsQueue.AddToRear(CommandTypeEnum.RotateIt);
     }
 
     private void SpawnIt()
     {
-        Position previous;
+        Position relative;
         Position spawn;
         Block newBlock;
         (Tetromino? tetromino, Block[,]? map, Position position) = _current;
@@ -163,8 +166,8 @@ public class MapManager(IOutput output)
         {
             ((int y, int x), _, _) = block;
             spawn = position + block.Position;
-            previous = _output.Map![spawn.Y, spawn.X].Position;
-            newBlock = new(previous, block);
+            relative = _output.Map![spawn.Y, spawn.X].Position;
+            newBlock = CreateBlock(relative, block);
             map[y, x] = newBlock;
             _output.Map![spawn.Y, spawn.X] = newBlock;
             _output.Stream(newBlock);
@@ -175,7 +178,38 @@ public class MapManager(IOutput output)
 
     private void RotateIt()
     {
-        throw new NotImplementedException();
+        // check if rotatable
+
+        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        int height = tetromino.Height;
+        int width = tetromino.Width;
+        int length = height * width;
+        int i;
+        int y;
+        int x;
+        Block block;
+        for (i = 0; i < length; i++)
+        {
+            y = i / width;
+            x = i % width;
+            block = map[y, x];
+            block = CreateBlock(block.Position, SymbolSpaceBlock, ColorSpace);
+            _output.Map![y, x] = block;
+            _output.Stream(block);
+        }
+
+        map = tetromino.Next();
+        for (i = 0; i < length; i++)
+        {
+            y = i / width;
+            x = i % width;
+            block = map[y, x];
+            block = CreateBlock(_output.Root + position + block.Position, block.Symbol, block.Color);
+            _output.Map![y, x] = block;
+            _output.Stream(block);
+        }
+
+        _current = (tetromino, map, position);
     }
 
     private bool IsNonWallBlock(int y, int x)
