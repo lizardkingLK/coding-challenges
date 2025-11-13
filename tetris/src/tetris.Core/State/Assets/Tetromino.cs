@@ -1,6 +1,4 @@
-using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
-using tetris.Core.State.Assets.Tetrominos;
 using tetris.Core.State.Cordinates;
 using static tetris.Core.Shared.Constants;
 
@@ -8,9 +6,6 @@ namespace tetris.Core.State.Assets;
 
 public abstract record Tetromino
 {
-    public static readonly DynamicallyAllocatedArray<Tetromino> allTetrominoes
-    = new(new TetrominoL());
-
     public abstract int Size { get; }
     public abstract int Width { get; }
     protected abstract int Height { get; }
@@ -51,4 +46,10 @@ public abstract record Tetromino
 
         return transformed;
     }
+
+    public Block[,] Get()
+    => Get(Random.Shared.Next(Size));
+
+    public Block[,] Next(int currentIndex)
+    => Get((currentIndex + 1) % Size);
 }

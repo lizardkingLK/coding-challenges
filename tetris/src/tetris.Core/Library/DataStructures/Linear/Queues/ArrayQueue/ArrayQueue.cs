@@ -1,6 +1,8 @@
+using System.Collections;
+
 namespace tetris.Core.Library.DataStructures.Linear.Queues.ArrayQueue;
 
-public class ArrayQueue<T>
+public class ArrayQueue<T> : IEnumerable<T>
 {
     private readonly int _capacity;
     private readonly T[] _values;
@@ -40,6 +42,43 @@ public class ArrayQueue<T>
         _size--;
 
         return removed;
+    }
+
+    public bool TryDequeue(out T? dequeued)
+    {
+        dequeued = default;
+
+        if (IsEmpty())
+        {
+            return false;
+        }
+
+        dequeued = _values[_front];
+        _front = (_front + 1) % _capacity;
+        _size--;
+
+        return true;
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        int i = _front;
+        do
+        {
+            yield return _values[i];
+            if (i == _rear)
+            {
+                break;
+            }
+
+            i = (i + 1) % _capacity;            
+        }
+        while (true);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 
     private bool IsEmpty() => _size == 0;
