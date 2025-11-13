@@ -64,10 +64,8 @@ public class MapManager(IOutput output)
 
     private bool TryTravelTetromino()
     {
-        CommandTypeEnum commandType;
-        while (!_actionsQueue.IsEmpty())
+        while (_actionsQueue.TryRemoveFromFront(out CommandTypeEnum commandType))
         {
-            commandType = _actionsQueue.RemoveFromFront();
             if (commandType == CommandTypeEnum.StoredIt)
             {
                 break;
@@ -154,7 +152,8 @@ public class MapManager(IOutput output)
         }
 
         // TODO: add to queue of go down if not stored it if touched bottom
-        _actionsQueue.AddToRear(CommandTypeEnum.RotateIt);
+        _actionsQueue.AddToRear(CommandTypeEnum.GoDown);
+        // _actionsQueue.AddToRear(CommandTypeEnum.RotateIt);
     }
 
     private void SpawnIt()
@@ -207,7 +206,7 @@ public class MapManager(IOutput output)
             x = i % width;
             block = map![y, x];
             block = CreateBlock(position + block.Position, block.Symbol, block.Color);
-            (y, x) = block.Position;            
+            (y, x) = block.Position;
             _output.Map![y, x] = block;
             _output.Stream(block);
         }

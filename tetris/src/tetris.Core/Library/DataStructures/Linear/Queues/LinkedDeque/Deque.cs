@@ -24,174 +24,191 @@ public class Deque<T> : IEnumerable<T>
     }
 
     private LinkNode? _head;
+
     private LinkNode? _tail;
-    private int _size;
+
+    public int Size { get; set; }
+
+    private readonly Lock _lock = new();
 
     public void AddToFront(T value)
     {
+        // lock (_lock)
+        // {
         LinkNode newNode = new(value);
+        LinkNode? next;
         if (_head == null)
         {
             _head = newNode;
-            _tail = _head;
-            _size++;
+            // _tail = _head;
+            if (_tail == null)
+            {
+                return;
+            }
+
+            LinkNode? current = _tail;
+            next = null;
+            while (current != null)
+            {
+                next = current;
+                current = current.Next;
+            }
+
+            next!.Previous = _head;
+            _head.Next = next;
+
             return;
         }
 
-        LinkNode? next = _head.Next;
-        newNode.Next = next;
-        if (next != null)
-        {
-            next.Previous = newNode;
-        }
-
-        _head.Next = null;
+        _head!.Previous = newNode;
+        newNode.Next = _head;
         _head = newNode;
-        _size++;
+        Size++;
+        // }
     }
 
     public void AddToRear(T value)
     {
+        // lock (_lock)
+        // {
         LinkNode newNode = new(value);
+        LinkNode? previous;
         if (_tail == null)
         {
             _tail = newNode;
-            _head = _tail;
-            _size++;
+            // _head = _tail;
+            Size++;
+            if (_head == null)
+            {
+                return;
+            }
+
+            LinkNode? current = _head;
+            previous = null;
+            while (current != null)
+            {
+                previous = current;
+                current = current.Next;
+            }
+
+            previous!.Next = _tail;
+            _tail.Previous = previous;
+
             return;
         }
 
-        LinkNode? previous = _tail.Next;
-        newNode.Previous = previous;
-        if (previous != null)
-        {
-            previous.Next = newNode;
-        }
-
-        _tail.Next = null;
+        _tail!.Next = newNode;
+        newNode.Previous = _tail;
         _tail = newNode;
-        _size++;
+        Size++;
+        // }
     }
 
     public T RemoveFromFront()
     {
-        if (_head == null)
+        // lock (_lock)
+        // {
+        LinkNode removed = _head
+            ?? throw new ApplicationException("error. cannot remove. queue is empty");
+        if (removed.Next != null)
         {
-            throw new ApplicationException("error. cannot remove. queue is empty");
+            removed.Next.Previous = null;
         }
 
-        LinkNode removed = _head;
-        if (removed == _tail)
-        {
-            _tail = null;
-        }
-
-        LinkNode? next = _head.Next;
-        if (next != null)
-        {
-            next.Previous = null;
-        }
-
+        _head = removed.Next;
         removed.Next = null;
-        _head = next;
-        _size--;
+        Size--;
 
         return removed.Value;
+        // }
     }
 
     public bool TryRemoveFromFront(out T? value)
     {
+        // lock (_lock)
+        // {
         value = default;
 
-        if (_head == null)
+        LinkNode? removed = _head ?? _tail;
+        if (removed == null)
         {
             return false;
         }
 
-        LinkNode removed = _head;
-        if (removed == _tail)
+        if (removed.Next != null)
         {
-            _tail = null;
+            removed.Next.Previous = null;
         }
 
-        LinkNode? next = _head.Next;
-        if (next != null)
-        {
-            next.Previous = null;
-        }
-
+        _head = removed.Next;
         removed.Next = null;
-        _head = next;
         value = removed.Value;
-        _size--;
+        Size--;
 
         return true;
+        // }
     }
 
     public T RemoveFromRear()
     {
-        if (_tail == null)
+        // lock (_lock)
+        // {
+        LinkNode? removed = _tail
+            ?? throw new ApplicationException("error. cannot remove. queue is empty");
+        if (removed.Previous != null)
         {
-            throw new ApplicationException("error. cannot remove. queue is empty");
+            removed.Previous.Next = null;
         }
 
-        LinkNode removed = _tail;
-        if (removed == _head)
-        {
-            _head = null;
-        }
-
-        LinkNode? previous = _tail.Previous;
-        if (previous != null)
-        {
-            previous.Next = null;
-        }
-
+        _tail = removed.Previous;
         removed.Previous = null;
-        _tail = previous;
-        _size--;
+        Size--;
 
         return removed.Value;
+        // }
     }
 
     public bool TryRemoveFromRear(out T? value)
     {
+        // lock (_lock)
+        // {
         value = default;
 
-        if (_tail == null)
+        LinkNode? removed = _tail ?? _head;
+        if (removed == null)
         {
             return false;
         }
 
-        LinkNode removed = _tail;
-        if (removed == _head)
+        if (removed.Previous != null)
         {
-            _head = null;
+            removed.Previous.Next = null;
         }
 
-        LinkNode? previous = _tail.Previous;
-        if (previous != null)
-        {
-            previous.Next = null;
-        }
-
+        _tail = removed.Previous;
         removed.Previous = null;
-        _tail = previous;
         value = removed.Value;
-        _size--;
+        Size--;
 
         return true;
+        // }
     }
 
     public void Purge()
     {
-        while (!IsEmpty())
+        // lock (_lock)
+        // {
+        while (TryRemoveFromFront(out T? _))
         {
-            _ = RemoveFromFront();
+            break;
         }
-    }
 
-    public bool IsEmpty() => _size == 0;
+        while (TryRemoveFromFront(out T? _))
+        {
+            break;
+        }
+        // }
+    }
 
     public IEnumerator<T> GetEnumerator()
     {
