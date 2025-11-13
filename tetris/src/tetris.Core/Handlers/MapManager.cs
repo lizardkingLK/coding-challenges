@@ -153,8 +153,6 @@ public class MapManager(IOutput output)
 
         // TODO: add to queue of go down if not stored it if touched bottom
         _actionsQueue.AddToRear(CommandTypeEnum.GoDown);
-
-        // _actionsQueue.AddToRear(CommandTypeEnum.RotateIt);
     }
 
     private void SpawnIt()

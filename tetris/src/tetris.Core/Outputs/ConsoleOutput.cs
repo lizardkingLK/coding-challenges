@@ -6,6 +6,7 @@ using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.Streamers;
 using static tetris.Core.Shared.Constants;
+using static tetris.Core.Helpers.BlockHelper;
 
 namespace tetris.Core.Outputs;
 
@@ -16,7 +17,7 @@ public class ConsoleOutput : IOutput
 
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
-    // public Position Root { get; set; }
+    public Position Root { get; set; }
     public IStreamer Streamer { get; }
     public bool[,]? Availability { get; set; }
 
@@ -34,9 +35,9 @@ public class ConsoleOutput : IOutput
             return dimensionResult;
         }
 
-        // Root = new(
-        //     Console.WindowHeight / 2 - Height / 2,
-        //     Console.WindowWidth / 2 - Width / 2);
+        Root = new(
+            Console.WindowHeight / 2 - Height / 2,
+            Console.WindowWidth / 2 - Width / 2);
 
         Borders = new(
             (DirectionEnum.Up, 0),
@@ -51,8 +52,35 @@ public class ConsoleOutput : IOutput
         return new(true);
     }
 
+    // TODO: add center aligned as an option in arguments
     public void Stream(Block block)
-    => Streamer.Stream(block, Height, Width, Map!);
+    => Streamer.Stream(
+        CreateBlock(Root + block.Position, block),
+        Height,
+        Width,
+        Map!);
+
+    public void Flush()
+    {
+        Block[,] centered = new Block[Height, Width];
+        int length = Height * Width;
+        int y;
+        int x;
+        Block block;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / Width;
+            x = i % Width;
+            block = Map![y, x];
+            centered[y, x] = new(Root + block.Position)
+            {
+                Symbol = block.Symbol,
+                Color = block.Color,
+            };
+        }
+
+        Streamer.Flush(Height, Width, centered);
+    }
 
     private Result<bool> ValidateDimensions(MapSizeEnum mapSize)
     {

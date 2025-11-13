@@ -29,18 +29,13 @@ public class Deque<T> : IEnumerable<T>
 
     public int Size { get; set; }
 
-    private readonly Lock _lock = new();
-
     public void AddToFront(T value)
     {
-        // lock (_lock)
-        // {
         LinkNode newNode = new(value);
         LinkNode? next;
         if (_head == null)
         {
             _head = newNode;
-            // _tail = _head;
             if (_tail == null)
             {
                 return;
@@ -64,19 +59,16 @@ public class Deque<T> : IEnumerable<T>
         newNode.Next = _head;
         _head = newNode;
         Size++;
-        // }
+        
     }
 
     public void AddToRear(T value)
     {
-        // lock (_lock)
-        // {
         LinkNode newNode = new(value);
         LinkNode? previous;
         if (_tail == null)
         {
             _tail = newNode;
-            // _head = _tail;
             Size++;
             if (_head == null)
             {
@@ -101,13 +93,10 @@ public class Deque<T> : IEnumerable<T>
         newNode.Previous = _tail;
         _tail = newNode;
         Size++;
-        // }
     }
 
     public T RemoveFromFront()
     {
-        // lock (_lock)
-        // {
         LinkNode removed = _head
             ?? throw new ApplicationException("error. cannot remove. queue is empty");
         if (removed.Next != null)
@@ -120,13 +109,11 @@ public class Deque<T> : IEnumerable<T>
         Size--;
 
         return removed.Value;
-        // }
+        
     }
 
     public bool TryRemoveFromFront(out T? value)
     {
-        // lock (_lock)
-        // {
         value = default;
 
         LinkNode? removed = _head ?? _tail;
@@ -146,13 +133,10 @@ public class Deque<T> : IEnumerable<T>
         Size--;
 
         return true;
-        // }
     }
 
     public T RemoveFromRear()
     {
-        // lock (_lock)
-        // {
         LinkNode? removed = _tail
             ?? throw new ApplicationException("error. cannot remove. queue is empty");
         if (removed.Previous != null)
@@ -165,13 +149,10 @@ public class Deque<T> : IEnumerable<T>
         Size--;
 
         return removed.Value;
-        // }
     }
 
     public bool TryRemoveFromRear(out T? value)
     {
-        // lock (_lock)
-        // {
         value = default;
 
         LinkNode? removed = _tail ?? _head;
@@ -191,13 +172,10 @@ public class Deque<T> : IEnumerable<T>
         Size--;
 
         return true;
-        // }
     }
 
     public void Purge()
     {
-        // lock (_lock)
-        // {
         while (TryRemoveFromFront(out T? _))
         {
             break;
@@ -207,7 +185,6 @@ public class Deque<T> : IEnumerable<T>
         {
             break;
         }
-        // }
     }
 
     public IEnumerator<T> GetEnumerator()
