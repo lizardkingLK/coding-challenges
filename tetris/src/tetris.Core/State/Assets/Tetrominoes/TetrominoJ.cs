@@ -20,16 +20,16 @@ public record TetrominoJ : Tetromino
 
     private readonly bool[,] _variantC = new bool[,]
     {
+        { false, false, false },
         { true, true, true },
         { true, false, false },
-        { false, false, false },
     };
 
     private readonly bool[,] _variantD = new bool[,]
     {
-        { false, true, true },
-        { false, false, true },
-        { false, false, true },
+        { true, true, false },
+        { false, true, false },
+        { false, true, false },
     };
 
     public override int Size { get; }

@@ -6,34 +6,18 @@ public record TetrominoI : Tetromino
 {
     private readonly bool[,] _variantA = new bool[,]
     {
-        { true, true, true, true },
-        { false, false, false, false },
-        { false, false, false, false },
-        { false, false, false, false },
+        { false, true, false, false },
+        { false, true, false, false },
+        { false, true, false, false },
+        { false, true, false, false },
     };
 
     private readonly bool[,] _variantB = new bool[,]
     {
-        { false, false, true, false },
-        { false, false, true, false },
-        { false, false, true, false },
-        { false, false, true, false },
-    };
-
-    private readonly bool[,] _variantC = new bool[,]
-    {
-        { false, false, false, false },
         { false, false, false, false },
         { true, true, true, true },
         { false, false, false, false },
-    };
-
-    private readonly bool[,] _variantD = new bool[,]
-    {
-        { false, true, false, false },
-        { false, true, false, false },
-        { false, true, false, false },
-        { false, true, false, false },
+        { false, false, false, false },
     };
 
     public override int Size { get; }
@@ -46,9 +30,7 @@ public record TetrominoI : Tetromino
     {
         Variants = new(
             (0, _variantA),
-            (1, _variantB),
-            (2, _variantC),
-            (3, _variantD));
+            (1, _variantB));
 
         Color = ConsoleColor.Cyan;
         Size = Variants.Count();

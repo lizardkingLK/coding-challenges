@@ -91,5 +91,6 @@ public class ConsoleOutput : IOutput
     {
         Console.CursorVisible = !isOn;
         Console.SetCursorPosition(0, 0);
+        Console.Clear();
     }
 }

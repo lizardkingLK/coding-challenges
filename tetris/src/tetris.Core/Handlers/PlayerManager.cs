@@ -26,8 +26,7 @@ public class PlayerManager(IManager gameManager)
             }
 
             if (_keyAndInputs.TryGetValue(
-                Console.ReadKey().Key,
-                out CommandTypeEnum commandType))
+                Console.ReadKey(true).Key, out CommandTypeEnum commandType))
             {
                 _gameManager.Input(commandType);
             }
