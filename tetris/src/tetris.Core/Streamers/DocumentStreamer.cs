@@ -27,7 +27,7 @@ public record DocumentStreamer : IStreamer
                 FileName),
                 FileMode.Create);
 
-        int length = width * height;
+        int length = height * width;
         int y;
         int x;
         int yPrevious = 0;

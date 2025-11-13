@@ -20,5 +20,5 @@ public interface IOutput
 
     public void Clear() => Streamer.Clear();
     public void Flush() => Streamer.Flush(Height, Width, Map!);
-    void Stream(Block block);
+    public void Stream(Block block);
 }

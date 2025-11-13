@@ -194,7 +194,8 @@ public class MapManager(IOutput output)
             y = i / width;
             x = i % width;
             block = _output.Map![y + position.Y, x + position.X];
-            block = CreateBlock(block.Position, SymbolWallBlock, ColorWall);
+            block = CreateBlock(block.Position, SymbolSpaceBlock, ColorSpace);
+            (y, x) = block.Position;
             _output.Map![y, x] = block;
             _output.Stream(block);
         }
@@ -206,6 +207,7 @@ public class MapManager(IOutput output)
             x = i % width;
             block = map![y, x];
             block = CreateBlock(position + block.Position, block.Symbol, block.Color);
+            (y, x) = block.Position;            
             _output.Map![y, x] = block;
             _output.Stream(block);
         }
