@@ -1,6 +1,7 @@
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.State.Cordinates;
 using static tetris.Core.Shared.Constants;
+using static tetris.Core.Helpers.BlockHelper;
 
 namespace tetris.Core.State.Assets;
 
@@ -8,9 +9,10 @@ public abstract record Tetromino
 {
     public abstract int Size { get; }
     public abstract int Width { get; }
-    protected abstract int Height { get; }
+    public abstract int Height { get; }
     protected abstract HashMap<int, bool[,]> Variants { get; }
     protected abstract ConsoleColor Color { get; }
+    public int Index { get; private set; }
 
     public Block[,] Get(int index)
     {
@@ -34,15 +36,13 @@ public abstract record Tetromino
             else
             {
                 symbol = SymbolSpaceBlock;
-                color = ConsoleColor.White;
+                color = ColorSpace;
             }
 
-            transformed[y, x] = new Block(y, x)
-            {
-                Symbol = symbol,
-                Color = color,
-            };
+            transformed[y, x] = CreateBlock(y, x, symbol, color);
         }
+
+        Index = index;
 
         return transformed;
     }
@@ -50,6 +50,6 @@ public abstract record Tetromino
     public Block[,] Get()
     => Get(Random.Shared.Next(Size));
 
-    public Block[,] Next(int currentIndex)
-    => Get((currentIndex + 1) % Size);
+    public Block[,] Next()
+    => Get((Index + 1) % Size);
 }

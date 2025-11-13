@@ -16,7 +16,7 @@ public class DocumentOutput : IOutput
 
     public Block[,]? Map { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
-    public Position Root { get; set; }
+    // public Position Root { get; set; }
     public IStreamer Streamer { get; }
     public bool[,]? Availability { get; set; }
 
@@ -36,15 +36,13 @@ public class DocumentOutput : IOutput
             Width = WidthScaled;
         }
 
-        Root = new(
-            Console.WindowHeight / 2 - Height / 2,
-            Console.WindowWidth / 2 - Width / 2);
+        // Root = new(0, 0);
 
         Borders = new(
-            (DirectionEnum.Up, Root.Y),
-            (DirectionEnum.Right, Root.X + Width - 1),
-            (DirectionEnum.Down, Root.Y + Height - 1),
-            (DirectionEnum.Left, Root.X));
+            (DirectionEnum.Up, 0),
+            (DirectionEnum.Right, Width - 1),
+            (DirectionEnum.Down, Height - 1),
+            (DirectionEnum.Left, 0));
 
         ((IOutput)this).Clear();
 

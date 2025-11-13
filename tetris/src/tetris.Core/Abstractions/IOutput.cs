@@ -10,7 +10,7 @@ public interface IOutput
 {
     public int Height { get; set; }
     public int Width { get; set; }
-    public Position Root { get; set; }
+    // public Position Root { get; set; }
     public IStreamer Streamer { get; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
@@ -20,5 +20,5 @@ public interface IOutput
 
     public void Clear() => Streamer.Clear();
     public void Flush() => Streamer.Flush(Height, Width, Map!);
-    void Stream(Block block);
+    public void Stream(Block block);
 }

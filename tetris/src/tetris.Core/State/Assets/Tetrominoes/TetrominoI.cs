@@ -38,7 +38,7 @@ public record TetrominoI : Tetromino
 
     public override int Size { get; }
     public override int Width { get; }
-    protected override int Height { get; }
+    public override int Height { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
     protected override ConsoleColor Color { get; }
 
