@@ -44,6 +44,22 @@ public class ArrayQueue<T> : IEnumerable<T>
         return removed;
     }
 
+    public bool TryDequeue(out T? dequeued)
+    {
+        dequeued = default;
+
+        if (IsEmpty())
+        {
+            return false;
+        }
+
+        dequeued = _values[_front];
+        _front = (_front + 1) % _capacity;
+        _size--;
+
+        return true;
+    }
+
     public IEnumerator<T> GetEnumerator()
     {
         int i = _front;

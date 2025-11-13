@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace tetris.Core.Library.DataStructures.Linear.Queues.DoublyEndedQueue;
+namespace tetris.Core.Library.DataStructures.Linear.Queues.LinkedDeque;
 
 public class Deque<T> : IEnumerable<T>
 {

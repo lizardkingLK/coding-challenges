@@ -15,6 +15,8 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
         set => Update(value, index);
     }
 
+    public IEnumerable<T?> Values => GetValues();
+
     public DynamicallyAllocatedArray(int capacity = InitialCapacity)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
@@ -186,6 +188,16 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
         return true;
     }
 
+    public void Shuffle()
+    {
+        int randomIndex;
+        for (int i = 0; i < Size; i++)
+        {
+            randomIndex = Random.Shared.Next(Size);
+            (_values[i], _values[randomIndex]) = (_values[randomIndex], _values[i]);
+        }
+    }
+
     public bool Exists(Predicate<T?> lookup, out int? index, out T? value)
     {
         index = default;
@@ -218,6 +230,14 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    private IEnumerable<T?> GetValues()
+    {
+        for (int i = 0; i < Size; i++)
+        {
+            yield return _values[i];
+        }
     }
 
     private bool IsEmpty() => Size == 0;
