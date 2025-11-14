@@ -11,8 +11,8 @@ public abstract record Tetromino
     public abstract int Width { get; }
     public abstract int Height { get; }
     protected abstract HashMap<int, bool[,]> Variants { get; }
-    protected abstract ConsoleColor Color { get; }
-    public int Index { get; private set; }
+    public abstract ConsoleColor Color { get; }
+    protected int Index { get; private set; }
 
     public Block[,] Get(int index)
     {

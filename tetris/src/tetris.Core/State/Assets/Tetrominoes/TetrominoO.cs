@@ -13,8 +13,8 @@ public record TetrominoO : Tetromino
     public override int Size { get; }
     public override int Width { get; }
     public override int Height { get; }
+    public override ConsoleColor Color { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
-    protected override ConsoleColor Color { get; }
 
     public TetrominoO()
     {
