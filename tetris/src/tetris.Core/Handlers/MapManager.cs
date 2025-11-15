@@ -130,13 +130,13 @@ public class MapManager(IOutput output)
     {
         _tetrominoes.Shuffle();
         Block[,] map;
-        int width;
+        int length;
         Position position;
         foreach (Tetromino tetromino in _tetrominoes.Values!)
         {
             map = tetromino.Get();
-            width = tetromino.Width;
-            position = new(1, _output.Width / 2 - width / 2);
+            length = tetromino.Side;
+            position = new(1, _output.Width / 2 - length / 2);
             _tetrominoQueue.Enqueue((tetromino, map, position));
         }
     }
@@ -153,15 +153,15 @@ public class MapManager(IOutput output)
         }
         else if (commandType == CommandTypeEnum.GoRight)
         {
-            Move(new(0, 1));
+            Move(DirectionEnum.Right, new(0, 1));
         }
         else if (commandType == CommandTypeEnum.GoDown)
         {
-            Move(new(1, 0));
+            Move(DirectionEnum.Down, new(1, 0));
         }
         else if (commandType == CommandTypeEnum.GoLeft)
         {
-            Move(new(0, -1));
+            Move(DirectionEnum.Left, new(0, -1));
         }
 
         // TODO: add to queue of go down if not stored it if touched bottom
@@ -192,21 +192,20 @@ public class MapManager(IOutput output)
     {
         // TODO: check if rotatable and early return
 
-        (Tetromino? tetromino, _, Position position) = _current;
-        int height = tetromino.Height;
-        int width = tetromino.Width;
-        ClearIt(position, (height, width));
+        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        int side = tetromino.Side;
+        ClearIt(map, position, side);
 
-        Block[,]? map = tetromino.Next();
-        int length = height * width;
+        map = tetromino.Next();
+        int length = side * side;
         int i;
         int y;
         int x;
         Block block;
         for (i = 0; i < length; i++)
         {
-            y = i / width;
-            x = i % width;
+            y = i / side;
+            x = i % side;
             block = map![y, x];
             block = CreateBlock(position + block.Position, block.Symbol, block.Color);
             (y, x) = block.Position;
@@ -217,134 +216,39 @@ public class MapManager(IOutput output)
         _current = (tetromino, map, position);
     }
 
-    private void Move(Position positionChange)
+    private void Move(DirectionEnum direction, Position positionChange)
     {
         (Tetromino? tetromino, Block[,]? map, Position position) = _current;
-        (int, int) dimensions = (tetromino.Height, tetromino.Width);
-        if (!IsValidMove(map, dimensions, position, positionChange))
+        if (!tetromino.CanMove(_output.Availability!, (position, positionChange), direction))
         {
             return;
         }
 
-        ClearIt(position, dimensions);
-        MoveIt(dimensions, (position, positionChange), tetromino, map);
+        ClearIt(map, position, tetromino.Side);
+        MoveIt((position, positionChange), tetromino, map);
 
         _current = (tetromino, map, position + positionChange);
     }
 
-    private bool IsValidMove(
-        in Block[,] map,
-        in (int Height, int Width) dimensions,
-        in Position position,
-        in Position change)
-    {
-        (int y, int x) = change;
-        if (x == -1)
-        {
-            return IsValidLeft(map, dimensions, position, change);
-        }
-        else if (x == 1)
-        {
-            return IsValidRight(map, dimensions, position, change);
-        }
-        else if (y == 1)
-        {
-            return IsValidDown(map, dimensions, position, change);
-        }
-
-        return true;
-    }
-
-    private bool IsValidDown(
-        in Block[,] map,
-        in (int Height, int Width) dimensions,
-        in Position position,
-        in Position change)
-    {
-        int length = dimensions.Width;
-        Block block;
-        int y;
-        int x;
-        for (int i = 0; i < length; i++)
-        {
-            block = map[dimensions.Height - 1, i];
-            (y, x) = position + block.Position + change;
-            if (IsNotAvaliable(y, x, block))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private bool IsValidRight(
-        in Block[,] map,
-        in (int Height, int Width) dimensions,
-        in Position position,
-        in Position change)
-    {
-        int length = dimensions.Height;
-        Block block;
-        int y;
-        int x;
-        for (int i = 0; i < length; i++)
-        {
-            block = map[i, dimensions.Width - 1];
-            (y, x) = position + block.Position + change;
-            if (IsNotAvaliable(y, x, block))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private bool IsValidLeft(
-        in Block[,] map,
-        in (int Height, int Width) dimensions,
-        in Position position,
-        in Position change)
-    {
-        int length = dimensions.Height;
-        Block block;
-        int y;
-        int x;
-        for (int i = 0; i < length; i++)
-        {
-            block = map[i, 0];
-            (y, x) = position + block.Position + change;
-            if (IsNotAvaliable(y, x, block))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private bool IsNotAvaliable(
-        in int y,
-        in int x,
-        in Block block)
-    => !_output.Availability![y, x]
-    && block.Symbol == SymbolTetrominoBlock;
-
     private void ClearIt(
+        in Block[,] map,
         in Position position,
-        in (int, int) dimensions)
+        in int side)
     {
-        (int height, int width) = dimensions;
-        int length = height * width;
+        int length = side * side;
         int i;
         int y;
         int x;
         Block block;
         for (i = 0; i < length; i++)
         {
-            y = i / width;
-            x = i % width;
+            y = i / side;
+            x = i % side;
+            if (map[y, x].Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
             block = _output.Map![y + position.Y, x + position.X];
             block = CreateBlock(block.Position, SymbolSpaceBlock, ColorSpace);
             (y, x) = block.Position;
@@ -354,15 +258,13 @@ public class MapManager(IOutput output)
     }
 
     private void MoveIt(
-        (int, int) dimensions,
         (Position, Position) positions,
         Tetromino tetromino,
         Block[,] map)
     {
-        (int height, int width) = dimensions;
         (Position previous, Position change) = positions;
-
-        int length = height * width;
+        int side = tetromino.Side;
+        int length = side * side;
         int i;
         int y;
         int x;
@@ -371,19 +273,24 @@ public class MapManager(IOutput output)
         ConsoleColor color;
         for (i = length - 1; i >= 0; i--)
         {
-            y = i / width;
-            x = i % width;
-            if (map[y, x].Symbol == SymbolTetrominoBlock)
+            y = i / side;
+            x = i % side;
+            if (map[y, x].Symbol != SymbolTetrominoBlock)
             {
-                symbol = SymbolTetrominoBlock;
-                color = tetromino.Color;
+                continue;
             }
-            else
-            {
-                block = _output.Map![y + previous.Y, x + previous.X];
-                symbol = block.Symbol;
-                color = block.Color;
-            }
+
+            // if (map[y, x].Symbol == SymbolTetrominoBlock)
+            // {
+            symbol = SymbolTetrominoBlock;
+            color = tetromino.Color;
+            // }
+            // else
+            // {
+            //     block = _output.Map![y + previous.Y, x + previous.X];
+            //     symbol = block.Symbol;
+            //     color = block.Color;
+            // }
 
             block = _output.Map![y + previous.Y, x + previous.X];
             block = CreateBlock(
@@ -391,7 +298,7 @@ public class MapManager(IOutput output)
                 symbol,
                 color);
             (y, x) = block.Position;
-            map[i / width, i % width] = block;
+            map[i / side, i % side] = block;
             _output.Map![y, x] = block;
             _output.Stream(block);
         }

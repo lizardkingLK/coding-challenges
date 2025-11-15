@@ -1,4 +1,6 @@
+using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
+using tetris.Core.State.Cordinates;
 
 namespace tetris.Core.State.Assets.Tetrominoes;
 
@@ -33,10 +35,11 @@ public record TetrominoZ : Tetromino
     };
 
     public override int Size { get; }
-    public override int Width { get; }
-    public override int Height { get; }
+    public override int Side { get; }
     public override ConsoleColor Color { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
+
+    protected override HashMap<int, Position[][]> Borders => throw new NotImplementedException();
 
     public TetrominoZ()
     {
@@ -48,7 +51,6 @@ public record TetrominoZ : Tetromino
 
         Color = ConsoleColor.Red;
         Size = Variants.Count();
-        Height = 3;
-        Width = 3;
+        Side = 3;
     }
 }
