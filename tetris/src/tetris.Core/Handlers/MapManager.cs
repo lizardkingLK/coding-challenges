@@ -18,11 +18,11 @@ public class MapManager(IOutput output)
 {
     private static readonly DynamicallyAllocatedArray<Tetromino> _tetrominoes
     = new(
-        new TetrominoI()//,
-                        // new TetrominoJ(),
-                        // new TetrominoL(),
-                        // new TetrominoO(),
-                        // new TetrominoS(),
+        // new TetrominoI(),
+        // new TetrominoJ(),
+        // new TetrominoL(),
+        // new TetrominoO(),
+        new TetrominoS()//,
                         // new TetrominoT(),
                         // new TetrominoZ()
         );
