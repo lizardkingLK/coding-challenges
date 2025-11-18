@@ -15,9 +15,18 @@ public interface IOutput
     public Block[,]? Map { get; set; }
     public bool[,]? Availability { get; set; }
 
+    public Result<bool> Validate(out int height, out int width);
     public Result<bool> Create();
-
-    public void Clear() => Streamer.Clear();
+    
     public void Flush();
     public void Stream(Block block);
+
+    public void Clear() => Streamer.Clear();
+
+    public void Toggle(bool isOn)
+    {
+        Console.CursorVisible = !isOn;
+        Console.SetCursorPosition(0, 0);
+        Console.Clear();
+    }
 }

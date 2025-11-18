@@ -2,6 +2,7 @@ using tetris.Core.Abstractions;
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
+using tetris.Core.Outputs.Document;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.Streamers;
@@ -9,7 +10,7 @@ using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.Outputs;
 
-public class DocumentOutput(MapSizeEnum mapSize) : IOutput
+public abstract class DocumentOutput(MapSizeEnum mapSize) : IOutput
 {
     public MapSizeEnum MapSize { get; set; } = mapSize;
     public Block[,]? Map { get; set; }
@@ -17,6 +18,11 @@ public class DocumentOutput(MapSizeEnum mapSize) : IOutput
     public Position Root { get; set; }
     public IStreamer Streamer { get; } = new DocumentStreamer();
     public bool[,]? Availability { get; set; }
+
+    public static DocumentOutput CreateScaled(MapSizeEnum mapSize)
+    {
+        return new NormalScaler(mapSize);
+    }
 
     public Result<bool> Create()
     {
@@ -38,4 +44,6 @@ public class DocumentOutput(MapSizeEnum mapSize) : IOutput
 
     public void Stream(Block block)
     => Streamer.Stream(block, HeightNormal, WidthNormal, Map!);
+
+    public abstract Result<bool> Validate(out int height, out int width);
 }

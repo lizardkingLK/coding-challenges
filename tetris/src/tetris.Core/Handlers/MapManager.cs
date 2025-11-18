@@ -66,10 +66,9 @@ public class MapManager(IOutput output)
     {
         while (_actionStack.TryPop(out CommandTypeEnum commandType))
         {
-            HandleTetrominoAction(commandType);
+            HandleAction(commandType);
             if (commandType == CommandTypeEnum.StoreIt)
             {
-                StoreTetrominoBlocks();
                 break;
             }
 
@@ -79,13 +78,10 @@ public class MapManager(IOutput output)
         return true;
     }
 
-    private void StoreTetrominoBlocks()
-    {
-
-    }
-
     private bool TryChooseTetromino()
     {
+        _actionStack.Purge();
+
         if (!_tetrominoQueue.TryPeek(out _current))
         {
             CreateQueue();
@@ -145,7 +141,7 @@ public class MapManager(IOutput output)
         }
     }
 
-    private void HandleTetrominoAction(CommandTypeEnum commandType)
+    private void HandleAction(CommandTypeEnum commandType)
     {
         if (commandType == CommandTypeEnum.SpawnIt)
         {
@@ -174,7 +170,7 @@ public class MapManager(IOutput output)
 
         _actionStack.Push(HasLodged()
         ? CommandTypeEnum.StoreIt
-        : CommandTypeEnum.GoDown);
+        : CommandTypeEnum.PauseGame);
     }
 
     private bool HasLodged()
@@ -222,7 +218,12 @@ public class MapManager(IOutput output)
         (Tetromino? tetromino, Block[,]? map, Position position) = _current;
         foreach (Block block in map)
         {
-            ((int y, int x), _, _) = block;
+            ((int y, int x), char symbol, _) = block;
+            if (symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
             spawn = position + block.Position;
             relative = _output.Map![spawn.Y, spawn.X].Position;
             newBlock = CreateBlock(relative, block);
@@ -257,6 +258,11 @@ public class MapManager(IOutput output)
             x = i % side;
             block = map![y, x];
             block = CreateBlock(position + block.Position, block.Symbol, block.Color);
+            if (block.Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
             (y, x) = block.Position;
             map[i / side, i % side] = block;
             _output.Map![y, x] = block;

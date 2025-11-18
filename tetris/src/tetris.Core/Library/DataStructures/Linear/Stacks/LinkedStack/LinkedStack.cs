@@ -113,6 +113,6 @@ public class LinkedStack<T>
 
     public void Purge()
     {
-        while (!TryPop(out _)) { }
+        while (TryPop(out _)) { }
     }
 }

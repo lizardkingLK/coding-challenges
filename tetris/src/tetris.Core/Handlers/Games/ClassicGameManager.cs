@@ -17,8 +17,8 @@ public class ClassicGameManager : IManager
     {
         Output = arguments.OutputType switch
         {
-            OutputTypeEnum.Console => new ConsoleOutput(arguments.MapSize),
-            OutputTypeEnum.Document => new DocumentOutput(arguments.MapSize),
+            OutputTypeEnum.Console => ConsoleOutput.CreateScaled(arguments.MapSize),
+            OutputTypeEnum.Document => DocumentOutput.CreateScaled(arguments.MapSize),
             _ => throw new NotImplementedException("error. cannot find output. invalid output type given"),
         };
 
