@@ -21,7 +21,7 @@ public static class BlockHelper
 
     public static Block CreateBlock(Position position, Block block) => new(position, block);
 
-    public static IEnumerable<(Block, Position)> CreateScaledBlock(Position Root, Block block)
+    public static IEnumerable<Block> CreateScaledBlock(Position Root, Block block)
     {
         (int y, int x) = block.Position;
         Position position;
@@ -31,9 +31,7 @@ public static class BlockHelper
             + new Position(y * 2, x * 2)
             + scaledBlockPositions[i / 2, i % 2];
 
-            yield return (
-                CreateBlock(position, block.Symbol, block.Color),
-                new(i / 2, i % 2));
+            yield return CreateBlock(position, block.Symbol, block.Color);
         }
     }
 }

@@ -79,7 +79,7 @@ public class ConsoleOutput : IOutput
 
     private void ScaledStream(Block block)
     {
-        foreach ((Block transformed, Position _) in CreateScaledBlock(Root, block))
+        foreach (Block transformed in CreateScaledBlock(Root, block))
         {
             Streamer.Stream(transformed, HeightScaled, WidthScaled, Map!);
         }

@@ -83,6 +83,29 @@ public abstract record Tetromino
         return true;
     }
 
+    public bool CanRotate(
+        bool[,] availability,
+        Position position)
+    {
+        (int yPosition, int xPosition) = position;
+        bool[,] variant = Variants[(Index + 1) % Size]!;
+
+        int length = Side * Side;
+        int y;
+        int x;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / Side;
+            x = i % Side;
+            if (variant[y, x] && !availability[y + yPosition, x + xPosition])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public Block[,] Get()
     => Get(Random.Shared.Next(Size));
 

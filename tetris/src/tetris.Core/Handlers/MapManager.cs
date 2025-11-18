@@ -21,10 +21,10 @@ public class MapManager(IOutput output)
         // new TetrominoI(),
         // new TetrominoJ(),
         new TetrominoL()//,
-        // new TetrominoO(),
-        // new TetrominoS(),
-        // new TetrominoT(),
-        // new TetrominoZ()
+                        // new TetrominoO(),
+                        // new TetrominoS(),
+                        // new TetrominoT(),
+                        // new TetrominoZ()
         );
 
     private readonly IOutput _output = output;
@@ -190,9 +190,12 @@ public class MapManager(IOutput output)
 
     private void RotateIt()
     {
-        // TODO: check if rotatable and early return
-
         (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        if (!tetromino.CanRotate(_output.Availability!, position))
+        {
+            return;
+        }
+
         int side = tetromino.Side;
         ClearIt(map, position, side);
 
