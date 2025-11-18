@@ -20,10 +20,10 @@ public class MapManager(IOutput output)
     = new(
         // new TetrominoI(),
         // new TetrominoJ(),
-        // new TetrominoL(),
-        new TetrominoO()//,
+        new TetrominoL()//,
+        // new TetrominoO(),
         // new TetrominoS(),
-        // new TetrominoT()//,
+        // new TetrominoT(),
         // new TetrominoZ()
         );
 
@@ -101,17 +101,17 @@ public class MapManager(IOutput output)
 
     private void CreateBoard()
     {
-        _output.Map = new Block[_output.Height, _output.Width];
-        _output.Availability = new bool[_output.Height, _output.Width];
+        _output.Map = new Block[HeightNormal, WidthNormal];
+        _output.Availability = new bool[HeightNormal, WidthNormal];
 
-        int length = _output.Height * _output.Width;
+        int length = HeightNormal * WidthNormal;
         int y;
         int x;
         Position position;
         for (int i = 0; i < length; i++)
         {
-            y = i / _output.Width;
-            x = i % _output.Width;
+            y = i / WidthNormal;
+            x = i % WidthNormal;
             position = new Position(y, x);
             if (IsNonWallBlock(position.Y, position.X))
             {
@@ -136,7 +136,7 @@ public class MapManager(IOutput output)
         {
             map = tetromino.Get();
             length = tetromino.Side;
-            position = new(1, _output.Width / 2 - length / 2);
+            position = new(1, WidthNormal / 2 - length / 2);
             _tetrominoQueue.Enqueue((tetromino, map, position));
         }
     }

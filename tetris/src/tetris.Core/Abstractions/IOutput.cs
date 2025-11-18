@@ -8,8 +8,6 @@ namespace tetris.Core.Abstractions;
 
 public interface IOutput
 {
-    public int Height { get; set; }
-    public int Width { get; set; }
     public MapSizeEnum MapSize { get; set; }
     public Position Root { get; set; }
     public IStreamer Streamer { get; }
@@ -20,6 +18,6 @@ public interface IOutput
     public Result<bool> Create();
 
     public void Clear() => Streamer.Clear();
-    public void Flush() => Streamer.Flush(Height, Width, Map!);
+    public void Flush();
     public void Stream(Block block);
 }

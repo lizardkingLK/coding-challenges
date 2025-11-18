@@ -17,12 +17,10 @@ public class ClassicGameManager : IManager
     {
         Output = arguments.OutputType switch
         {
-            OutputTypeEnum.Console => new ConsoleOutput(),
-            OutputTypeEnum.Document => new DocumentOutput(),
+            OutputTypeEnum.Console => new ConsoleOutput(arguments.MapSize),
+            OutputTypeEnum.Document => new DocumentOutput(arguments.MapSize),
             _ => throw new NotImplementedException("error. cannot find output. invalid output type given"),
         };
-
-        Output.MapSize = arguments.MapSize;
 
         MapManager = new MapManager(Output);
         PlayerManager = new(this);
@@ -70,7 +68,7 @@ public class ClassicGameManager : IManager
         {
             return;
         }
-        
+
         MapManager!.Input(commandType);
     }
 }

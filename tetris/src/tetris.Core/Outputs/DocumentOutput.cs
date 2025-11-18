@@ -9,40 +9,23 @@ using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.Outputs;
 
-public class DocumentOutput : IOutput
+public class DocumentOutput(MapSizeEnum mapSize) : IOutput
 {
-    public int Height { get; set; }
-    public int Width { get; set; }
-
-    public MapSizeEnum MapSize { get; set; }
+    public MapSizeEnum MapSize { get; set; } = mapSize;
     public Block[,]? Map { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Position Root { get; set; }
-    public IStreamer Streamer { get; }
+    public IStreamer Streamer { get; } = new DocumentStreamer();
     public bool[,]? Availability { get; set; }
-
-    public DocumentOutput()
-    => Streamer = new DocumentStreamer();
 
     public Result<bool> Create()
     {
-        if (MapSize == MapSizeEnum.Normal)
-        {
-            Height = HeightNormal;
-            Width = WidthNormal;
-        }
-        else if (MapSize == MapSizeEnum.Scaled)
-        {
-            Height = HeightScaled;
-            Width = WidthScaled;
-        }
-
         Root = new(0, 0);
 
         Borders = new(
             (DirectionEnum.Up, 0),
-            (DirectionEnum.Right, Width - 1),
-            (DirectionEnum.Down, Height - 1),
+            (DirectionEnum.Right, WidthNormal - 1),
+            (DirectionEnum.Down, HeightNormal - 1),
             (DirectionEnum.Left, 0));
 
         ((IOutput)this).Clear();
@@ -50,6 +33,9 @@ public class DocumentOutput : IOutput
         return new(true);
     }
 
+    public void Flush()
+    => Streamer.Flush(HeightNormal, WidthNormal, Map!);
+
     public void Stream(Block block)
-    => Streamer.Stream(block, Height, Width, Map!);
+    => Streamer.Stream(block, HeightNormal, WidthNormal, Map!);
 }

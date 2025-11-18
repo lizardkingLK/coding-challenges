@@ -5,16 +5,13 @@ using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.Streamers;
-using static tetris.Core.Shared.Constants;
 using static tetris.Core.Helpers.BlockHelper;
+using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.Outputs;
 
 public class ConsoleOutput : IOutput
 {
-    public int Height { get; set; }
-    public int Width { get; set; }
-
     public MapSizeEnum MapSize { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
@@ -22,28 +19,31 @@ public class ConsoleOutput : IOutput
     public IStreamer Streamer { get; }
     public bool[,]? Availability { get; set; }
 
-    public ConsoleOutput()
+    public ConsoleOutput(MapSizeEnum mapSize)
     {
         Console.CancelKeyPress += (sender, _) => Toggle(isOn: false);
         Streamer = new ConsoleStreamer();
+        MapSize = mapSize;
     }
 
     public Result<bool> Create()
     {
-        Result<bool> dimensionResult = ValidateDimensions();
+        Result<bool> dimensionResult = ValidateDimensions(
+            out int height,
+            out int width);
         if (!dimensionResult.Data)
         {
             return dimensionResult;
         }
 
         Root = new(
-            Console.WindowHeight / 2 - Height / 2,
-            Console.WindowWidth / 2 - Width / 2);
+            Console.WindowHeight / 2 - height / 2,
+            Console.WindowWidth / 2 - width / 2);
 
         Borders = new(
             (DirectionEnum.Up, 0),
-            (DirectionEnum.Right, Width - 1),
-            (DirectionEnum.Down, Height - 1),
+            (DirectionEnum.Right, WidthNormal - 1),
+            (DirectionEnum.Down, HeightNormal - 1),
             (DirectionEnum.Left, 0));
 
         Toggle(isOn: true);
@@ -53,24 +53,73 @@ public class ConsoleOutput : IOutput
         return new(true);
     }
 
-    public void Stream(Block block)
-    => Streamer.Stream(
-        CreateBlock(Root + block.Position, block),
-        Height,
-        Width,
-        Map!);
-
     public void Flush()
     {
-        Block[,] centered = new Block[Height, Width];
-        int length = Height * Width;
+        if (MapSize == MapSizeEnum.Normal)
+        {
+            NormalFlush();
+        }
+        else if (MapSize == MapSizeEnum.Scaled)
+        {
+            ScaledFlush();
+        }
+    }
+
+    public void Stream(Block block)
+    {
+        if (MapSize == MapSizeEnum.Normal)
+        {
+            NormalStream(block);
+        }
+        else if (MapSize == MapSizeEnum.Scaled)
+        {
+            ScaledStream(block);
+        }
+    }
+
+    private void ScaledStream(Block block)
+    {
+        foreach ((Block transformed, Position _) in CreateScaledBlock(Root, block))
+        {
+            Streamer.Stream(transformed, HeightScaled, WidthScaled, Map!);
+        }
+    }
+
+    private void NormalStream(Block block)
+    {
+        Streamer.Stream(
+            CreateBlock(Root + block.Position, block),
+            HeightNormal,
+            WidthNormal,
+            Map!);
+    }
+
+    private void ScaledFlush()
+    {
+        int length = HeightNormal * WidthNormal;
         int y;
         int x;
         Block block;
         for (int i = 0; i < length; i++)
         {
-            y = i / Width;
-            x = i % Width;
+            y = i / WidthNormal;
+            x = i % WidthNormal;
+            block = Map![y, x];
+            ScaledStream(block);
+        }
+    }
+
+    private void NormalFlush()
+    {
+        Block[,] centered = new Block[HeightNormal, WidthNormal];
+        int length = HeightNormal * WidthNormal;
+        int y;
+        int x;
+        Block block;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / WidthNormal;
+            x = i % WidthNormal;
             block = Map![y, x];
             centered[y, x] = CreateBlock(
                 Root + block.Position,
@@ -78,38 +127,35 @@ public class ConsoleOutput : IOutput
                 block.Color);
         }
 
-        Streamer.Flush(Height, Width, centered);
+        Streamer.Flush(HeightNormal, WidthNormal, centered);
     }
 
-    private Result<bool> ValidateDimensions()
+    private Result<bool> ValidateDimensions(out int height, out int width)
     {
-        int chosenHeight = 0;
-        int chosenWidth = 0;
+        height = 0;
+        width = 0;
         if (MapSize == MapSizeEnum.Normal)
         {
-            chosenHeight = HeightNormal;
-            chosenWidth = WidthNormal;
+            height = HeightNormal;
+            width = WidthNormal;
         }
         else if (MapSize == MapSizeEnum.Scaled)
         {
-            chosenHeight = HeightScaled;
-            chosenWidth = WidthScaled;
+            height = HeightScaled;
+            width = WidthScaled;
         }
 
-        Height = Console.WindowHeight;
-        if (Height < chosenHeight)
+        int availableHeight = Console.WindowHeight;
+        if (availableHeight < height)
         {
             return new(false, "error. cannot create map. height not enough");
         }
 
-        Width = Console.WindowWidth;
-        if (Width < chosenWidth)
+        int availableWidth = Console.WindowWidth;
+        if (availableWidth < width)
         {
             return new(false, "error. cannot create map. width not enough");
         }
-
-        Height = chosenHeight;
-        Width = chosenWidth;
 
         return new(true);
     }
