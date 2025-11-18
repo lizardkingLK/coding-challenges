@@ -1,4 +1,3 @@
-using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.State.Cordinates;
 
@@ -39,7 +38,7 @@ public record TetrominoT : Tetromino
     public override ConsoleColor Color { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
 
-    protected override HashMap<int, Position[][]> Borders => throw new NotImplementedException();
+    protected override HashMap<int, Position[][]> Borders { get; }
 
     public TetrominoT()
     {
@@ -48,6 +47,32 @@ public record TetrominoT : Tetromino
             (1, _variantB),
             (2, _variantC),
             (3, _variantD));
+
+        Borders = new(
+            (0, new Position[3][]
+            {
+                [new(1, 2)],
+                [new(1, 0), new(1, 1), new(1, 2)],
+                [new(1, 0)],
+            }),
+            (1, new Position[3][]
+            {
+                [new(1, 2)],
+                [new(2, 1)],
+                [new(0, 1), new(1, 1), new(2, 1)],
+            }),
+            (2, new Position[3][]
+            {
+                [new(1, 2)],
+                [new(2, 1)],
+                [new(1, 0)],
+            }),
+            (3, new Position[3][]
+            {
+                [new(0, 1), new(1, 1), new(2, 1)],
+                [new(2, 1)],
+                [new(1, 0)],
+            }));
 
         Color = ConsoleColor.Magenta;
         Size = Variants.Count();

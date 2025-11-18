@@ -22,9 +22,9 @@ public class MapManager(IOutput output)
         // new TetrominoJ(),
         // new TetrominoL(),
         // new TetrominoO(),
-        new TetrominoS()//,
-                        // new TetrominoT(),
-                        // new TetrominoZ()
+        // new TetrominoS(),
+        new TetrominoT()//,
+        // new TetrominoZ()
         );
 
     private readonly IOutput _output = output;
