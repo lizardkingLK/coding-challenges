@@ -21,9 +21,9 @@ public class MapManager(IOutput output)
         // new TetrominoI(),
         // new TetrominoJ(),
         // new TetrominoL(),
-        // new TetrominoO(),
+        new TetrominoO()//,
         // new TetrominoS(),
-        new TetrominoT()//,
+        // new TetrominoT()//,
         // new TetrominoZ()
         );
 
@@ -280,17 +280,8 @@ public class MapManager(IOutput output)
                 continue;
             }
 
-            // if (map[y, x].Symbol == SymbolTetrominoBlock)
-            // {
             symbol = SymbolTetrominoBlock;
             color = tetromino.Color;
-            // }
-            // else
-            // {
-            //     block = _output.Map![y + previous.Y, x + previous.X];
-            //     symbol = block.Symbol;
-            //     color = block.Color;
-            // }
 
             block = _output.Map![y + previous.Y, x + previous.X];
             block = CreateBlock(

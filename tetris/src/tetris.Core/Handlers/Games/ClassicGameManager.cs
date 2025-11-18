@@ -9,15 +9,12 @@ namespace tetris.Core.Handlers.Games;
 
 public class ClassicGameManager : IManager
 {
-    private readonly MapSizeEnum _mapSize;
     public IOutput? Output { get; set; }
     public PlayerManager? PlayerManager { get; set; }
     public MapManager? MapManager { get; set; }
 
     public ClassicGameManager(Arguments arguments)
     {
-        _mapSize = arguments.MapSize;
-
         Output = arguments.OutputType switch
         {
             OutputTypeEnum.Console => new ConsoleOutput(),
@@ -25,13 +22,15 @@ public class ClassicGameManager : IManager
             _ => throw new NotImplementedException("error. cannot find output. invalid output type given"),
         };
 
+        Output.MapSize = arguments.MapSize;
+
         MapManager = new MapManager(Output);
         PlayerManager = new(this);
     }
 
     public Result<bool> New()
     {
-        Result<bool> dimensionCreateResult = Output!.Create(_mapSize);
+        Result<bool> dimensionCreateResult = Output!.Create();
         if (dimensionCreateResult.Errors != null)
         {
             return dimensionCreateResult;

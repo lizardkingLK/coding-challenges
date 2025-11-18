@@ -10,13 +10,14 @@ public interface IOutput
 {
     public int Height { get; set; }
     public int Width { get; set; }
+    public MapSizeEnum MapSize { get; set; }
     public Position Root { get; set; }
     public IStreamer Streamer { get; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
     public bool[,]? Availability { get; set; }
 
-    public Result<bool> Create(MapSizeEnum mapSize);
+    public Result<bool> Create();
 
     public void Clear() => Streamer.Clear();
     public void Flush() => Streamer.Flush(Height, Width, Map!);

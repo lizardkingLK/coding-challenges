@@ -15,6 +15,7 @@ public class ConsoleOutput : IOutput
     public int Height { get; set; }
     public int Width { get; set; }
 
+    public MapSizeEnum MapSize { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
     public Position Root { get; set; }
@@ -27,9 +28,9 @@ public class ConsoleOutput : IOutput
         Streamer = new ConsoleStreamer();
     }
 
-    public Result<bool> Create(MapSizeEnum mapSize)
+    public Result<bool> Create()
     {
-        Result<bool> dimensionResult = ValidateDimensions(mapSize);
+        Result<bool> dimensionResult = ValidateDimensions();
         if (!dimensionResult.Data)
         {
             return dimensionResult;
@@ -52,7 +53,6 @@ public class ConsoleOutput : IOutput
         return new(true);
     }
 
-    // TODO: add center aligned as an option in arguments
     public void Stream(Block block)
     => Streamer.Stream(
         CreateBlock(Root + block.Position, block),
@@ -72,26 +72,25 @@ public class ConsoleOutput : IOutput
             y = i / Width;
             x = i % Width;
             block = Map![y, x];
-            centered[y, x] = new(Root + block.Position)
-            {
-                Symbol = block.Symbol,
-                Color = block.Color,
-            };
+            centered[y, x] = CreateBlock(
+                Root + block.Position,
+                block.Symbol,
+                block.Color);
         }
 
         Streamer.Flush(Height, Width, centered);
     }
 
-    private Result<bool> ValidateDimensions(MapSizeEnum mapSize)
+    private Result<bool> ValidateDimensions()
     {
         int chosenHeight = 0;
         int chosenWidth = 0;
-        if (mapSize == MapSizeEnum.Normal)
+        if (MapSize == MapSizeEnum.Normal)
         {
             chosenHeight = HeightNormal;
             chosenWidth = WidthNormal;
         }
-        else if (mapSize == MapSizeEnum.Scaled)
+        else if (MapSize == MapSizeEnum.Scaled)
         {
             chosenHeight = HeightScaled;
             chosenWidth = WidthScaled;

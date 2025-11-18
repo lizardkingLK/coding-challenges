@@ -14,6 +14,7 @@ public class DocumentOutput : IOutput
     public int Height { get; set; }
     public int Width { get; set; }
 
+    public MapSizeEnum MapSize { get; set; }
     public Block[,]? Map { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Position Root { get; set; }
@@ -23,14 +24,14 @@ public class DocumentOutput : IOutput
     public DocumentOutput()
     => Streamer = new DocumentStreamer();
 
-    public Result<bool> Create(MapSizeEnum mapSize)
+    public Result<bool> Create()
     {
-        if (mapSize == MapSizeEnum.Normal)
+        if (MapSize == MapSizeEnum.Normal)
         {
             Height = HeightNormal;
             Width = WidthNormal;
         }
-        else if (mapSize == MapSizeEnum.Scaled)
+        else if (MapSize == MapSizeEnum.Scaled)
         {
             Height = HeightScaled;
             Width = WidthScaled;
