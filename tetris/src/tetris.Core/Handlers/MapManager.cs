@@ -28,8 +28,7 @@ public class MapManager(IOutput output)
 
     private readonly IOutput _output = output;
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
-    private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue
-    = new(_tetrominoes.Count());
+    private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(_tetrominoes.Count());
 
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
 
@@ -170,7 +169,7 @@ public class MapManager(IOutput output)
 
         _actionStack.Push(HasLodged()
         ? CommandTypeEnum.StoreIt
-        : CommandTypeEnum.PauseGame);
+        : CommandTypeEnum.GoDown);
     }
 
     private bool HasLodged()

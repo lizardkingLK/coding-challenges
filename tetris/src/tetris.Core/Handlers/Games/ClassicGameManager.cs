@@ -4,6 +4,7 @@ using tetris.Core.Enums.Commands;
 using tetris.Core.Outputs;
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
+using static tetris.Core.Helpers.ValueHelper;
 
 namespace tetris.Core.Handlers.Games;
 
@@ -24,6 +25,8 @@ public class ClassicGameManager : IManager
 
         MapManager = new MapManager(Output);
         PlayerManager = new(this);
+
+        SetDifficultyValues(arguments.DifficultyLevel);
     }
 
     public Result<bool> New()

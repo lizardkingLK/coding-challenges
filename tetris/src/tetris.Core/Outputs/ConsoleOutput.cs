@@ -28,11 +28,9 @@ public abstract class ConsoleOutput : IOutput
     }
 
     public static ConsoleOutput CreateScaled(MapSizeEnum mapSize)
-    {
-        return mapSize == MapSizeEnum.Normal
-        ? new NormalScaler(mapSize)
-        : new DoubleScaler(mapSize);
-    }
+    => mapSize == MapSizeEnum.Normal
+    ? new NormalScaler(mapSize)
+    : new DoubleScaler(mapSize);
 
     public Result<bool> Create()
     {
