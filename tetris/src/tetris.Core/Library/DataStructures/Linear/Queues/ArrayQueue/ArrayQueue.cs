@@ -60,6 +60,20 @@ public class ArrayQueue<T> : IEnumerable<T>
         return true;
     }
 
+    public bool TryPeek(out T? peeked)
+    {
+        peeked = default;
+
+        if (IsEmpty())
+        {
+            return false;
+        }
+
+        peeked = _values[_front];
+
+        return true;
+    }
+
     public IEnumerator<T> GetEnumerator()
     {
         int i = _front;

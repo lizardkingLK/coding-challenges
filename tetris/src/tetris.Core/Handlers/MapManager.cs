@@ -18,14 +18,13 @@ public class MapManager(IOutput output)
 {
     private static readonly DynamicallyAllocatedArray<Tetromino> _tetrominoes
     = new(
-        // new TetrominoI(),
-        // new TetrominoJ(),
-        new TetrominoL()//,
-                        // new TetrominoO(),
-                        // new TetrominoS(),
-                        // new TetrominoT(),
-                        // new TetrominoZ()
-        );
+        new TetrominoI(),
+        new TetrominoJ(),
+        new TetrominoL(),
+        new TetrominoO(),
+        new TetrominoS(),
+        new TetrominoT(),
+        new TetrominoZ());
 
     private readonly IOutput _output = output;
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
@@ -67,27 +66,32 @@ public class MapManager(IOutput output)
     {
         while (_actionStack.TryPop(out CommandTypeEnum commandType))
         {
-            if (commandType == CommandTypeEnum.StoredIt)
+            HandleTetrominoAction(commandType);
+            if (commandType == CommandTypeEnum.StoreIt)
             {
+                StoreTetrominoBlocks();
                 break;
             }
 
-            HandleTetrominoAction(commandType);
             Thread.Sleep(durationMoveInterval);
         }
-
-        _actionStack.Purge();
 
         return true;
     }
 
+    private void StoreTetrominoBlocks()
+    {
+
+    }
+
     private bool TryChooseTetromino()
     {
-        if (!_tetrominoQueue.TryDequeue(out _current))
+        if (!_tetrominoQueue.TryPeek(out _current))
         {
             CreateQueue();
         }
 
+        _current = _tetrominoQueue.Dequeue();
         (_, _, Position origin) = _current;
         if (!_output.Availability![origin.Y, origin.X])
         {
@@ -163,9 +167,51 @@ public class MapManager(IOutput output)
         {
             Move(DirectionEnum.Left, new(0, -1));
         }
+        else if (commandType == CommandTypeEnum.StoreIt)
+        {
+            StoreIt();
+        }
 
-        // TODO: add to queue of go down if not stored it if touched bottom
-        _actionStack.Push(CommandTypeEnum.PauseGame);
+        _actionStack.Push(HasLodged()
+        ? CommandTypeEnum.StoreIt
+        : CommandTypeEnum.GoDown);
+    }
+
+    private bool HasLodged()
+    {
+        (_, Block[,] map, _) = _current;
+        int y;
+        int x;
+        Position oneLower = new(1, 0);
+        foreach (Block block in map)
+        {
+            if (block.Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            (y, x) = block.Position + oneLower;
+            if (!_output.Availability![y, x])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void StoreIt()
+    {
+        (_, Block[,] Map, _) = _current;
+        foreach (Block block in Map)
+        {
+            if (block.Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            _output.Availability![block.Y, block.X] = false;
+        }
     }
 
     private void SpawnIt()
@@ -212,6 +258,7 @@ public class MapManager(IOutput output)
             block = map![y, x];
             block = CreateBlock(position + block.Position, block.Symbol, block.Color);
             (y, x) = block.Position;
+            map[i / side, i % side] = block;
             _output.Map![y, x] = block;
             _output.Stream(block);
         }
