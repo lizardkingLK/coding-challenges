@@ -6,10 +6,10 @@ namespace tetris.Core.Outputs.Document;
 
 public class NormalScaler(MapSizeEnum mapSize) : DocumentOutput(mapSize)
 {
-    public override Result<bool> Validate(out int height, out int width)
+    public override Result<bool> Validate()
     {
-        height = HeightNormal;
-        width = WidthNormal;
+        Height = HeightNormal;
+        Width = WidthNormal;
 
         return new(true);
     }

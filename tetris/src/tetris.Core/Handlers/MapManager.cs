@@ -198,6 +198,7 @@ public class MapManager(IOutput output)
     private void StoreIt()
     {
         (_, Block[,] Map, _) = _current;
+        Block? previousBlock = null;
         foreach (Block block in Map)
         {
             if (block.Symbol != SymbolTetrominoBlock)
@@ -206,7 +207,31 @@ public class MapManager(IOutput output)
             }
 
             _output.Availability![block.Y, block.X] = false;
+            if (previousBlock != null && previousBlock.Value.Y != block.Y)
+            {
+                TrackComplete(previousBlock!.Value.Position);
+            }
+
+            previousBlock = block;
         }
+    }
+
+    private void TrackComplete(Position position)
+    {
+        (int y, _) = position;
+
+        for (int i = 1; i < WidthNormal; i++)
+        {
+            if (_output.Availability![y, i])
+            {
+                _output.Stream(CreateBlock(y, i, SymbolWallBlock, ColorWall));
+                return;
+            }
+        }
+
+        // TODO: add to a priority queue where 
+        // y max is highest takes max priority to clear lines
+        throw new ApplicationException("success. time to clear");
     }
 
     private void SpawnIt()

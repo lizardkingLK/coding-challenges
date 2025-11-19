@@ -31,19 +31,19 @@ public class DoubleScaler(MapSizeEnum mapSize) : ConsoleOutput(mapSize)
         }
     }
 
-    public override Result<bool> Validate(out int height, out int width)
+    public override Result<bool> Validate()
     {
-        height = HeightScaled;
-        width = WidthScaled;
+        Height = HeightScaled;
+        Width = WidthScaled;
 
         int availableHeight = System.Console.WindowHeight;
-        if (availableHeight < height)
+        if (availableHeight < Height)
         {
             return new(false, "error. cannot create map. height not enough");
         }
 
         int availableWidth = System.Console.WindowWidth;
-        if (availableWidth < width)
+        if (availableWidth < Width)
         {
             return new(false, "error. cannot create map. width not enough");
         }

@@ -15,9 +15,9 @@ public interface IOutput
     public Block[,]? Map { get; set; }
     public bool[,]? Availability { get; set; }
 
-    public Result<bool> Validate(out int height, out int width);
+    public Result<bool> Validate();
     public Result<bool> Create();
-    
+
     public void Flush();
     public void Stream(Block block);
 

@@ -38,21 +38,21 @@ public class NormalScaler(MapSizeEnum mapSize) : ConsoleOutput(mapSize)
             Map!);
     }
 
-    public override Result<bool> Validate(out int height, out int width)
+    public override Result<bool> Validate()
     {
-        height = HeightNormal;
-        width = WidthNormal;
+        Height = HeightNormal;
+        Width = WidthNormal;
 
         int availableHeight = System.Console.WindowHeight;
-        if (availableHeight < height)
+        if (availableHeight < Height)
         {
-            return new(false, "error. cannot create map. height not enough");
+            return new(false, "error. cannot create map. Height not enough");
         }
 
         int availableWidth = System.Console.WindowWidth;
-        if (availableWidth < width)
+        if (availableWidth < Width)
         {
-            return new(false, "error. cannot create map. width not enough");
+            return new(false, "error. cannot create map. Width not enough");
         }
 
         return new(true);

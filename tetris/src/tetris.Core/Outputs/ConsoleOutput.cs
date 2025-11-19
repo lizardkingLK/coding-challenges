@@ -12,6 +12,8 @@ namespace tetris.Core.Outputs;
 
 public abstract class ConsoleOutput : IOutput
 {
+    public int Height { get; set; }
+    public int Width { get; set; }
     public MapSizeEnum MapSize { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
@@ -34,17 +36,15 @@ public abstract class ConsoleOutput : IOutput
 
     public Result<bool> Create()
     {
-        Result<bool> dimensionResult = Validate(
-            out int height,
-            out int width);
+        Result<bool> dimensionResult = Validate();
         if (!dimensionResult.Data)
         {
             return dimensionResult;
         }
 
         Root = new(
-            System.Console.WindowHeight / 2 - height / 2,
-            System.Console.WindowWidth / 2 - width / 2);
+            System.Console.WindowHeight / 2 - Height / 2,
+            System.Console.WindowWidth / 2 - Width / 2);
 
         Borders = new(
             (DirectionEnum.Up, 0),
@@ -63,5 +63,5 @@ public abstract class ConsoleOutput : IOutput
 
     public abstract void Stream(Block block);
 
-    public abstract Result<bool> Validate(out int height, out int width);
+    public abstract Result<bool> Validate();
 }

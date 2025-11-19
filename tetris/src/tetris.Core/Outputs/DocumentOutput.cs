@@ -12,6 +12,8 @@ namespace tetris.Core.Outputs;
 
 public abstract class DocumentOutput(MapSizeEnum mapSize) : IOutput
 {
+    public int Height { get; set; }
+    public int Width { get; set; }
     public MapSizeEnum MapSize { get; set; } = mapSize;
     public Block[,]? Map { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
@@ -45,5 +47,5 @@ public abstract class DocumentOutput(MapSizeEnum mapSize) : IOutput
     public void Stream(Block block)
     => Streamer.Stream(block, HeightNormal, WidthNormal, Map!);
 
-    public abstract Result<bool> Validate(out int height, out int width);
+    public abstract Result<bool> Validate();
 }
