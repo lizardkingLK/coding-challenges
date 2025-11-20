@@ -20,6 +20,7 @@ public abstract class ConsoleOutput : IOutput
     public Position Root { get; set; }
     public IStreamer Streamer { get; }
     public bool[,]? Availability { get; set; }
+    public HashMap<int, int>? FilledTracker { get; set; }
 
     public ConsoleOutput(MapSizeEnum mapSize)
     {

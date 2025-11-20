@@ -31,6 +31,7 @@ public class MapManager(IOutput output)
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(_tetrominoes.Count());
 
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
+    private int _yHighest = HeightNormal;
 
     public Result<bool> Create()
     {
@@ -102,12 +103,19 @@ public class MapManager(IOutput output)
     {
         _output.Map = new Block[HeightNormal, WidthNormal];
         _output.Availability = new bool[HeightNormal, WidthNormal];
+        _output.FilledTracker = [];
+
+        int i;
+        for (i = 0; i < HeightNormal; i++)
+        {
+            _output.FilledTracker.Add(i, WidthNormal);
+        }
 
         int length = HeightNormal * WidthNormal;
         int y;
         int x;
         Position position;
-        for (int i = 0; i < length; i++)
+        for (i = 0; i < length; i++)
         {
             y = i / WidthNormal;
             x = i % WidthNormal;
@@ -116,6 +124,7 @@ public class MapManager(IOutput output)
             {
                 _output.Map[y, x] = CreateBlock(position);
                 _output.Availability[y, x] = true;
+                _output.FilledTracker[y]--;
             }
             else
             {
@@ -197,42 +206,87 @@ public class MapManager(IOutput output)
 
     private void StoreIt()
     {
-        (_, Block[,] Map, _) = _current;
-        foreach (Block block in Map)
+        (Tetromino? tetromino, Block[,] Map, Position position) = _current;
+
+        int y;
+        int x;
+        int side = tetromino.Side;
+        int length = side * side;
+        Block block;
+        int? lowestYPoint = null;
+        LinkedStack<int> yPoints = new();
+        for (int i = 0; i < length; i++)
         {
+            y = i / side;
+            x = i % side;
+            block = Map[y, x];
             if (block.Symbol != SymbolTetrominoBlock)
             {
                 continue;
             }
 
-            _output.Availability![block.Y, block.X] = false;
+            block = _output.Map![position.Y + y, position.X + x];
+            (y, x) = block.Position;
+            if (y < _yHighest)
+            {
+                _yHighest = y;
+            }
+
+            _output.Availability![y, x] = false;
+            _output.FilledTracker![y]++;
+            if (_output.FilledTracker[y] == WidthNormal)
+            {
+                yPoints.Push(y);
+                lowestYPoint = y;
+            }
+        }
+
+        if (lowestYPoint != null)
+        {
+            ClearLines(yPoints, lowestYPoint.Value);
+        }
+    }
+
+    private void ClearLines(LinkedStack<int> yPoints, int yLowest)
+    {
+        int size = yPoints.Size;
+        while (yPoints.TryPop(out int yPoint))
+        {
+            ClearLine(yPoint);
         }
 
         // TODO: hashmap to store not available counts
         // TODO: two pointer to clear lines
-        ClearLines(block.Position);
+        int lower = yLowest;
+        int higher = yLowest - 1;
+        while (lower < higher && lower < _yHighest)
+        {
+            DownShift(lower, higher);
+            lower++;
+            higher++;
+        }
+
+        _yHighest -= size;
     }
 
-    private void ClearLines(Position position)
+    private void DownShift(int bottom, int top)
     {
-        (int y, _) = position;
+        throw new NotImplementedException();
+    }
 
-        int i;
-        int length = WidthNormal;
-        for (i = 1; i < length; i++)
+    private void ClearLine(int yPoint)
+    {
+        int length = WidthNormal - 1;
+        Block block;
+        for (int i = 1; i < length; i++)
         {
-            if (_output.Availability![y, i])
-            {
-                return;
-            }
+            block = CreateBlock(yPoint, i, SymbolSpaceBlock, ColorSpace);
+            _output.Map![yPoint, i] = block;
+            _output.Availability![yPoint, i] = true;
+            _output.Stream(block);
         }
 
-        length = WidthNormal - 1;
-        for (i = 1; i < length; i++)
-        {
-            _output.Availability![y, i] = true;
-            _output.Stream(CreateBlock(y, i, SymbolSpaceBlock, ColorSpace));
-        }
+        _output.FilledTracker![yPoint] = WidthNormal - 2;
     }
 
     private void SpawnIt()

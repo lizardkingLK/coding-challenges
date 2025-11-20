@@ -14,6 +14,7 @@ public interface IOutput
     public HashMap<DirectionEnum, int>? Borders { get; set; }
     public Block[,]? Map { get; set; }
     public bool[,]? Availability { get; set; }
+    public HashMap<int, int>? FilledTracker { get; set; }
 
     public Result<bool> Validate();
     public Result<bool> Create();

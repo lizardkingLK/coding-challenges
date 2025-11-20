@@ -20,6 +20,7 @@ public abstract class DocumentOutput(MapSizeEnum mapSize) : IOutput
     public Position Root { get; set; }
     public IStreamer Streamer { get; } = new DocumentStreamer();
     public bool[,]? Availability { get; set; }
+    public HashMap<int, int>? FilledTracker { get; set; }
 
     public static DocumentOutput CreateScaled(MapSizeEnum mapSize)
     {
