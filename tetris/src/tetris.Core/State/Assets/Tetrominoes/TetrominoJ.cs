@@ -69,7 +69,7 @@ public record TetrominoJ : Tetromino
             }),
             (3, new Position[3][]
             {
-                [new(0, 1), new(1, 2), new(2, 1)],
+                [new(0, 1), new(1, 1), new(2, 1)],
                 [new(2, 1)],
                 [new(0, 0)],
             }));
