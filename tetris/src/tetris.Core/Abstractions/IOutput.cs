@@ -9,11 +9,10 @@ public interface IOutput
 {
     public int Height { get; set; }
     public int Width { get; set; }
-    public Position Root { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
 
     public Result<bool> Create();
     public void Clear();
     public void Flush(Block[,] map);
-    public void Stream(in Block block, Block[,] map);
+    public void Stream(Block block, Block[,] map);
 }

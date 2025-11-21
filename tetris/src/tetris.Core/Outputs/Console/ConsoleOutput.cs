@@ -1,6 +1,10 @@
 using tetris.Core.Abstractions;
+using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Cordinates;
+using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
+using tetris.Core.Outputs.Console.Aligners;
+using tetris.Core.Outputs.Console.Scalers;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
@@ -11,22 +15,29 @@ namespace tetris.Core.Outputs.Console;
 
 public record ConsoleOutput : IOutput
 {
-    private readonly Arguments _arguments;
-
     public int Height { get; set; }
     public int Width { get; set; }
-    public Position Root { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
+
+    public ConsoleScaler _scaler;
+    public ConsoleAligner _aligner;
 
     public ConsoleOutput(Arguments arguments)
     {
-        _arguments = arguments;
-        if (arguments.MapSize == Enums.Arguments.MapSizeEnum.Normal)
+        if (arguments.MapSize == MapSizeEnum.Normal)
         {
-
+            Height = HeightNormal;
+            Width = WidthNormal;
+            _scaler = new NormalScaler();
+        }
+        else
+        {
+            Height = HeightScaled;
+            Width = WidthScaled;
+            _scaler = new DoubleScaler();
         }
 
-        // TODO: set scalars and aligners
+        _aligner = new CenterAligner();
     }
 
     public void Clear() => System.Console.Clear();
@@ -38,10 +49,6 @@ public record ConsoleOutput : IOutput
         {
             return dimensionResult;
         }
-
-        Root = new(
-            System.Console.WindowHeight / 2 - Height / 2,
-            System.Console.WindowWidth / 2 - Width / 2);
 
         Borders = new(
             (DirectionEnum.Up, 0),
@@ -58,9 +65,6 @@ public record ConsoleOutput : IOutput
 
     private Result<bool> Validate()
     {
-        Height = HeightNormal;
-        Width = WidthNormal;
-
         int availableHeight = System.Console.WindowHeight;
         if (availableHeight < Height)
         {
@@ -73,19 +77,51 @@ public record ConsoleOutput : IOutput
             return new(false, "error. cannot create map. Width not enough");
         }
 
+        Position root = _aligner.GetRoot(Height, Width);
+        _aligner.Root = root;
+        _scaler.Root = root;
+
+        Height = HeightNormal;
+        Width = WidthNormal;
+
         return new(true);
     }
 
     public void Flush(Block[,] map)
     {
-        foreach (((int y, int x), char symbol, ConsoleColor color) in map)
+        int length = HeightNormal * WidthNormal;
+        int y;
+        int x;
+        Block block;
+        DynamicallyAllocatedArray<Block> blocks = [];
+        for (int i = 0; i < length; i++)
+        {
+            y = i / WidthNormal;
+            x = i % WidthNormal;
+            block = map[y, x];
+            _aligner.Align(ref block);
+            _scaler.Scale(block, blocks);
+        }
+
+        Output(blocks);
+    }
+
+    public void Stream(Block block, Block[,] _)
+    {
+        DynamicallyAllocatedArray<Block> blocks = [];
+        _aligner.Align(ref block);
+        _scaler.Scale(block, blocks);
+
+        Output(blocks);
+    }
+
+    private static void Output(DynamicallyAllocatedArray<Block> blocks)
+    {
+        foreach (((int y, int x), char symbol, ConsoleColor color) in blocks)
         {
             WriteAt(symbol, y, x, color);
         }
     }
-
-    public void Stream(in Block block, Block[,] _)
-    => WriteAt(block.Symbol, block.Y, block.X, block.Color);
 
     private static void Toggle(bool isOn)
     {
