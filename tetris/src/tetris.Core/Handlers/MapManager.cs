@@ -14,7 +14,7 @@ using static tetris.Core.Shared.Values;
 
 namespace tetris.Core.Handlers;
 
-public class MapManager(IOutput output)
+public class MapManager(IGameplay gameplay)
 {
     private static readonly DynamicallyAllocatedArray<Tetromino> _tetrominoes
     = new(
@@ -26,7 +26,7 @@ public class MapManager(IOutput output)
         new TetrominoT(),
         new TetrominoZ());
 
-    private readonly IOutput _output = output;
+    private readonly IGameplay _gameplay = gameplay;
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(_tetrominoes.Count());
 
@@ -89,7 +89,7 @@ public class MapManager(IOutput output)
 
         _current = _tetrominoQueue.Dequeue();
         (_, _, Position origin) = _current;
-        if (!_output.Availability![origin.Y, origin.X])
+        if (!_gameplay.Availability![origin.Y, origin.X])
         {
             return false;
         }
@@ -101,14 +101,14 @@ public class MapManager(IOutput output)
 
     private void CreateBoard()
     {
-        _output.Map = new Block[HeightNormal, WidthNormal];
-        _output.Availability = new bool[HeightNormal, WidthNormal];
-        _output.FilledTracker = [];
+        _gameplay.Map = new Block[HeightNormal, WidthNormal];
+        _gameplay.Availability = new bool[HeightNormal, WidthNormal];
+        _gameplay.FilledTracker = [];
 
         int i;
         for (i = 0; i < HeightNormal; i++)
         {
-            _output.FilledTracker.Add(i, WidthNormal);
+            _gameplay.FilledTracker.Add(i, WidthNormal);
         }
 
         int length = HeightNormal * WidthNormal;
@@ -122,14 +122,14 @@ public class MapManager(IOutput output)
             position = new Position(y, x);
             if (IsNonWallBlock(position.Y, position.X))
             {
-                _output.Map[y, x] = CreateBlock(position);
-                _output.Availability[y, x] = true;
-                _output.FilledTracker[y]--;
+                _gameplay.Map[y, x] = CreateBlock(position);
+                _gameplay.Availability[y, x] = true;
+                _gameplay.FilledTracker[y]--;
             }
             else
             {
-                _output.Map[y, x] = CreateBlock(position, SymbolWallBlock, ColorWall);
-                _output.Availability[y, x] = false;
+                _gameplay.Map[y, x] = CreateBlock(position, SymbolWallBlock, ColorWall);
+                _gameplay.Availability[y, x] = false;
             }
         }
     }
@@ -195,7 +195,7 @@ public class MapManager(IOutput output)
             }
 
             (y, x) = block.Position + oneLower;
-            if (!_output.Availability![y, x])
+            if (!_gameplay.Availability![y, x])
             {
                 return true;
             }
@@ -225,16 +225,16 @@ public class MapManager(IOutput output)
                 continue;
             }
 
-            block = _output.Map![position.Y + y, position.X + x];
+            block = _gameplay.Map![position.Y + y, position.X + x];
             (y, x) = block.Position;
             if (y < _yRoof)
             {
                 _yRoof = y;
             }
 
-            _output.Availability![y, x] = false;
-            _output.FilledTracker![y]++;
-            if (_output.FilledTracker[y] == WidthNormal)
+            _gameplay.Availability![y, x] = false;
+            _gameplay.FilledTracker![y]++;
+            if (_gameplay.FilledTracker[y] == WidthNormal)
             {
                 yPoints.Push(y);
                 lowestYPoint = y;
@@ -259,12 +259,12 @@ public class MapManager(IOutput output)
         int top = yFLoor - 1;
         while (top < bottom && _yRoof <= top)
         {
-            if (_output.FilledTracker![bottom] > 2)
+            if (_gameplay.FilledTracker![bottom] > 2)
             {
                 bottom--;
             }
 
-            if (_output.FilledTracker![top] == 2)
+            if (_gameplay.FilledTracker![top] == 2)
             {
                 top--;
                 continue;
@@ -278,7 +278,7 @@ public class MapManager(IOutput output)
 
     private void DownShift(int bottom, int top)
     {
-        int filledCountTop = _output.FilledTracker![top];
+        int filledCountTop = _gameplay.FilledTracker![top];
         int length = WidthNormal - 1;
         Block oldBlock;
         Block newBlock;
@@ -289,26 +289,26 @@ public class MapManager(IOutput output)
         bool isOldBlockAvailable;
         for (int i = 1; i < length; i++)
         {
-            ((y, x), symbol, color) = _output.Map![top, i];
-            isOldBlockAvailable = _output.Availability![top, i];
+            ((y, x), symbol, color) = _gameplay.Map![top, i];
+            isOldBlockAvailable = _gameplay.Availability![top, i];
 
             oldBlock = CreateBlock(y, x, SymbolSpaceBlock, ColorSpace);
-            _output.Map![top, i] = oldBlock;
-            _output.Availability![top, i] = true;
+            _gameplay.Map![top, i] = oldBlock;
+            _gameplay.Availability![top, i] = true;
 
             newBlock = CreateBlock(bottom, i, symbol, color);
-            _output.Map![bottom, i] = newBlock;
-            _output.Availability![bottom, i] = isOldBlockAvailable;
+            _gameplay.Map![bottom, i] = newBlock;
+            _gameplay.Availability![bottom, i] = isOldBlockAvailable;
 
             if (symbol != SymbolSpaceBlock)
             {
-                _output.Stream(oldBlock);
-                _output.Stream(newBlock);
+                _gameplay.Stream(oldBlock);
+                _gameplay.Stream(newBlock);
             }
         }
 
-        _output.FilledTracker![top] = 2;
-        _output.FilledTracker![bottom] = filledCountTop;
+        _gameplay.FilledTracker![top] = 2;
+        _gameplay.FilledTracker![bottom] = filledCountTop;
     }
 
     private void ClearLine(int yPoint)
@@ -318,12 +318,12 @@ public class MapManager(IOutput output)
         for (int i = 1; i < length; i++)
         {
             block = CreateBlock(yPoint, i, SymbolSpaceBlock, ColorSpace);
-            _output.Map![yPoint, i] = block;
-            _output.Availability![yPoint, i] = true;
-            _output.Stream(block);
+            _gameplay.Map![yPoint, i] = block;
+            _gameplay.Availability![yPoint, i] = true;
+            _gameplay.Stream(block);
         }
 
-        _output.FilledTracker![yPoint] = 2;
+        _gameplay.FilledTracker![yPoint] = 2;
     }
 
     private void SpawnIt()
@@ -341,11 +341,11 @@ public class MapManager(IOutput output)
             }
 
             spawn = position + block.Position;
-            relative = _output.Map![spawn.Y, spawn.X].Position;
+            relative = _gameplay.Map![spawn.Y, spawn.X].Position;
             newBlock = CreateBlock(relative, block);
             map[y, x] = newBlock;
-            _output.Map![spawn.Y, spawn.X] = newBlock;
-            _output.Stream(newBlock);
+            _gameplay.Map![spawn.Y, spawn.X] = newBlock;
+            _gameplay.Stream(newBlock);
         }
 
         _current = (tetromino, map, position);
@@ -354,7 +354,7 @@ public class MapManager(IOutput output)
     private void RotateIt()
     {
         (Tetromino? tetromino, Block[,]? map, Position position) = _current;
-        if (!tetromino.CanRotate(_output.Availability!, position))
+        if (!tetromino.CanRotate(_gameplay.Availability!, position))
         {
             return;
         }
@@ -381,8 +381,8 @@ public class MapManager(IOutput output)
 
             (y, x) = block.Position;
             map[i / side, i % side] = block;
-            _output.Map![y, x] = block;
-            _output.Stream(block);
+            _gameplay.Map![y, x] = block;
+            _gameplay.Stream(block);
         }
 
         _current = (tetromino, map, position);
@@ -391,7 +391,7 @@ public class MapManager(IOutput output)
     private void Move(DirectionEnum direction, Position positionChange)
     {
         (Tetromino? tetromino, Block[,]? map, Position position) = _current;
-        if (!tetromino.CanMove(_output.Availability!, (position, positionChange), direction))
+        if (!tetromino.CanMove(_gameplay.Availability!, (position, positionChange), direction))
         {
             return;
         }
@@ -421,11 +421,11 @@ public class MapManager(IOutput output)
                 continue;
             }
 
-            block = _output.Map![y + position.Y, x + position.X];
+            block = _gameplay.Map![y + position.Y, x + position.X];
             block = CreateBlock(block.Position, SymbolSpaceBlock, ColorSpace);
             (y, x) = block.Position;
-            _output.Map![y, x] = block;
-            _output.Stream(block);
+            _gameplay.Map![y, x] = block;
+            _gameplay.Stream(block);
         }
     }
 
@@ -455,21 +455,21 @@ public class MapManager(IOutput output)
             symbol = SymbolTetrominoBlock;
             color = tetromino.Color;
 
-            block = _output.Map![y + previous.Y, x + previous.X];
+            block = _gameplay.Map![y + previous.Y, x + previous.X];
             block = CreateBlock(
                 block.Position + change,
                 symbol,
                 color);
             (y, x) = block.Position;
             map[i / side, i % side] = block;
-            _output.Map![y, x] = block;
-            _output.Stream(block);
+            _gameplay.Map![y, x] = block;
+            _gameplay.Stream(block);
         }
     }
 
     private bool IsNonWallBlock(int y, int x)
-    => x > _output.Borders![DirectionEnum.Left]
-    && x < _output.Borders[DirectionEnum.Right]
-    && y > _output.Borders[DirectionEnum.Up]
-    && y < _output.Borders[DirectionEnum.Down];
+    => x > _gameplay.Borders![DirectionEnum.Left]
+    && x < _gameplay.Borders[DirectionEnum.Right]
+    && y > _gameplay.Borders[DirectionEnum.Up]
+    && y < _gameplay.Borders[DirectionEnum.Down];
 }

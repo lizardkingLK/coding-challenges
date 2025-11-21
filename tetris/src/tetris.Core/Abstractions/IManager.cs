@@ -7,7 +7,7 @@ namespace tetris.Core.Abstractions;
 public interface IManager
 {
     public MapManager? MapManager { get; set; }
-    public IOutput? Output { get; set; }
+    public IGameplay? Output { get; set; }
 
     public void Input(CommandTypeEnum command);
     public Result<bool> New();

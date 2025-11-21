@@ -11,7 +11,7 @@ public static class Constants
     public const char SymbolSpaceBlock = ' ';
     public const char SymbolTetrominoBlock = '#';
     public const char SymbolNewLine = '\n';
-    public const string FileName = "output.txt";
+    public const string FileName = "gameplay.txt";
     public const ConsoleColor ColorWall = ConsoleColor.Gray;
     public const ConsoleColor ColorSpace = ConsoleColor.White;
 }

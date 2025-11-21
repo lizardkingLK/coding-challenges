@@ -1,6 +1,7 @@
 using tetris.Core.Abstractions;
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Commands;
+using tetris.Core.Gamplay;
 using tetris.Core.Outputs;
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
@@ -10,7 +11,7 @@ namespace tetris.Core.Handlers.Games;
 
 public class ClassicGameManager : IManager
 {
-    public IOutput? Output { get; set; }
+    public IGameplay? Output { get; set; }
     public PlayerManager? PlayerManager { get; set; }
     public MapManager? MapManager { get; set; }
 
@@ -18,9 +19,9 @@ public class ClassicGameManager : IManager
     {
         Output = arguments.OutputType switch
         {
-            OutputTypeEnum.Console => ConsoleOutput.CreateScaled(arguments.MapSize),
-            OutputTypeEnum.Document => DocumentOutput.CreateScaled(arguments.MapSize),
-            _ => throw new NotImplementedException("error. cannot find output. invalid output type given"),
+            OutputTypeEnum.Console => ConsoleGameplay.CreateScaled(arguments.MapSize),
+            OutputTypeEnum.Document => DocumentGameplay.CreateScaled(arguments.MapSize),
+            _ => throw new NotImplementedException("error. cannot find gameplay. invalid gameplay type given"),
         };
 
         MapManager = new MapManager(Output);

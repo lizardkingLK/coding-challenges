@@ -4,12 +4,13 @@ using tetris.Core.State.Cordinates;
 using static tetris.Core.Helpers.BlockHelper;
 using static tetris.Core.Shared.Constants;
 
-namespace tetris.Core.Outputs.Console;
+namespace tetris.Core.Gamplay.Console;
 
-public class DoubleScaler(MapSizeEnum mapSize) : ConsoleOutput(mapSize)
+public class NormalScaler(MapSizeEnum mapSize) : ConsoleGameplay(mapSize)
 {
     public override void Flush()
     {
+        Block[,] centered = new Block[HeightNormal, WidthNormal];
         int length = HeightNormal * WidthNormal;
         int y;
         int x;
@@ -19,33 +20,39 @@ public class DoubleScaler(MapSizeEnum mapSize) : ConsoleOutput(mapSize)
             y = i / WidthNormal;
             x = i % WidthNormal;
             block = Map![y, x];
-            Stream(block);
+            centered[y, x] = CreateBlock(
+                Root + block.Position,
+                block.Symbol,
+                block.Color);
         }
+
+        Output.Flush(HeightNormal, WidthNormal, centered);
     }
 
     public override void Stream(Block block)
     {
-        foreach (Block transformed in CreateScaledBlock(Root, block))
-        {
-            Streamer.Stream(transformed, HeightScaled, WidthScaled, Map!);
-        }
+        Output.Stream(
+            CreateBlock(Root + block.Position, block),
+            HeightNormal,
+            WidthNormal,
+            Map!);
     }
 
     public override Result<bool> Validate()
     {
-        Height = HeightScaled;
-        Width = WidthScaled;
+        Height = HeightNormal;
+        Width = WidthNormal;
 
         int availableHeight = System.Console.WindowHeight;
         if (availableHeight < Height)
         {
-            return new(false, "error. cannot create map. height not enough");
+            return new(false, "error. cannot create map. Height not enough");
         }
 
         int availableWidth = System.Console.WindowWidth;
         if (availableWidth < Width)
         {
-            return new(false, "error. cannot create map. width not enough");
+            return new(false, "error. cannot create map. Width not enough");
         }
 
         return new(true);

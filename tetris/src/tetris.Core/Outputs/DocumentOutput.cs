@@ -1,52 +1,54 @@
 using tetris.Core.Abstractions;
-using tetris.Core.Enums.Arguments;
-using tetris.Core.Enums.Cordinates;
-using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
-using tetris.Core.Outputs.Document;
-using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
-using tetris.Core.Streamers;
 using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.Outputs;
 
-public abstract class DocumentOutput(MapSizeEnum mapSize) : IOutput
+public record DocumentOutput : IOutput
 {
-    public int Height { get; set; }
-    public int Width { get; set; }
-    public MapSizeEnum MapSize { get; set; } = mapSize;
-    public Block[,]? Map { get; set; }
-    public HashMap<DirectionEnum, int>? Borders { get; set; }
-    public Position Root { get; set; }
-    public IStreamer Streamer { get; } = new DocumentStreamer();
-    public bool[,]? Availability { get; set; }
-    public HashMap<int, int>? FilledTracker { get; set; }
-
-    public static DocumentOutput CreateScaled(MapSizeEnum mapSize)
+    public void Clear()
     {
-        return new NormalScaler(mapSize);
+        Console.Clear();
+
+        using FileStream fileStream = new(
+            Path.Join(
+                Directory.GetCurrentDirectory(),
+                FileName),
+                FileMode.Create);
+
+        fileStream.Close();
     }
 
-    public Result<bool> Create()
+    public void Flush(in int height, in int width, in Block[,] map)
     {
-        Root = new(0, 0);
+        using FileStream fileStream = new(
+            Path.Join(
+                Directory.GetCurrentDirectory(),
+                FileName),
+                FileMode.Create);
 
-        Borders = new(
-            (DirectionEnum.Up, 0),
-            (DirectionEnum.Right, WidthNormal - 1),
-            (DirectionEnum.Down, HeightNormal - 1),
-            (DirectionEnum.Left, 0));
+        int length = height * width;
+        int y;
+        int x;
+        int yPrevious = 0;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / width;
+            x = i % width;
+            if (yPrevious != y)
+            {
+                fileStream.WriteByte((byte)SymbolNewLine);
+            }
 
-        ((IOutput)this).Clear();
+            (_, char symbol, _) = map[y, x];
+            fileStream.WriteByte((byte)symbol);
 
-        return new(true);
+            yPrevious = y;
+        }
+
+        fileStream.Close();
     }
 
-    public void Flush()
-    => Streamer.Flush(HeightNormal, WidthNormal, Map!);
-
-    public void Stream(Block block)
-    => Streamer.Stream(block, HeightNormal, WidthNormal, Map!);
-
-    public abstract Result<bool> Validate();
+    public void Stream(in Block block, in int height, in int width, in Block[,] map)
+    => Flush(height, width, map);
 }

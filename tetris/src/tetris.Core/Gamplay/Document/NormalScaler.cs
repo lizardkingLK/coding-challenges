@@ -2,9 +2,9 @@ using tetris.Core.Enums.Arguments;
 using tetris.Core.Shared;
 using static tetris.Core.Shared.Constants;
 
-namespace tetris.Core.Outputs.Document;
+namespace tetris.Core.Gamplay.Document;
 
-public class NormalScaler(MapSizeEnum mapSize) : DocumentOutput(mapSize)
+public class NormalScaler(MapSizeEnum mapSize) : DocumentGameplay(mapSize)
 {
     public override Result<bool> Validate()
     {
