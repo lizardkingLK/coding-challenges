@@ -31,7 +31,7 @@ public class MapManager(IOutput output)
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(_tetrominoes.Count());
 
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
-    private int _yHighest = HeightNormal;
+    private int _yRoof = HeightNormal;
 
     public Result<bool> Create()
     {
@@ -227,9 +227,9 @@ public class MapManager(IOutput output)
 
             block = _output.Map![position.Y + y, position.X + x];
             (y, x) = block.Position;
-            if (y < _yHighest)
+            if (y < _yRoof)
             {
-                _yHighest = y;
+                _yRoof = y;
             }
 
             _output.Availability![y, x] = false;
@@ -247,7 +247,7 @@ public class MapManager(IOutput output)
         }
     }
 
-    private void ClearLines(LinkedStack<int> yPoints, int yLowest)
+    private void ClearLines(LinkedStack<int> yPoints, int yFLoor)
     {
         int size = yPoints.Size;
         while (yPoints.TryPop(out int yPoint))
@@ -255,23 +255,60 @@ public class MapManager(IOutput output)
             ClearLine(yPoint);
         }
 
-        // TODO: hashmap to store not available counts
-        // TODO: two pointer to clear lines
-        int lower = yLowest;
-        int higher = yLowest - 1;
-        while (lower < higher && lower < _yHighest)
+        int bottom = yFLoor;
+        int top = yFLoor - 1;
+        while (top < bottom && _yRoof <= top)
         {
-            DownShift(lower, higher);
-            lower++;
-            higher++;
+            if (_output.FilledTracker![bottom] > 2)
+            {
+                bottom--;
+            }
+
+            if (_output.FilledTracker![top] == 2)
+            {
+                top--;
+                continue;
+            }
+
+            DownShift(bottom, top);
         }
 
-        _yHighest -= size;
+        _yRoof += size;
     }
 
     private void DownShift(int bottom, int top)
     {
-        throw new NotImplementedException();
+        int filledCountTop = _output.FilledTracker![top];
+        int length = WidthNormal - 1;
+        Block oldBlock;
+        Block newBlock;
+        int y;
+        int x;
+        char symbol;
+        ConsoleColor color;
+        bool isOldBlockAvailable;
+        for (int i = 1; i < length; i++)
+        {
+            ((y, x), symbol, color) = _output.Map![top, i];
+            isOldBlockAvailable = _output.Availability![top, i];
+
+            oldBlock = CreateBlock(y, x, SymbolSpaceBlock, ColorSpace);
+            _output.Map![top, i] = oldBlock;
+            _output.Availability![top, i] = true;
+
+            newBlock = CreateBlock(bottom, i, symbol, color);
+            _output.Map![bottom, i] = newBlock;
+            _output.Availability![bottom, i] = isOldBlockAvailable;
+
+            if (symbol != SymbolSpaceBlock)
+            {
+                _output.Stream(oldBlock);
+                _output.Stream(newBlock);
+            }
+        }
+
+        _output.FilledTracker![top] = 2;
+        _output.FilledTracker![bottom] = filledCountTop;
     }
 
     private void ClearLine(int yPoint)
@@ -286,7 +323,7 @@ public class MapManager(IOutput output)
             _output.Stream(block);
         }
 
-        _output.FilledTracker![yPoint] = WidthNormal - 2;
+        _output.FilledTracker![yPoint] = 2;
     }
 
     private void SpawnIt()
