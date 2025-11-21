@@ -1,8 +1,9 @@
 using tetris.Core.Enums.Arguments;
+using tetris.Core.Gamplay;
 using tetris.Core.Shared;
 using static tetris.Core.Shared.Constants;
 
-namespace tetris.Core.Gamplay.Document;
+namespace tetris.Core.Outputs.Document.Scalers;
 
 public class NormalScaler(MapSizeEnum mapSize) : DocumentGameplay(mapSize)
 {

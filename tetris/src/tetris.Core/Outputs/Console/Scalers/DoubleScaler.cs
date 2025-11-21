@@ -1,10 +1,11 @@
 using tetris.Core.Enums.Arguments;
+using tetris.Core.Gamplay;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using static tetris.Core.Helpers.BlockHelper;
 using static tetris.Core.Shared.Constants;
 
-namespace tetris.Core.Gamplay.Console;
+namespace tetris.Core.Outputs.Console.Scalers;
 
 public class DoubleScaler(MapSizeEnum mapSize) : ConsoleGameplay(mapSize)
 {

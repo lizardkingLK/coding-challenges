@@ -1,36 +1,41 @@
 using tetris.Core.Abstractions;
 using tetris.Core.Enums.Arguments;
+using tetris.Core.Handlers;
 using tetris.Core.Handlers.Games;
-using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
 
 namespace tetris.Core.Controllers;
 
-public class GameController : IController
+public class GameController(Arguments arguments) : IController
 {
-    private readonly HashMap<GameModeEnum, IManager> _gameSelector;
-
-    private readonly IManager _gameManager;
-
-    public GameController(Arguments arguments)
+    private readonly GameManager _gameManager = arguments.GameMode switch
     {
-        _gameSelector = new((GameModeEnum.Classic, new ClassicGameManager(arguments)));
-        _gameManager = _gameSelector[arguments.GameMode]!;
-    }
+        GameModeEnum.Classic => new ClassicGameManager(arguments),
+        GameModeEnum.Timed => throw new NotImplementedException(),
+        GameModeEnum.Points => throw new NotImplementedException(),
+        _ => throw new NotImplementedException(
+            "error. game mode not implemented"),
+    };
 
     public Result<bool> Execute()
     {
-        Result<bool> gameCreateResult = _gameManager.New();
-        if (gameCreateResult.Errors != null)
+        Result<bool> validateResult = _gameManager.Validate();
+        if (validateResult.Errors != null)
         {
-            return new(false, gameCreateResult.Errors);
+            return validateResult;
+        }
+
+        Result<bool> newGameResult = _gameManager.New();
+        if (newGameResult.Errors != null)
+        {
+            return newGameResult;
         }
 
         Result<bool> gamePlayResult = _gameManager.Play();
         if (gamePlayResult.Errors != null)
         {
-            return new(false, gamePlayResult.Errors);
+            return gamePlayResult;
         }
 
         return new(true);
