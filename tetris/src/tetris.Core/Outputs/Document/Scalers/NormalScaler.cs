@@ -1,17 +1,16 @@
-using tetris.Core.Enums.Arguments;
-using tetris.Core.Gamplay;
-using tetris.Core.Shared;
-using static tetris.Core.Shared.Constants;
+using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using tetris.Core.State.Cordinates;
 
 namespace tetris.Core.Outputs.Document.Scalers;
 
-public class NormalScaler(MapSizeEnum mapSize) : DocumentGameplay(mapSize)
+public record NormalScaler : DocumentScaler
 {
-    public override Result<bool> Validate()
-    {
-        Height = HeightNormal;
-        Width = WidthNormal;
+    public override Position Root { get; set; }
 
-        return new(true);
+    public override void Scale(
+        Block block,
+        DynamicallyAllocatedArray<Block> blocks)
+    {
+        return;   
     }
 }

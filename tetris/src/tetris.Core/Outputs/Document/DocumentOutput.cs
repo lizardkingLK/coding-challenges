@@ -1,6 +1,9 @@
 using tetris.Core.Abstractions;
+using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Cordinates;
+using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
+using tetris.Core.Outputs.Document.Scalers;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
@@ -10,33 +13,27 @@ namespace tetris.Core.Outputs.Document;
 
 public record DocumentOutput : IOutput
 {
-    private readonly Arguments _arguments;
-
     public int Height { get; set; }
     public int Width { get; set; }
     public Position Root { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
 
+    public DocumentScaler _scaler;
+
     public DocumentOutput(Arguments arguments)
     {
-        _arguments = arguments;
-
-        // TODO: set scalars and aligners
-    }
-
-    public Result<bool> Create()
-    {
-        Root = new(0, 0);
-
-        Borders = new(
-            (DirectionEnum.Up, 0),
-            (DirectionEnum.Right, WidthNormal - 1),
-            (DirectionEnum.Down, HeightNormal - 1),
-            (DirectionEnum.Left, 0));
-
-        Clear();
-
-        return new(true);
+        if (arguments.MapSize == MapSizeEnum.Normal)
+        {
+            Height = HeightNormal;
+            Width = WidthNormal;
+            _scaler = new NormalScaler();
+        }
+        else
+        {
+            Height = HeightScaled;
+            Width = WidthScaled;
+            _scaler = new DoubleScaler();
+        }
     }
 
     public void Clear()
@@ -52,6 +49,24 @@ public record DocumentOutput : IOutput
         fileStream.Close();
     }
 
+    public Result<bool> Create()
+    {
+        Root = new(0, 0);
+
+        Borders = new(
+            (DirectionEnum.Up, 0),
+            (DirectionEnum.Right, WidthNormal - 1),
+            (DirectionEnum.Down, HeightNormal - 1),
+            (DirectionEnum.Left, 0));
+
+        System.Console.CancelKeyPress += (sender, _)
+        => IOutput.Toggle(isOn: false);
+
+        Clear();
+
+        return new(true);
+    }
+
     public void Flush(Block[,] map)
     {
         using FileStream fileStream = new(
@@ -60,6 +75,7 @@ public record DocumentOutput : IOutput
                 FileName),
                 FileMode.Create);
 
+        DynamicallyAllocatedArray<Block> blocks = [];
         int length = HeightNormal * HeightNormal;
         int y;
         int x;
@@ -82,6 +98,13 @@ public record DocumentOutput : IOutput
         fileStream.Close();
     }
 
-    public void Stream(in Block block, Block[,] map)
-    => Flush(map);
+    public void Stream(Block block, Block[,] map)
+    {
+        Flush(map);
+    }
+
+    private void Output(DynamicallyAllocatedArray<Block> blocks)
+    {
+
+    }
 }

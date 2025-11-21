@@ -56,7 +56,8 @@ public record ConsoleOutput : IOutput
             (DirectionEnum.Down, HeightNormal - 1),
             (DirectionEnum.Left, 0));
 
-        System.Console.CancelKeyPress += (sender, _) => Toggle(isOn: false);
+        System.Console.CancelKeyPress += (sender, _)
+        => IOutput.Toggle(isOn: false);
 
         Clear();
 
@@ -121,12 +122,5 @@ public record ConsoleOutput : IOutput
         {
             WriteAt(symbol, y, x, color);
         }
-    }
-
-    private static void Toggle(bool isOn)
-    {
-        System.Console.CursorVisible = !isOn;
-        System.Console.SetCursorPosition(0, 0);
-        System.Console.Clear();
     }
 }
