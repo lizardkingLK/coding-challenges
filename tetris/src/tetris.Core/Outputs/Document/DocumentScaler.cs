@@ -6,6 +6,8 @@ namespace tetris.Core.Outputs.Document;
 
 public abstract record DocumentScaler : IScaler
 {
+    public abstract int Height { get; set; }
+    public abstract int Width { get; set; }
     public abstract Position Root { get; set; }
 
     public abstract void Scale(

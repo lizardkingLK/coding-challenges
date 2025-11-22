@@ -1,24 +1,34 @@
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
-using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
-using static tetris.Core.Shared.Constants;
+using static tetris.Core.Helpers.BlockHelper;
+using static tetris.Core.Shared.Values;
 
 namespace tetris.Core.Outputs.Document.Scalers;
 
 public record DoubleScaler : DocumentScaler
 {
     public override Position Root { get; set; }
+    public override int Height { get; set; }
+    public override int Width { get; set; }
 
-    public override void Scale(Block block, DynamicallyAllocatedArray<Block> blocks)
+    public override void Scale(
+        Block block,
+        DynamicallyAllocatedArray<Block> blocks)
     {
-        throw new NotImplementedException();
-    }
+        (int y, int x) = block.Position;
+        Position position;
+        for (int i = 0; i < 4; i++)
+        {
+            position = Root
+            + new Position(y * 2, x * 2)
+            + scaledBlockPositions[i / 2, i % 2];
 
-    public override Result<bool> Validate()
-    {
-        Height = HeightNormal;
-        Width = WidthNormal;
+            block = CreateBlock(
+                position,
+                block.Symbol,
+                block.Color);
 
-        return new(true);
+            blocks.Add(block, Width * y + x);
+        }
     }
 }

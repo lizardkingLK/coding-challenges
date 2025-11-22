@@ -15,7 +15,6 @@ public record DocumentOutput : IOutput
 {
     public int Height { get; set; }
     public int Width { get; set; }
-    public Position Root { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
 
     public DocumentScaler _scaler;
@@ -51,13 +50,18 @@ public record DocumentOutput : IOutput
 
     public Result<bool> Create()
     {
-        Root = new(0, 0);
-
         Borders = new(
             (DirectionEnum.Up, 0),
             (DirectionEnum.Right, WidthNormal - 1),
             (DirectionEnum.Down, HeightNormal - 1),
             (DirectionEnum.Left, 0));
+
+        _scaler.Root = new(0, 0);
+        _scaler.Height = Height;
+        _scaler.Width = Width;
+
+        Height = HeightNormal;
+        Width = WidthNormal;
 
         System.Console.CancelKeyPress += (sender, _)
         => IOutput.Toggle(isOn: false);
@@ -75,7 +79,9 @@ public record DocumentOutput : IOutput
                 FileName),
                 FileMode.Create);
 
-        DynamicallyAllocatedArray<Block> blocks = [];
+        DynamicallyAllocatedArray<Block> blocks = new(HeightScaled * WidthScaled);
+
+
         int length = HeightNormal * HeightNormal;
         int y;
         int x;
