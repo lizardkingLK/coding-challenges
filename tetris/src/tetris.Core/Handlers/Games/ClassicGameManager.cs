@@ -18,7 +18,6 @@ using static tetris.Core.Shared.Values;
 
 namespace tetris.Core.Handlers.Games;
 
-// TODO: add scoring
 public record ClassicGameManager(Arguments Arguments) : GameManager
 {
     private readonly Arguments _arguments = Arguments;
@@ -33,6 +32,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private IOutput? _output;
     private int _yRoof = HeightNormal;
     private int _actionInterval;
+    private int _score;
 
     public override Result<bool> Validate()
     {
@@ -206,9 +206,14 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             StoreIt();
         }
 
-        _actionStack.Push(HasLodged()
-        ? CommandTypeEnum.StoreIt
-        : CommandTypeEnum.GoDown);
+        if (HasLodged())
+        {
+            _actionStack.Push(CommandTypeEnum.StoreIt);
+        }
+        else
+        {
+            _actionStack.Push(CommandTypeEnum.GoDown);
+        }
     }
 
     private bool HasLodged()
@@ -279,7 +284,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     private void ClearLines(LinkedStack<int> yPoints, int yFLoor)
     {
-        int size = yPoints.Size;
+        int points = yPoints.Size;
         while (yPoints.TryPop(out int yPoint))
         {
             ClearLine(yPoint);
@@ -303,7 +308,9 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             DownShift(bottom, top);
         }
 
-        _yRoof += size;
+        _yRoof += points;
+
+        Score(points);
     }
 
     private void DownShift(int bottom, int top)
@@ -325,6 +332,8 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             oldBlock = CreateBlock(y, x, SymbolSpaceBlock, ColorSpace);
             Map![top, i] = oldBlock;
             Availability![top, i] = true;
+
+            Thread.Sleep(BlockClearTimeout);
 
             newBlock = CreateBlock(bottom, i, symbol, color);
             Map![bottom, i] = newBlock;
@@ -466,6 +475,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         Block[,] map)
     {
         (Position previous, Position change) = positions;
+
         int side = tetromino.Side;
         int length = side * side;
         int i;
@@ -495,6 +505,32 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             map[i / side, i % side] = block;
             Map![y, x] = block;
             _output!.Stream(block, Map);
+        }
+    }
+
+    private void Score(int points)
+    {
+        _score += points * _arguments.DifficultyLevel switch
+        {
+            DifficultyLevelEnum.Easy => 2,
+            DifficultyLevelEnum.Medium => 3,
+            DifficultyLevelEnum.Hard => 4,
+            _ => -1,
+        };
+
+        Position position = new(0, WidthNormal - 1);
+        Position oneLeft = new(0, -1);
+        int length = 1 + (int)Math.Log10(_score);
+        int tempScore = _score;
+        char symbol;
+        Block block;
+        for (int i = 0; i < length; i++)
+        {
+            symbol = (char)((tempScore % 10) + '0');
+            block = CreateBlock(position, symbol, ColorWall);
+            _output!.Stream(block, Map!);
+            tempScore /= 10;
+            position += oneLeft;
         }
     }
 
