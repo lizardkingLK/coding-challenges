@@ -28,7 +28,7 @@ public class OutputTypeValidator(
 
         if (!Enum.TryParse(input, out OutputTypeEnum value) || !Enum.IsDefined(value))
         {
-            return new(null, $"error. invalid output type value provided: {input}");
+            return new(null, $"error. invalid gameplay type value provided: {input}");
         }
 
         Value.OutputType = value;

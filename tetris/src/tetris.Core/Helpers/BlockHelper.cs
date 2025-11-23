@@ -4,8 +4,6 @@ namespace tetris.Core.Helpers;
 
 public static class BlockHelper
 {
-    public static Block CreateBlock(int y, int x) => new(y, x);
-
     public static Block CreateBlock(int y, int x, char symbol, ConsoleColor color) => new(y, x)
     {
         Symbol = symbol,
@@ -19,5 +17,6 @@ public static class BlockHelper
     };
 
     public static Block CreateBlock(Position position) => new(position);
+
     public static Block CreateBlock(Position position, Block block) => new(position, block);
 }

@@ -4,7 +4,7 @@ public enum CommandTypeEnum
 {
     PauseGame,
     SpawnIt,
-    StoredIt,
+    StoreIt,
     RotateIt,
     GoRight,
     GoLeft,

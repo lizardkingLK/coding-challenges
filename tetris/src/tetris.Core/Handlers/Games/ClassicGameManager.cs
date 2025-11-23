@@ -1,77 +1,523 @@
 using tetris.Core.Abstractions;
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Commands;
-using tetris.Core.Outputs;
+using tetris.Core.Enums.Cordinates;
+using tetris.Core.Library.DataStructures.Linear.Queues.ArrayQueue;
+using tetris.Core.Library.DataStructures.Linear.Stacks.LinkedStack;
+using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
+using tetris.Core.Outputs.Console;
+using tetris.Core.Outputs.Document;
+using tetris.Core.Players;
 using tetris.Core.Shared;
+using tetris.Core.State.Assets;
+using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
+using static tetris.Core.Helpers.BlockHelper;
+using static tetris.Core.Shared.Constants;
+using static tetris.Core.Shared.Values;
 
 namespace tetris.Core.Handlers.Games;
 
-public class ClassicGameManager : IManager
+// TODO: add scoring
+public record ClassicGameManager(Arguments Arguments) : GameManager
 {
-    private readonly MapSizeEnum _mapSize;
-    public IOutput? Output { get; set; }
-    public PlayerManager? PlayerManager { get; set; }
-    public MapManager? MapManager { get; set; }
+    private readonly Arguments _arguments = Arguments;
+    private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
+    private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(tetrominoes.Count());
 
-    public ClassicGameManager(Arguments arguments)
+    public override Block[,]? Map { get; set; }
+    public override bool[,]? Availability { get; set; }
+    public override HashMap<int, int>? FilledTracker { get; set; }
+
+    private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
+    private IOutput? _output;
+    private int _yRoof = HeightNormal;
+    private int _actionInterval;
+
+    public override Result<bool> Validate()
     {
-        _mapSize = arguments.MapSize;
-
-        Output = arguments.OutputType switch
+        Result<IOutput> outputCreationResult = SetOutput();
+        if (outputCreationResult.Errors != null)
         {
-            OutputTypeEnum.Console => new ConsoleOutput(),
-            OutputTypeEnum.Document => new DocumentOutput(),
-            _ => throw new NotImplementedException("error. cannot find output. invalid output type given"),
-        };
-
-        MapManager = new MapManager(Output);
-        PlayerManager = new(this);
-    }
-
-    public Result<bool> New()
-    {
-        Result<bool> dimensionCreateResult = Output!.Create(_mapSize);
-        if (dimensionCreateResult.Errors != null)
-        {
-            return dimensionCreateResult;
+            return new(false, outputCreationResult.Errors);
         }
 
-        Result<bool> playableCreateResult = MapManager!.Create();
-        if (playableCreateResult.Errors != null)
+        _output = outputCreationResult!.Data;
+        Result<int> actionIntervalResult = SetInterval();
+        if (actionIntervalResult.Errors != null)
         {
-            return playableCreateResult;
+            return new(false, actionIntervalResult.Errors);
         }
 
-        Output!.Flush();
+        _actionInterval = actionIntervalResult!.Data;
+        Result<bool> gameCreationResult = _output!.Create();
+        if (gameCreationResult.Errors != null)
+        {
+            return new(false, gameCreationResult.Errors);
+        }
 
         return new(true);
     }
 
-    public Result<bool> Play()
+    public override Result<bool> New()
     {
-        Task.Run(PlayerManager!.Input);
+        CreateBoard();
+        CreateQueue();
 
-        return MapManager!.Play();
+        return new(true);
     }
 
-    public void Pause()
+    public override Result<bool> Play()
     {
-        throw new NotImplementedException();
+        Task.Run(new Player(this).Input);
+
+        while (true)
+        {
+            if (!TryChooseTetromino())
+            {
+                return new(false);
+            }
+
+            if (!TryTravelTetromino())
+            {
+                return new(false);
+            }
+        }
     }
 
-    public void Quit()
+    public override void Input(CommandTypeEnum commandType)
     {
-        throw new NotImplementedException();
+        _actionStack.Push(commandType);
     }
 
-    public void Input(CommandTypeEnum commandType)
+    private bool TryTravelTetromino()
     {
-        if (commandType == CommandTypeEnum.PauseGame)
+        while (_actionStack.TryPop(out CommandTypeEnum commandType))
+        {
+            HandleAction(commandType);
+            if (commandType == CommandTypeEnum.StoreIt)
+            {
+                break;
+            }
+
+            Thread.Sleep(_actionInterval);
+        }
+
+        return true;
+    }
+
+    private bool TryChooseTetromino()
+    {
+        _actionStack.Purge();
+
+        if (!_tetrominoQueue.TryPeek(out _current))
+        {
+            CreateQueue();
+        }
+
+        _current = _tetrominoQueue.Dequeue();
+        (_, _, Position origin) = _current;
+        if (!Availability![origin.Y, origin.X])
+        {
+            return false;
+        }
+
+        _actionStack.Push(CommandTypeEnum.SpawnIt);
+
+        return true;
+    }
+
+    private void CreateBoard()
+    {
+        Map = new Block[HeightNormal, WidthNormal];
+        Availability = new bool[HeightNormal, WidthNormal];
+        FilledTracker = [];
+
+        int i;
+        for (i = 0; i < HeightNormal; i++)
+        {
+            FilledTracker.Add(i, WidthNormal);
+        }
+
+        int length = HeightNormal * WidthNormal;
+        int y;
+        int x;
+        Position position;
+        for (i = 0; i < length; i++)
+        {
+            y = i / WidthNormal;
+            x = i % WidthNormal;
+            position = new Position(y, x);
+            if (IsNonWallBlock(position.Y, position.X))
+            {
+                Map[y, x] = CreateBlock(position);
+                Availability[y, x] = true;
+                FilledTracker[y]--;
+            }
+            else
+            {
+                Map[y, x] = CreateBlock(position, SymbolWallBlock, ColorWall);
+                Availability[y, x] = false;
+            }
+        }
+
+        _output!.Flush(Map!);
+    }
+
+    private void CreateQueue()
+    {
+        tetrominoes.Shuffle();
+        Block[,] map;
+        int length;
+        Position position;
+        foreach (Tetromino tetromino in tetrominoes.Values!)
+        {
+            map = tetromino.Get();
+            length = tetromino.Side;
+            position = new(1, WidthNormal / 2 - length / 2);
+            _tetrominoQueue.Enqueue((tetromino, map, position));
+        }
+    }
+
+    private void HandleAction(CommandTypeEnum commandType)
+    {
+        if (commandType == CommandTypeEnum.SpawnIt)
+        {
+            SpawnIt();
+        }
+        else if (commandType == CommandTypeEnum.RotateIt)
+        {
+            RotateIt();
+        }
+        else if (commandType == CommandTypeEnum.GoRight)
+        {
+            Move(DirectionEnum.Right, new(0, 1));
+        }
+        else if (commandType == CommandTypeEnum.GoDown)
+        {
+            Move(DirectionEnum.Down, new(1, 0));
+        }
+        else if (commandType == CommandTypeEnum.GoLeft)
+        {
+            Move(DirectionEnum.Left, new(0, -1));
+        }
+        else if (commandType == CommandTypeEnum.StoreIt)
+        {
+            StoreIt();
+        }
+
+        _actionStack.Push(HasLodged()
+        ? CommandTypeEnum.StoreIt
+        : CommandTypeEnum.GoDown);
+    }
+
+    private bool HasLodged()
+    {
+        (_, Block[,] map, _) = _current;
+        int y;
+        int x;
+        Position oneLower = new(1, 0);
+        foreach (Block block in map)
+        {
+            if (block.Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            (y, x) = block.Position + oneLower;
+            if (!Availability![y, x])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void StoreIt()
+    {
+        (Tetromino? tetromino, Block[,] map, Position position) = _current;
+
+        int y;
+        int x;
+        int side = tetromino.Side;
+        int length = side * side;
+        Block block;
+        int? lowestYPoint = null;
+        LinkedStack<int> yPoints = new();
+        for (int i = 0; i < length; i++)
+        {
+            y = i / side;
+            x = i % side;
+            block = map![y, x];
+            if (block.Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            block = Map![position.Y + y, position.X + x];
+            (y, x) = block.Position;
+            if (y < _yRoof)
+            {
+                _yRoof = y;
+            }
+
+            Availability![y, x] = false;
+            FilledTracker![y]++;
+            if (FilledTracker[y] == WidthNormal)
+            {
+                yPoints.Push(y);
+                lowestYPoint = y;
+            }
+        }
+
+        if (lowestYPoint != null)
+        {
+            ClearLines(yPoints, lowestYPoint.Value);
+        }
+    }
+
+    private void ClearLines(LinkedStack<int> yPoints, int yFLoor)
+    {
+        int size = yPoints.Size;
+        while (yPoints.TryPop(out int yPoint))
+        {
+            ClearLine(yPoint);
+        }
+
+        int bottom = yFLoor;
+        int top = yFLoor - 1;
+        while (top < bottom && _yRoof <= top)
+        {
+            if (FilledTracker![bottom] > 2)
+            {
+                bottom--;
+            }
+
+            if (FilledTracker![top] == 2)
+            {
+                top--;
+                continue;
+            }
+
+            DownShift(bottom, top);
+        }
+
+        _yRoof += size;
+    }
+
+    private void DownShift(int bottom, int top)
+    {
+        int filledCountTop = FilledTracker![top];
+        int length = WidthNormal - 1;
+        Block oldBlock;
+        Block newBlock;
+        int y;
+        int x;
+        char symbol;
+        ConsoleColor color;
+        bool isOldBlockAvailable;
+        for (int i = 1; i < length; i++)
+        {
+            ((y, x), symbol, color) = Map![top, i];
+            isOldBlockAvailable = Availability![top, i];
+
+            oldBlock = CreateBlock(y, x, SymbolSpaceBlock, ColorSpace);
+            Map![top, i] = oldBlock;
+            Availability![top, i] = true;
+
+            newBlock = CreateBlock(bottom, i, symbol, color);
+            Map![bottom, i] = newBlock;
+            Availability![bottom, i] = isOldBlockAvailable;
+
+            if (symbol != SymbolSpaceBlock)
+            {
+                _output!.Stream(oldBlock, Map);
+                _output!.Stream(newBlock, Map);
+            }
+        }
+
+        FilledTracker![top] = 2;
+        FilledTracker![bottom] = filledCountTop;
+    }
+
+    private void ClearLine(int yPoint)
+    {
+        int length = WidthNormal - 1;
+        Block block;
+        for (int i = 1; i < length; i++)
+        {
+            block = CreateBlock(yPoint, i, SymbolSpaceBlock, ColorSpace);
+            Map![yPoint, i] = block;
+            Availability![yPoint, i] = true;
+            _output!.Stream(block, Map);
+            Thread.Sleep(BlockClearTimeout);
+        }
+
+        FilledTracker![yPoint] = 2;
+    }
+
+    private void SpawnIt()
+    {
+        Position relative;
+        Position spawn;
+        Block newBlock;
+        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        foreach (Block block in map)
+        {
+            ((int y, int x), char symbol, _) = block;
+            if (symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            spawn = position + block.Position;
+            relative = Map![spawn.Y, spawn.X].Position;
+            newBlock = CreateBlock(relative, block);
+            map[y, x] = newBlock;
+            Map![spawn.Y, spawn.X] = newBlock;
+            _output!.Stream(newBlock, Map);
+        }
+
+        _current = (tetromino, map, position);
+    }
+
+    private void RotateIt()
+    {
+        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        if (!tetromino.CanRotate(Availability!, position))
         {
             return;
         }
-        
-        MapManager!.Input(commandType);
+
+        int side = tetromino.Side;
+        ClearIt(map, position, side);
+
+        map = tetromino.Next();
+        int length = side * side;
+        int i;
+        int y;
+        int x;
+        Block block;
+        for (i = 0; i < length; i++)
+        {
+            y = i / side;
+            x = i % side;
+            block = map![y, x];
+            block = CreateBlock(position + block.Position, block.Symbol, block.Color);
+            if (block.Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            (y, x) = block.Position;
+            map[i / side, i % side] = block;
+            Map![y, x] = block;
+            _output!.Stream(block, Map);
+        }
+
+        _current = (tetromino, map, position);
     }
+
+    private void Move(DirectionEnum direction, Position positionChange)
+    {
+        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        if (!tetromino.CanMove(Availability!, (position, positionChange), direction))
+        {
+            return;
+        }
+
+        ClearIt(map, position, tetromino.Side);
+        MoveIt((position, positionChange), tetromino, map);
+
+        _current = (tetromino, map, position + positionChange);
+    }
+
+    private void ClearIt(
+        in Block[,] map,
+        in Position position,
+        in int side)
+    {
+        int length = side * side;
+        int i;
+        int y;
+        int x;
+        Block block;
+        for (i = 0; i < length; i++)
+        {
+            y = i / side;
+            x = i % side;
+            if (map[y, x].Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            block = Map![y + position.Y, x + position.X];
+            block = CreateBlock(block.Position, SymbolSpaceBlock, ColorSpace);
+            (y, x) = block.Position;
+            Map![y, x] = block;
+            _output!.Stream(block, Map);
+        }
+    }
+
+    private void MoveIt(
+        (Position, Position) positions,
+        Tetromino tetromino,
+        Block[,] map)
+    {
+        (Position previous, Position change) = positions;
+        int side = tetromino.Side;
+        int length = side * side;
+        int i;
+        int y;
+        int x;
+        Block block;
+        char symbol;
+        ConsoleColor color;
+        for (i = length - 1; i >= 0; i--)
+        {
+            y = i / side;
+            x = i % side;
+            if (map[y, x].Symbol != SymbolTetrominoBlock)
+            {
+                continue;
+            }
+
+            symbol = SymbolTetrominoBlock;
+            color = tetromino.Color;
+
+            block = Map![y + previous.Y, x + previous.X];
+            block = CreateBlock(
+                block.Position + change,
+                symbol,
+                color);
+            (y, x) = block.Position;
+            map[i / side, i % side] = block;
+            Map![y, x] = block;
+            _output!.Stream(block, Map);
+        }
+    }
+
+    private Result<int> SetInterval()
+    => _arguments.DifficultyLevel switch
+    {
+        DifficultyLevelEnum.Easy => new(BlockMoveInterval * 2),
+        DifficultyLevelEnum.Medium => new(BlockMoveInterval),
+        DifficultyLevelEnum.Hard => new(BlockMoveInterval / 2),
+        _ => new(-1, "error. difficulty level not implemented"),
+    };
+
+    private Result<IOutput> SetOutput()
+    => _arguments.OutputType switch
+    {
+        OutputTypeEnum.Console => new(new ConsoleOutput(_arguments)),
+        OutputTypeEnum.Document => new(new DocumentOutput(_arguments)),
+        _ => new(null, "error. output type not implemented"),
+    };
+
+    private bool IsNonWallBlock(int y, int x)
+    => x > _output!.Borders![DirectionEnum.Left]
+    && x < _output.Borders[DirectionEnum.Right]
+    && y > _output.Borders[DirectionEnum.Up]
+    && y < _output.Borders[DirectionEnum.Down];
 }

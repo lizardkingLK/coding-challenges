@@ -8,4 +8,5 @@ public enum ArgumentTypeEnum
     GameMode,
     OutputType,
     MapSize,
+    AnimationToggle,
 }
