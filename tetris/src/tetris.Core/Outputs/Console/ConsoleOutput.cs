@@ -60,7 +60,15 @@ public record ConsoleOutput : IOutput
         return new(true);
     }
 
+    // TODO: fix scoring issue when double scaler is used
     // TODO: add hashmap specific speed counter with directions as keys
+    // TODO: add ghost tetromino to show ⋰ where it is going to be
+    /*
+      ˣˣ 
+      ˣˣ
+    ˣˣˣˣˣˣ
+    ˣˣˣˣˣˣ
+    */
 
     private Result<bool> Validate()
     {

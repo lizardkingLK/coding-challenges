@@ -28,9 +28,9 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     public override bool[,]? Availability { get; set; }
     public override HashMap<int, int>? FilledTracker { get; set; }
 
+    private int _yRoof = HeightNormal;
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
     private IOutput? _output;
-    private int _yRoof = HeightNormal;
     private int _actionInterval;
     private int _score;
 
@@ -216,6 +216,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
     }
 
+    // TODO: block input once lodged and enable once spawned
     private bool HasLodged()
     {
         (_, Block[,] map, _) = _current;
@@ -235,6 +236,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
                 return true;
             }
         }
+
 
         return false;
     }

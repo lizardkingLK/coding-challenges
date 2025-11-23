@@ -5,6 +5,14 @@ namespace tetris.Core.State.Assets.Tetrominoes;
 
 public record TetrominoS : Tetromino
 {
+    // TODO: add game over screen
+    // TODO: add pause menu and pause function
+    // TODO: add restart game
+    // TODO: add new game
+    // TODO: add help screens
+    // TODO: add interactive game creation mode
+    // TODO: add rebuild_tool.ps1 file and shell file
+    // TODO: add README.md file
     private readonly bool[,] _variantA = new bool[,]
     {
         { false, true, true },
