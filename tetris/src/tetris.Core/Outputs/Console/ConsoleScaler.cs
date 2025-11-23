@@ -6,7 +6,14 @@ namespace tetris.Core.Outputs.Console;
 
 public abstract record ConsoleScaler : IScaler
 {
-    public abstract Position Root { get; set; }
+    public Position Root { get; set; }
+
+    public void SetRoot(int height, int width)
+    {
+        Root = new(
+            System.Console.WindowHeight / 2 - height / 2,
+            System.Console.WindowWidth / 2 - width / 2);
+    }
 
     public abstract void Scale(
         Block block,

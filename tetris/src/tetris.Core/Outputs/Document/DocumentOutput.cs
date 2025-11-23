@@ -73,44 +73,49 @@ public record DocumentOutput : IOutput
 
     public void Flush(Block[,] map)
     {
+        int length = HeightNormal * WidthNormal;
+        int y;
+        int x;
+        Block block;
+        DynamicallyAllocatedArray<Block> blocks = new(HeightScaled * WidthScaled);
+        for (int i = 0; i < length; i++)
+        {
+            y = i / WidthNormal;
+            x = i % WidthNormal;
+            block = map[y, x];
+            _scaler.Scale(block, blocks);
+        }
+
+        Output(blocks);
+    }
+
+    public void Stream(Block block, Block[,] map) => Flush(map);
+
+    private static void Output(DynamicallyAllocatedArray<Block> blocks)
+    {
         using FileStream fileStream = new(
             Path.Join(
                 Directory.GetCurrentDirectory(),
                 FileName),
                 FileMode.Create);
 
-        DynamicallyAllocatedArray<Block> blocks = new(HeightScaled * WidthScaled);
-
-
-        int length = HeightNormal * HeightNormal;
         int y;
         int x;
+        int length = blocks.Size;
         int yPrevious = 0;
         for (int i = 0; i < length; i++)
         {
-            y = i / WidthNormal;
-            x = i % WidthNormal;
+            ((y, x), char symbol, _) = blocks[i];
             if (yPrevious != y)
             {
                 fileStream.WriteByte((byte)SymbolNewLine);
             }
 
-            (_, char symbol, _) = map[y, x];
             fileStream.WriteByte((byte)symbol);
 
             yPrevious = y;
         }
 
         fileStream.Close();
-    }
-
-    public void Stream(Block block, Block[,] map)
-    {
-        Flush(map);
-    }
-
-    private void Output(DynamicallyAllocatedArray<Block> blocks)
-    {
-
     }
 }

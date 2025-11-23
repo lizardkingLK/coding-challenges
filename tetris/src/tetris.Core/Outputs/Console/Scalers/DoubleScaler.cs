@@ -7,8 +7,6 @@ namespace tetris.Core.Outputs.Console.Scalers;
 
 public record DoubleScaler : ConsoleScaler
 {
-    public override Position Root { get; set; }
-
     public override void Scale(
         Block block,
         DynamicallyAllocatedArray<Block> blocks)

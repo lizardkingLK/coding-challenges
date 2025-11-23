@@ -3,7 +3,6 @@ using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
-using tetris.Core.Outputs.Console.Aligners;
 using tetris.Core.Outputs.Console.Scalers;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
@@ -20,7 +19,6 @@ public record ConsoleOutput : IOutput
     public HashMap<DirectionEnum, int>? Borders { get; set; }
 
     public ConsoleScaler _scaler;
-    public ConsoleAligner _aligner;
 
     public ConsoleOutput(Arguments arguments)
     {
@@ -36,8 +34,6 @@ public record ConsoleOutput : IOutput
             Width = WidthScaled;
             _scaler = new DoubleScaler();
         }
-
-        _aligner = new CenterAligner();
     }
 
     public void Clear() => System.Console.Clear();
@@ -59,10 +55,12 @@ public record ConsoleOutput : IOutput
         System.Console.CancelKeyPress += (sender, _)
         => IOutput.Toggle(isOn: false);
 
-        Clear();
+        IOutput.Toggle(isOn: true);
 
         return new(true);
     }
+
+    // TODO: add hashmap specific speed counter with directions as keys
 
     private Result<bool> Validate()
     {
@@ -78,9 +76,7 @@ public record ConsoleOutput : IOutput
             return new(false, "error. cannot create map. Width not enough");
         }
 
-        Position root = _aligner.GetRoot(Height, Width);
-        _aligner.Root = root;
-        _scaler.Root = root;
+        _scaler.SetRoot(Height, Width);
 
         Height = HeightNormal;
         Width = WidthNormal;
@@ -100,7 +96,6 @@ public record ConsoleOutput : IOutput
             y = i / WidthNormal;
             x = i % WidthNormal;
             block = map[y, x];
-            _aligner.Align(ref block);
             _scaler.Scale(block, blocks);
         }
 
@@ -110,7 +105,6 @@ public record ConsoleOutput : IOutput
     public void Stream(Block block, Block[,] _)
     {
         DynamicallyAllocatedArray<Block> blocks = [];
-        _aligner.Align(ref block);
         _scaler.Scale(block, blocks);
 
         Output(blocks);

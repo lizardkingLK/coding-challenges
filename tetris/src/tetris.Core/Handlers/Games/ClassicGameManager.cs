@@ -18,6 +18,7 @@ using static tetris.Core.Shared.Values;
 
 namespace tetris.Core.Handlers.Games;
 
+// TODO: add scoring
 public record ClassicGameManager(Arguments Arguments) : GameManager
 {
     private readonly Arguments _arguments = Arguments;
@@ -29,28 +30,28 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     public override HashMap<int, int>? FilledTracker { get; set; }
 
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
+    private IOutput? _output;
     private int _yRoof = HeightNormal;
     private int _actionInterval;
-    private IOutput? _output;
 
     public override Result<bool> Validate()
     {
         Result<IOutput> outputCreationResult = SetOutput();
-        if (outputCreationResult != null)
+        if (outputCreationResult.Errors != null)
         {
             return new(false, outputCreationResult.Errors);
         }
 
         _output = outputCreationResult!.Data;
         Result<int> actionIntervalResult = SetInterval();
-        if (actionIntervalResult != null)
+        if (actionIntervalResult.Errors != null)
         {
             return new(false, actionIntervalResult.Errors);
         }
 
         _actionInterval = actionIntervalResult!.Data;
         Result<bool> gameCreationResult = _output!.Create();
-        if (gameCreationResult != null)
+        if (gameCreationResult.Errors != null)
         {
             return new(false, gameCreationResult.Errors);
         }
@@ -235,7 +236,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     private void StoreIt()
     {
-        (Tetromino? tetromino, Block[,] Map, Position position) = _current;
+        (Tetromino? tetromino, Block[,] map, Position position) = _current;
 
         int y;
         int x;
@@ -248,7 +249,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         {
             y = i / side;
             x = i % side;
-            block = Map[y, x];
+            block = map![y, x];
             if (block.Symbol != SymbolTetrominoBlock)
             {
                 continue;
@@ -350,6 +351,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             Map![yPoint, i] = block;
             Availability![yPoint, i] = true;
             _output!.Stream(block, Map);
+            Thread.Sleep(BlockClearTimeout);
         }
 
         FilledTracker![yPoint] = 2;
@@ -499,9 +501,9 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private Result<int> SetInterval()
     => _arguments.DifficultyLevel switch
     {
-        DifficultyLevelEnum.Easy => new(DurationMoveInterval * 2),
-        DifficultyLevelEnum.Medium => new(DurationMoveInterval),
-        DifficultyLevelEnum.Hard => new(DurationMoveInterval / 2),
+        DifficultyLevelEnum.Easy => new(BlockMoveInterval * 2),
+        DifficultyLevelEnum.Medium => new(BlockMoveInterval),
+        DifficultyLevelEnum.Hard => new(BlockMoveInterval / 2),
         _ => new(-1, "error. difficulty level not implemented"),
     };
 

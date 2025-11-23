@@ -19,8 +19,7 @@ public record DoubleScaler : DocumentScaler
         Position position;
         for (int i = 0; i < 4; i++)
         {
-            position = Root
-            + new Position(y * 2, x * 2)
+            position = new Position(y * 2, x * 2)
             + scaledBlockPositions[i / 2, i % 2];
 
             block = CreateBlock(
