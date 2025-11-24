@@ -27,6 +27,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     public override Block[,]? Map { get; set; }
     public override bool[,]? Availability { get; set; }
     public override HashMap<int, int>? FilledTracker { get; set; }
+    public override HashMap<int, int>? HeightsTracker { get; set; }
 
     private int _yRoof = HeightNormal;
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
@@ -132,11 +133,17 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         Map = new Block[HeightNormal, WidthNormal];
         Availability = new bool[HeightNormal, WidthNormal];
         FilledTracker = [];
+        HeightsTracker = [];
 
         int i;
         for (i = 0; i < HeightNormal; i++)
         {
             FilledTracker.Add(i, WidthNormal);
+        }
+
+        for (i = WidthNormal - 1; i >= 1; i--)
+        {
+            HeightsTracker.Add(i, HeightNormal - 1);
         }
 
         int length = HeightNormal * WidthNormal;
@@ -189,6 +196,10 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         {
             RotateIt();
         }
+        else if (commandType == CommandTypeEnum.SlamDown)
+        {
+            SlamDown();
+        }
         else if (commandType == CommandTypeEnum.GoRight)
         {
             Move(DirectionEnum.Right, new(0, 1));
@@ -236,7 +247,6 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             }
         }
 
-
         return false;
     }
 
@@ -263,10 +273,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
             block = Map![position.Y + y, position.X + x];
             (y, x) = block.Position;
-            if (y < _yRoof)
-            {
-                _yRoof = y;
-            }
+            UpdateHeights(y, x);
 
             Availability![y, x] = false;
             FilledTracker![y]++;
@@ -312,6 +319,19 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         _yRoof += points;
 
         Score(points);
+    }
+
+    private void UpdateHeights(int y, int x)
+    {
+        if (y < _yRoof)
+        {
+            _yRoof = y;
+        }
+
+        if (y < HeightsTracker![x])
+        {
+            HeightsTracker[x] = y;
+        }
     }
 
     private void DownShift(int bottom, int top)
@@ -360,6 +380,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             block = CreateBlock(yPoint, i, SymbolSpaceBlock, ColorSpace);
             Map![yPoint, i] = block;
             Availability![yPoint, i] = true;
+            HeightsTracker![i]++;
             _output!.Stream(block, Map);
             Thread.Sleep(BlockClearTimeout);
         }
@@ -427,6 +448,32 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
 
         _current = (tetromino, map, position);
+    }
+
+    private void SlamDown()
+    {
+        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        int side = tetromino.Side;
+        ClearIt(map, position, side);
+
+        int yFloor = HeightNormal;
+        for (int i = 0; i < side; i++)
+        {
+            if (HeightsTracker!.TryGetValue(position.X + i, out int yHeight)
+            && yHeight < yFloor)
+            {
+                yFloor = yHeight;
+            }
+        }
+
+        var np = new Position(yFloor - side, position.X);
+        _output!.Stream(CreateBlock(np, SymbolWallBlock, ColorWall), Map!);
+
+        Position positionChange = new Position(yFloor - side, position.X) - position;
+
+        MoveIt((position, positionChange), tetromino, map);
+
+        _current = (tetromino, map, position + positionChange);
     }
 
     private void Move(DirectionEnum direction, Position positionChange)
