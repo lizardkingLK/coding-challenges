@@ -89,7 +89,12 @@ public record DocumentOutput : IOutput
         Output(blocks);
     }
 
-    public void Stream(Block block, Block[,] map) => Flush(map);
+    public void Stream(Block _, Block[,] map) => Flush(map);
+
+    public void Score(int score, Block[,] map)
+    {
+        throw new NotImplementedException();
+    }
 
     private static void Output(DynamicallyAllocatedArray<Block> blocks)
     {

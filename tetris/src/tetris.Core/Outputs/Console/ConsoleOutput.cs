@@ -7,6 +7,7 @@ using tetris.Core.Outputs.Console.Scalers;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
+using static tetris.Core.Helpers.BlockHelper;
 using static tetris.Core.Helpers.ConsoleHelper;
 using static tetris.Core.Shared.Constants;
 
@@ -60,9 +61,9 @@ public record ConsoleOutput : IOutput
         return new(true);
     }
 
-    // TODO: fix scoring issue when double scaler is used
-    // TODO: add hashmap specific speed counter with directions as keys
+    // TODO: add slam down functionality
     // TODO: add ghost tetromino to show ⋰ where it is going to be
+    // TODO: add hashmap specific speed counter with directions as keys
     /*
       ˣˣ 
       ˣˣ
@@ -114,6 +115,24 @@ public record ConsoleOutput : IOutput
     {
         DynamicallyAllocatedArray<Block> blocks = [];
         _scaler.Scale(block, blocks);
+        Output(blocks);
+    }
+
+    public void Score(int score, Block[,] map)
+    {
+        Position position = _scaler.ScorePosition;
+        Position oneLeft = new(0, -1);
+        int length = 1 + (int)Math.Log10(score);
+        int tempScore = score;
+        char symbol;
+        DynamicallyAllocatedArray<Block> blocks = [];
+        for (int i = 0; i < length; i++)
+        {
+            symbol = (char)((tempScore % 10) + '0');
+            blocks.Add(CreateBlock(position, symbol, ColorWall));
+            tempScore /= 10;
+            position += oneLeft;
+        }
 
         Output(blocks);
     }

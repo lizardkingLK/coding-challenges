@@ -15,6 +15,7 @@ public interface IOutput
     public void Clear();
     public void Flush(Block[,] map);
     public void Stream(Block block, Block[,] map);
+    public void Score(int score, Block[,] map);
     public static void Toggle(bool isOn)
     {
         Console.CursorVisible = !isOn;

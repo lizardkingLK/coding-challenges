@@ -519,20 +519,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             _ => -1,
         };
 
-        Position position = new(0, WidthNormal - 1);
-        Position oneLeft = new(0, -1);
-        int length = 1 + (int)Math.Log10(_score);
-        int tempScore = _score;
-        char symbol;
-        Block block;
-        for (int i = 0; i < length; i++)
-        {
-            symbol = (char)((tempScore % 10) + '0');
-            block = CreateBlock(position, symbol, ColorWall);
-            _output!.Stream(block, Map!);
-            tempScore /= 10;
-            position += oneLeft;
-        }
+        _output!.Score(_score, Map!);
     }
 
     private Result<int> SetInterval()
