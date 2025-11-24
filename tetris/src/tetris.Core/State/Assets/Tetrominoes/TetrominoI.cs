@@ -5,7 +5,6 @@ namespace tetris.Core.State.Assets.Tetrominoes;
 
 public record TetrominoI : Tetromino
 {
-    // TODO: validate all border cells for a side
     private readonly bool[,] _variantA = new bool[,]
     {
         { false, false, false, false },

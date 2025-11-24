@@ -51,27 +51,27 @@ public record TetrominoT : Tetromino
         Borders = new(
             (0, new Position[3][]
             {
-                [new(1, 2)],
+                [new(1, 2), new(0, 1)],
                 [new(1, 0), new(1, 1), new(1, 2)],
-                [new(1, 0)],
+                [new(1, 0), new(0, 1)],
             }),
             (1, new Position[3][]
             {
-                [new(1, 2)],
-                [new(2, 1)],
+                [new(1, 2), new(0, 1), new(2, 1)],
+                [new(2, 1), new(1, 2)],
                 [new(0, 1), new(1, 1), new(2, 1)],
             }),
             (2, new Position[3][]
             {
-                [new(1, 2)],
-                [new(2, 1)],
-                [new(1, 0)],
+                [new(1, 2), new(2, 1)],
+                [new(2, 1), new(1, 0), new(1, 2)],
+                [new(1, 0), new(2, 1)],
             }),
             (3, new Position[3][]
             {
                 [new(0, 1), new(1, 1), new(2, 1)],
-                [new(2, 1)],
-                [new(1, 0)],
+                [new(2, 1), new(1, 0)],
+                [new(1, 0), new(0, 1), new(2, 1)],
             }));
 
         Color = ConsoleColor.Magenta;

@@ -216,7 +216,6 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
     }
 
-    // TODO: block input once lodged and enable once spawned
     private bool HasLodged()
     {
         (_, Block[,] map, _) = _current;
