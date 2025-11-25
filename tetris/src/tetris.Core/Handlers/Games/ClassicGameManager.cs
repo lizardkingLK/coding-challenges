@@ -184,8 +184,13 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         Block[,] map;
         int length;
         Position position;
-        foreach (Tetromino tetromino in tetrominoes.Values!)
+        foreach (Tetromino? tetromino in tetrominoes.Values)
         {
+            if (tetromino == null)
+            {
+                continue;
+            }
+
             map = tetromino.Get();
             length = tetromino.Side;
             position = new(1, WidthNormal / 2 - length / 2);
@@ -251,6 +256,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         else
         {
             _output!.WriteAll(Map!);
+            _output!.WriteScore(_score, Map!);
         }
     }
 

@@ -11,13 +11,14 @@ public static class Values
 {
     internal static readonly DynamicallyAllocatedArray<Tetromino> tetrominoes
     = new(
-        new TetrominoI(),
-        new TetrominoJ(),
-        new TetrominoL(),
-        new TetrominoO(),
-        new TetrominoS(),
-        new TetrominoT(),
-        new TetrominoZ());
+        new TetrominoI()//,
+        // new TetrominoJ(),
+        // new TetrominoL(),
+        // new TetrominoO(),
+        // new TetrominoS(),
+        // new TetrominoT(),
+        // new TetrominoZ()
+        );
 
     internal static readonly HashMap<ConsoleKey, CommandTypeEnum> keyAndInputs = new(
         (ConsoleKey.Escape, CommandTypeEnum.ToggleGame),

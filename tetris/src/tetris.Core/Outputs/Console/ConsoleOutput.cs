@@ -155,7 +155,7 @@ public record ConsoleOutput : IOutput
 
             position = origin + _scaler.Root + new Position(y, x);
 
-            color = (ConsoleColor)Random.Shared.Next(_colorsLength);
+            color = (ConsoleColor)Random.Shared.Next(1, _colorsLength);
 
             blocks.Add(CreateBlock(position, symbol, color));
         }
