@@ -5,6 +5,8 @@ namespace tetris.Core.State.Assets.Tetrominoes;
 
 public record TetrominoS : Tetromino
 {
+    // TODO: add reset game functionality with animation
+    // TODO: add persistence local stored highscores preferably sqlite or json
     // TODO: add pause game functionality
     // TODO: add pause menu and pause function
     // TODO: add restart game

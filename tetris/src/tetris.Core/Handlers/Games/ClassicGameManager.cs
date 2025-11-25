@@ -24,13 +24,15 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(tetrominoes.Count());
 
+    public override Player? Player { get; set; }
     public override Block[,]? Map { get; set; }
-    public override bool[,]? Availability { get; set; }
     public override HashMap<int, int>? FilledTracker { get; set; }
+    public override bool[,]? Availability { get; set; }
 
     private int _yRoof = HeightNormal;
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
     private IOutput? _output;
+    private bool _isPaused;
     private int _actionInterval;
     private int _score;
 
@@ -56,6 +58,8 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             return new(false, gameCreationResult.Errors);
         }
 
+        Player = new Player(this);
+
         return new(true);
     }
 
@@ -69,7 +73,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     public override Result<bool> Play()
     {
-        Task.Run(new Player(this).Input);
+        Task.Run(Player!.Input);
 
         while (true)
         {
@@ -92,8 +96,21 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     private bool TryTravelTetromino()
     {
-        while (_actionStack.TryPop(out CommandTypeEnum commandType))
+        while (true)
         {
+            if (_isPaused
+            && _actionStack.TryPeek(out CommandTypeEnum commandType)
+            && commandType != CommandTypeEnum.ToggleGame)
+            {
+                Thread.Sleep(_actionInterval);
+                continue;
+            }
+
+            if (!_actionStack.TryPop(out commandType))
+            {
+                break;
+            }
+
             HandleAction(commandType);
             if (commandType == CommandTypeEnum.StoreIt)
             {
@@ -117,7 +134,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
         _current = _tetrominoQueue.Dequeue();
         (_, _, Position origin) = _current;
-        if (!Availability![origin.Y, origin.X])
+        if (_yRoof == origin.Y)
         {
             return false;
         }
@@ -181,7 +198,11 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     private void HandleAction(CommandTypeEnum commandType)
     {
-        if (commandType == CommandTypeEnum.SpawnIt)
+        if (commandType == CommandTypeEnum.ToggleGame)
+        {
+            Toggle();
+        }
+        else if (commandType == CommandTypeEnum.SpawnIt)
         {
             SpawnIt();
         }
@@ -219,6 +240,9 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             _actionStack.Push(CommandTypeEnum.GoDown);
         }
     }
+
+    private void Toggle()
+    => _isPaused = !_isPaused;
 
     private bool HasLodged()
     {

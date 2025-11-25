@@ -12,14 +12,8 @@ public class Player(GameManager gameManager)
     {
         while (true)
         {
-            if (!Console.KeyAvailable)
-            {
-                continue;
-            }
-
-            if (keyAndInputs.TryGetValue(
-                Console.ReadKey(true).Key,
-                out CommandTypeEnum commandType))
+            if (Console.KeyAvailable && keyAndInputs.TryGetValue(
+                Console.ReadKey(true).Key, out CommandTypeEnum commandType))
             {
                 _gameManager.Input(commandType);
             }

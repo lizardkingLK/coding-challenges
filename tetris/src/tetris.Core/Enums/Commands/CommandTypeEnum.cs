@@ -2,7 +2,7 @@ namespace tetris.Core.Enums.Commands;
 
 public enum CommandTypeEnum
 {
-    PauseGame,
+    ToggleGame,
     SpawnIt,
     StoreIt,
     RotateIt,
