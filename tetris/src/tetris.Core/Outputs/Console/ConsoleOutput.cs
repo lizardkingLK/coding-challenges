@@ -15,6 +15,8 @@ namespace tetris.Core.Outputs.Console;
 
 public record ConsoleOutput : IOutput
 {
+    private readonly int _colorsLength = Enum.GetValues<ConsoleColor>().Length;
+
     public int Height { get; set; }
     public int Width { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
@@ -83,7 +85,7 @@ public record ConsoleOutput : IOutput
         return new(true);
     }
 
-    public void Flush(Block[,] map)
+    public void WriteAll(Block[,] map)
     {
         int length = HeightNormal * WidthNormal;
         int y;
@@ -101,14 +103,14 @@ public record ConsoleOutput : IOutput
         Output(blocks);
     }
 
-    public void Stream(Block block, Block[,] _)
+    public void Write(Block block, Block[,] _)
     {
         DynamicallyAllocatedArray<Block> blocks = [];
         _scaler.Scale(block, blocks);
         Output(blocks);
     }
 
-    public void Score(int score, Block[,] map)
+    public void WriteScore(int score, Block[,] map)
     {
         Position position = _scaler.ScorePosition;
         Position oneLeft = new(0, -1);
@@ -122,6 +124,40 @@ public record ConsoleOutput : IOutput
             blocks.Add(CreateBlock(position, symbol, ColorWall));
             tempScore /= 10;
             position += oneLeft;
+        }
+
+        Output(blocks);
+    }
+
+    public void WriteContent(string content, int height, int width)
+    {
+        int length = content.Length;
+        Position origin = new(
+            HeightNormal / 2 - height / 2,
+            WidthNormal / 2 - width / 2);
+
+        DynamicallyAllocatedArray<Block> blocks = [];
+        char symbol;
+        Position position;
+        int y;
+        int x;
+        ConsoleColor color;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / width;
+            x = i % width;
+
+            symbol = content[i];
+            if (symbol == SymbolNewLine)
+            {
+                continue;
+            }
+
+            position = origin + _scaler.Root + new Position(y, x);
+
+            color = (ConsoleColor)Random.Shared.Next(_colorsLength);
+
+            blocks.Add(CreateBlock(position, symbol, color));
         }
 
         Output(blocks);

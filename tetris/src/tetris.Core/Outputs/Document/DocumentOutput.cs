@@ -71,7 +71,7 @@ public record DocumentOutput : IOutput
         return new(true);
     }
 
-    public void Flush(Block[,] map)
+    public void WriteAll(Block[,] map)
     {
         int length = HeightNormal * WidthNormal;
         int y;
@@ -89,9 +89,14 @@ public record DocumentOutput : IOutput
         Output(blocks);
     }
 
-    public void Stream(Block _, Block[,] map) => Flush(map);
+    public void Write(Block _, Block[,] map) => WriteAll(map);
 
     public void Score(int score, Block[,] map)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Pause()
     {
         throw new NotImplementedException();
     }
@@ -122,5 +127,15 @@ public record DocumentOutput : IOutput
         }
 
         fileStream.Close();
+    }
+
+    public void WriteScore(int score, Block[,] map)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void WriteContent(string content, int heightm, int width)
+    {
+        throw new NotImplementedException();
     }
 }

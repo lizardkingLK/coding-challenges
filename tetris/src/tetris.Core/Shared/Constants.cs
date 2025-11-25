@@ -14,5 +14,6 @@ public static class Constants
     public const char SymbolNewLine = '\n';
     public const string FileName = "tetris.txt";
     public const ConsoleColor ColorWall = ConsoleColor.Gray;
+    public const ConsoleColor ColorMenu = ConsoleColor.DarkYellow;
     public const ConsoleColor ColorSpace = ConsoleColor.White;
 }

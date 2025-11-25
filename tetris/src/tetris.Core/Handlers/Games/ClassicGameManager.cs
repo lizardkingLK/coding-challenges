@@ -12,6 +12,7 @@ using tetris.Core.Shared;
 using tetris.Core.State.Assets;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
+using tetris.Core.Views;
 using static tetris.Core.Helpers.BlockHelper;
 using static tetris.Core.Shared.Constants;
 using static tetris.Core.Shared.Values;
@@ -23,6 +24,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private readonly Arguments _arguments = Arguments;
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(tetrominoes.Count());
+    private readonly PauseMenuView _pauseMenuView = new();
 
     public override Player? Player { get; set; }
     public override Block[,]? Map { get; set; }
@@ -77,12 +79,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
         while (true)
         {
-            if (!TryChooseTetromino())
-            {
-                return new(false);
-            }
-
-            if (!TryTravelTetromino())
+            if (!TryChooseTetromino() || !TryTravelTetromino())
             {
                 return new(false);
             }
@@ -178,7 +175,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             }
         }
 
-        _output!.Flush(Map!);
+        _output!.WriteAll(Map!);
     }
 
     private void CreateQueue()
@@ -242,7 +239,20 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     }
 
     private void Toggle()
-    => _isPaused = !_isPaused;
+    {
+        _isPaused = !_isPaused;
+        if (_isPaused)
+        {
+            _output!.WriteContent(
+                _pauseMenuView.Message,
+                _pauseMenuView.Height,
+                _pauseMenuView.Width);
+        }
+        else
+        {
+            _output!.WriteAll(Map!);
+        }
+    }
 
     private bool HasLodged()
     {
@@ -369,8 +379,8 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
             if (symbol != SymbolSpaceBlock)
             {
-                _output!.Stream(oldBlock, Map);
-                _output!.Stream(newBlock, Map);
+                _output!.Write(oldBlock, Map);
+                _output!.Write(newBlock, Map);
             }
         }
 
@@ -387,7 +397,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             block = CreateBlock(yPoint, i, SymbolSpaceBlock, ColorSpace);
             Map![yPoint, i] = block;
             Availability![yPoint, i] = true;
-            _output!.Stream(block, Map);
+            _output!.Write(block, Map);
             Thread.Sleep(BlockClearTimeout);
         }
 
@@ -413,7 +423,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             newBlock = CreateBlock(relative, block);
             map[y, x] = newBlock;
             Map![spawn.Y, spawn.X] = newBlock;
-            _output!.Stream(newBlock, Map);
+            _output!.Write(newBlock, Map);
         }
 
         _current = (tetromino, map, position);
@@ -450,7 +460,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             (y, x) = block.Position;
             map[i / side, i % side] = block;
             Map![y, x] = block;
-            _output!.Stream(block, Map);
+            _output!.Write(block, Map);
         }
 
         _current = (tetromino, map, position);
@@ -508,7 +518,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             block = CreateBlock(block.Position, SymbolSpaceBlock, ColorSpace);
             (y, x) = block.Position;
             Map![y, x] = block;
-            _output!.Stream(block, Map);
+            _output!.Write(block, Map);
         }
     }
 
@@ -547,7 +557,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             (y, x) = block.Position;
             map[i / side, i % side] = block;
             Map![y, x] = block;
-            _output!.Stream(block, Map);
+            _output!.Write(block, Map);
         }
     }
 
@@ -561,7 +571,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             _ => -1,
         };
 
-        _output!.Score(_score, Map!);
+        _output!.WriteScore(_score, Map!);
     }
 
     private Result<int> SetInterval()

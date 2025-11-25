@@ -7,15 +7,17 @@ public record TetrominoS : Tetromino
 {
     // TODO: add reset game functionality with animation
     // TODO: add persistence local stored highscores preferably sqlite or json
-    // TODO: add pause game functionality
+    
     // TODO: add pause menu and pause function
     // TODO: add restart game
     // TODO: add new game
     // TODO: add game over screen
-    // TODO: add help screens
-    // TODO: add interactive game creation mode
+
     // TODO: add rebuild_tool.ps1 file and shell file
     // TODO: add README.md file
+
+    // TODO: add help screens
+    // TODO: add interactive game creation mode
     private readonly bool[,] _variantA = new bool[,]
     {
         { false, true, true },
