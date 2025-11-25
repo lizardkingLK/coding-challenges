@@ -46,7 +46,6 @@ public record TetrominoS : Tetromino
     public override int Side { get; }
     public override ConsoleColor Color { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
-
     protected override HashMap<int, Position[][]> Borders { get; }
 
     public TetrominoS()

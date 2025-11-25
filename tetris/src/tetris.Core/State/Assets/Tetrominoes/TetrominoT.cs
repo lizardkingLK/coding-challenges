@@ -37,7 +37,6 @@ public record TetrominoT : Tetromino
     public override int Side { get; }
     public override ConsoleColor Color { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
-
     protected override HashMap<int, Position[][]> Borders { get; }
 
     public TetrominoT()
@@ -73,7 +72,7 @@ public record TetrominoT : Tetromino
                 [new(2, 1), new(1, 0)],
                 [new(1, 0), new(0, 1), new(2, 1)],
             }));
-
+        
         Color = ConsoleColor.Magenta;
         Size = Variants.Count();
         Side = 3;

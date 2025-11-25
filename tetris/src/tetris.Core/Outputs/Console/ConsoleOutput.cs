@@ -61,7 +61,6 @@ public record ConsoleOutput : IOutput
         return new(true);
     }
 
-    // TODO: add slam down functionality
     // TODO: add ghost tetromino to show ⋰ where it is going to be
     // TODO: add hashmap specific speed counter with directions as keys
     /*
