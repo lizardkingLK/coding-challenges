@@ -17,7 +17,6 @@ public interface IOutput
     public void Write(Block block, Block[,] map);
     public void WriteScore(int score, Block[,] map);
     public void WriteContent(string content, int height, int width);
-    public void ClearContent(string content, int height, int width, Block[,] map);
     public static void Toggle(bool isOn)
     {
         Console.CursorVisible = !isOn;

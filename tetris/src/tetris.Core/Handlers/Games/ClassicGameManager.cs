@@ -213,13 +213,9 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
         else
         {
-            _output!.ClearContent(
-                _pauseMenuView.Message,
-                _pauseMenuView.Height,
-                _pauseMenuView.Width,
-                Map!);
-            // Thread.Sleep(_actionInterval);
-            // _output!.WriteScore(_score, Map!);
+            _output!.WriteAll(Map!);
+            Thread.Sleep(_actionInterval);
+            _output!.WriteScore(_score, Map!);
         }
     }
 

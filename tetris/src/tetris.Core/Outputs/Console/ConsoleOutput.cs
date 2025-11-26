@@ -159,33 +159,7 @@ public record ConsoleOutput : IOutput
         Output(blocks);
     }
 
-    public void ClearContent(string content, int height, int width, Block[,] map)
-    {
-        Position origin = new(
-            _scaler.Height / 2 - height / 2,
-            _scaler.Width / 2 - width / 2);
-
-        int length = height * width;
-        int y;
-        int x;
-        DynamicallyAllocatedArray<Block> blocks = [];
-        Position position;
-        char symbol;
-        ConsoleColor color;
-        Block block;
-        for (int i = 0; i < length; i++)
-        {
-            y = i / width;
-            x = i % width;
-            block = map[origin.Y + y, origin.X + x];
-            (_, symbol, color) = block;
-            position = _scaler.Root + origin + new Position(y, x);
-            blocks.Add(CreateBlock(position, symbol, color));
-        }
-
-        Output(blocks);
-    }
-
+    // TODO: test hashmaps for startup error fix
     private static void Output(DynamicallyAllocatedArray<Block> blocks)
     {
         foreach (((int y, int x), char symbol, ConsoleColor color) in blocks)
