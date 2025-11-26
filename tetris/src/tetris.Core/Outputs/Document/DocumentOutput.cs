@@ -13,6 +13,7 @@ namespace tetris.Core.Outputs.Document;
 
 public record DocumentOutput : IOutput
 {
+    // TODO: fix issue with document output double scaler
     public int Height { get; set; }
     public int Width { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }

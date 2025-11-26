@@ -31,6 +31,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private IOutput? _output;
     private bool _isPaused;
     private bool _isReset;
+    private bool _isQuit;
     private int _actionInterval;
     private int _score;
 
@@ -75,13 +76,15 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     public override Result<bool> Play()
     {
-        while (true)
+        while (!_isQuit)
         {
             if (!TryChooseTetromino() || !TryTravelTetromino())
             {
                 return new(false);
             }
         }
+
+        return new(true);
     }
 
     public override void Input(CommandTypeEnum commandType)
@@ -219,7 +222,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
     }
 
-    private void RestartGame()
+    private void NewGame()
     {
         if (!_isPaused)
         {
@@ -265,16 +268,6 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         _isReset = true;
     }
 
-    private void NewGame()
-    {
-        if (!_isPaused)
-        {
-            return;
-        }
-
-        throw new NotImplementedException();
-    }
-
     private void QuitGame()
     {
         if (!_isPaused)
@@ -282,7 +275,11 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             return;
         }
 
-        throw new NotImplementedException();
+        _isReset = true;
+        _isPaused = false;
+        _isQuit = true;
+
+        _output!.Clear();
     }
 
     private bool HasLodged()
@@ -633,7 +630,6 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     {
         HashMap<CommandTypeEnum, Action?> commandActions = new(
             (CommandTypeEnum.ToggleGame, Toggle),
-            (CommandTypeEnum.RestartGame, RestartGame),
             (CommandTypeEnum.NewGame, NewGame),
             (CommandTypeEnum.QuitGame, QuitGame),
             (CommandTypeEnum.SpawnIt, SpawnIt),
@@ -650,8 +646,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private bool ShouldPause(CommandTypeEnum commandType)
     {
         if (_isPaused
-        && (commandType == CommandTypeEnum.RestartGame
-        || commandType == CommandTypeEnum.NewGame
+        && (commandType == CommandTypeEnum.NewGame
         || commandType == CommandTypeEnum.QuitGame))
         {
             return false;

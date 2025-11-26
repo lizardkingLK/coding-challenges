@@ -21,9 +21,8 @@ public static class Values
 
     internal static readonly HashMap<ConsoleKey, CommandTypeEnum> keyAndInputs = new(
         (ConsoleKey.Escape, CommandTypeEnum.ToggleGame),
-        (ConsoleKey.D1, CommandTypeEnum.RestartGame),
-        (ConsoleKey.D2, CommandTypeEnum.NewGame),
-        (ConsoleKey.D3, CommandTypeEnum.QuitGame),
+        (ConsoleKey.D1, CommandTypeEnum.NewGame),
+        (ConsoleKey.D2, CommandTypeEnum.QuitGame),
         (ConsoleKey.Z, CommandTypeEnum.RotateIt),
         (ConsoleKey.LeftArrow, CommandTypeEnum.GoLeft),
         (ConsoleKey.RightArrow, CommandTypeEnum.GoRight),

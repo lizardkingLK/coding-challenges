@@ -44,7 +44,6 @@ public class GameController(Arguments arguments) : IController
             return gamePlayResult;
         }
 
-
         return new(true);
     }
 

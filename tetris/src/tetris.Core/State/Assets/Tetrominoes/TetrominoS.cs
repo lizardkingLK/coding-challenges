@@ -10,7 +10,7 @@ public record TetrominoS : Tetromino
     // TODO: add persistence local stored highscores preferably sqlite or json
 
     // TODO: add pause menu and pause function
-    // TODO: add restart game
+    // TODO: add New game
     // TODO: add new game
     // TODO: add game over screen
 
