@@ -106,6 +106,18 @@ public class HashMap<K, V> : IEnumerable<KeyValuePair<K, V>> where K : notnull
         return true;
     }
 
+    public void TryAddOrUpdate(K key, V? value)
+    {
+        if (ContainsKey(key, out _, out HashNode? bucket))
+        {
+            bucket!.Value = value;
+        }
+        else
+        {
+            Add(key, value);
+        }
+    }
+
     public KeyValuePair<K, V> Remove(K key)
     {
         if (!ContainsKey(key, out _, out HashNode? bucket))

@@ -7,7 +7,6 @@ using tetris.Core.Library.DataStructures.Linear.Stacks.LinkedStack;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Outputs.Console;
 using tetris.Core.Outputs.Document;
-using tetris.Core.Players;
 using tetris.Core.Shared;
 using tetris.Core.State.Assets;
 using tetris.Core.State.Cordinates;
@@ -21,22 +20,23 @@ namespace tetris.Core.Handlers.Games;
 
 public record ClassicGameManager(Arguments Arguments) : GameManager
 {
-    private readonly Arguments _arguments = Arguments;
-    private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(tetrominoes.Count());
+    private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
     private readonly PauseMenuView _pauseMenuView = new();
+    private readonly Arguments _arguments = Arguments;
 
-    public override Player? Player { get; set; }
+    private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
+    private HashMap<CommandTypeEnum, Action?>? _commandActions;
+    private int _yRoof = HeightNormal;
+    private IOutput? _output;
+    private bool _isPaused;
+    private bool _isReset;
+    private int _actionInterval;
+    private int _score;
+
     public override Block[,]? Map { get; set; }
     public override HashMap<int, int>? FilledTracker { get; set; }
     public override bool[,]? Availability { get; set; }
-
-    private int _yRoof = HeightNormal;
-    private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
-    private IOutput? _output;
-    private bool _isPaused;
-    private int _actionInterval;
-    private int _score;
 
     public override Result<bool> Validate()
     {
@@ -60,7 +60,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             return new(false, gameCreationResult.Errors);
         }
 
-        Player = new Player(this);
+        _commandActions = SetCommandActions();
 
         return new(true);
     }
@@ -75,8 +75,6 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     public override Result<bool> Play()
     {
-        Task.Run(Player!.Input);
-
         while (true)
         {
             if (!TryChooseTetromino() || !TryTravelTetromino())
@@ -87,34 +85,23 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     }
 
     public override void Input(CommandTypeEnum commandType)
-    {
-        _actionStack.Push(commandType);
-    }
+    => _actionStack.Push(commandType);
 
     private bool TryTravelTetromino()
     {
-        while (true)
+        while (!_isReset)
         {
-            if (_isPaused
-            && _actionStack.TryPeek(out CommandTypeEnum commandType)
-            && commandType != CommandTypeEnum.ToggleGame)
+            Thread.Sleep(_actionInterval);
+
+            if (_actionStack.TryPop(out CommandTypeEnum commandType))
             {
-                Thread.Sleep(_actionInterval);
-                continue;
+                HandleAction(commandType);
             }
 
-            if (!_actionStack.TryPop(out commandType))
-            {
-                break;
-            }
-
-            HandleAction(commandType);
             if (commandType == CommandTypeEnum.StoreIt)
             {
                 break;
             }
-
-            Thread.Sleep(_actionInterval);
         }
 
         return true;
@@ -123,6 +110,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private bool TryChooseTetromino()
     {
         _actionStack.Purge();
+        _isReset = false;
 
         if (!_tetrominoQueue.TryPeek(out _current))
         {
@@ -147,12 +135,9 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         Availability = new bool[HeightNormal, WidthNormal];
         FilledTracker = [];
 
-        int i;
-        for (i = 0; i < HeightNormal; i++)
-        {
-            FilledTracker.Add(i, WidthNormal);
-        }
+        SetFilledTracker();
 
+        int i;
         int length = HeightNormal * WidthNormal;
         int y;
         int x;
@@ -200,39 +185,12 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     private void HandleAction(CommandTypeEnum commandType)
     {
-        if (commandType == CommandTypeEnum.ToggleGame)
+        if (ShouldPause(commandType))
         {
-            Toggle();
-        }
-        else if (commandType == CommandTypeEnum.SpawnIt)
-        {
-            SpawnIt();
-        }
-        else if (commandType == CommandTypeEnum.RotateIt)
-        {
-            RotateIt();
-        }
-        else if (commandType == CommandTypeEnum.SlamDown)
-        {
-            SlamDown();
-        }
-        else if (commandType == CommandTypeEnum.GoRight)
-        {
-            Move(DirectionEnum.Right, new(0, 1));
-        }
-        else if (commandType == CommandTypeEnum.GoDown)
-        {
-            Move(DirectionEnum.Down, new(1, 0));
-        }
-        else if (commandType == CommandTypeEnum.GoLeft)
-        {
-            Move(DirectionEnum.Left, new(0, -1));
-        }
-        else if (commandType == CommandTypeEnum.StoreIt)
-        {
-            StoreIt();
+            return;
         }
 
+        _commandActions![commandType]!.Invoke();
         if (HasLodged())
         {
             _actionStack.Push(CommandTypeEnum.StoreIt);
@@ -255,9 +213,80 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
         else
         {
-            _output!.WriteAll(Map!);
-            _output!.WriteScore(_score, Map!);
+            _output!.ClearContent(
+                _pauseMenuView.Message,
+                _pauseMenuView.Height,
+                _pauseMenuView.Width,
+                Map!);
+            // Thread.Sleep(_actionInterval);
+            // _output!.WriteScore(_score, Map!);
         }
+    }
+
+    private void RestartGame()
+    {
+        if (!_isPaused)
+        {
+            return;
+        }
+
+        _output!.WriteAll(Map!);
+        SetFilledTracker();
+
+        int length = HeightNormal * WidthNormal;
+        int y;
+        int x;
+        char symbol;
+        Position position;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / WidthNormal;
+            x = i % WidthNormal;
+            position = new(y, x);
+            (_, symbol, _) = Map![y, x];
+            if (IsNonWallBlock(y, x))
+            {
+                Map[y, x] = CreateBlock(position);
+                Availability![y, x] = true;
+                FilledTracker![y]--;
+            }
+            else
+            {
+                Availability![y, x] = false;
+            }
+
+            if (symbol == SymbolTetrominoBlock)
+            {
+                _output.Write(Map[y, x], Map);
+                Thread.Sleep(BlockClearTimeout);
+            }
+        }
+
+        _score = 0;
+        _actionStack.Purge();
+        _yRoof = HeightNormal;
+        _isPaused = false;
+        _isReset = true;
+    }
+
+    private void NewGame()
+    {
+        if (!_isPaused)
+        {
+            return;
+        }
+
+        throw new NotImplementedException();
+    }
+
+    private void QuitGame()
+    {
+        if (!_isPaused)
+        {
+            return;
+        }
+
+        throw new NotImplementedException();
     }
 
     private bool HasLodged()
@@ -482,23 +511,8 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             MoveIt((position, positionChange), tetromino, map);
 
             position += positionChange;
-
             _current = (tetromino, map, position);
         }
-    }
-
-    private void Move(DirectionEnum direction, Position positionChange)
-    {
-        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
-        if (!tetromino.CanMove(Availability!, (position, positionChange), direction))
-        {
-            return;
-        }
-
-        ClearIt(map, position, tetromino.Side);
-        MoveIt((position, positionChange), tetromino, map);
-
-        _current = (tetromino, map, position + positionChange);
     }
 
     private void ClearIt(
@@ -526,6 +540,20 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             Map![y, x] = block;
             _output!.Write(block, Map);
         }
+    }
+
+    private void Move(DirectionEnum direction, Position positionChange)
+    {
+        (Tetromino? tetromino, Block[,]? map, Position position) = _current;
+        if (!tetromino.CanMove(Availability!, (position, positionChange), direction))
+        {
+            return;
+        }
+
+        ClearIt(map, position, tetromino.Side);
+        MoveIt((position, positionChange), tetromino, map);
+
+        _current = (tetromino, map, position + positionChange);
     }
 
     private void MoveIt(
@@ -580,6 +608,14 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         _output!.WriteScore(_score, Map!);
     }
 
+    private void SetFilledTracker()
+    {
+        for (int i = 0; i < HeightNormal; i++)
+        {
+            FilledTracker!.TryAddOrUpdate(i, WidthNormal);
+        }
+    }
+
     private Result<int> SetInterval()
     => _arguments.DifficultyLevel switch
     {
@@ -596,6 +632,42 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         OutputTypeEnum.Document => new(new DocumentOutput(_arguments)),
         _ => new(null, "error. output type not implemented"),
     };
+
+    private HashMap<CommandTypeEnum, Action?> SetCommandActions()
+    {
+        HashMap<CommandTypeEnum, Action?> commandActions = new(
+            (CommandTypeEnum.ToggleGame, Toggle),
+            (CommandTypeEnum.RestartGame, RestartGame),
+            (CommandTypeEnum.NewGame, NewGame),
+            (CommandTypeEnum.QuitGame, QuitGame),
+            (CommandTypeEnum.SpawnIt, SpawnIt),
+            (CommandTypeEnum.RotateIt, RotateIt),
+            (CommandTypeEnum.SlamDown, SlamDown),
+            (CommandTypeEnum.StoreIt, StoreIt),
+            (CommandTypeEnum.GoRight, () => Move(DirectionEnum.Right, new(0, 1))),
+            (CommandTypeEnum.GoDown, () => Move(DirectionEnum.Down, new(1, 0))),
+            (CommandTypeEnum.GoLeft, () => Move(DirectionEnum.Left, new(0, -1))));
+
+        return commandActions;
+    }
+
+    private bool ShouldPause(CommandTypeEnum commandType)
+    {
+        if (_isPaused
+        && (commandType == CommandTypeEnum.RestartGame
+        || commandType == CommandTypeEnum.NewGame
+        || commandType == CommandTypeEnum.QuitGame))
+        {
+            return false;
+        }
+
+        if (_isPaused && commandType != CommandTypeEnum.ToggleGame)
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     private bool IsNonWallBlock(int y, int x)
     => x > _output!.Borders![DirectionEnum.Left]

@@ -138,4 +138,9 @@ public record DocumentOutput : IOutput
     {
         throw new NotImplementedException();
     }
+
+    public void ClearContent(string content, int height, int width, Block[,] map)
+    {
+        throw new NotImplementedException();
+    }
 }

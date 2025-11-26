@@ -6,8 +6,10 @@ namespace tetris.Core.Outputs.Console;
 
 public abstract record ConsoleScaler : IScaler
 {
+    public int Height { get; set; }
+    public int Width { get; set; }
     public Position Root { get; set; }
-    
+
     public abstract Position ScorePosition { get; }
 
     public void SetRoot(int height, int width)

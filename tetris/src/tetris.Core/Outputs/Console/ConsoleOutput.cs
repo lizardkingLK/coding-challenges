@@ -77,10 +77,9 @@ public record ConsoleOutput : IOutput
             return new(false, "error. cannot create map. Width not enough");
         }
 
+        (_scaler.Height, _scaler.Width) = (Height, Width);
         _scaler.SetRoot(Height, Width);
-
-        Height = HeightNormal;
-        Width = WidthNormal;
+        (Height, Width) = (HeightNormal, WidthNormal);
 
         return new(true);
     }
@@ -133,8 +132,8 @@ public record ConsoleOutput : IOutput
     {
         int length = content.Length;
         Position origin = new(
-            HeightNormal / 2 - height / 2,
-            WidthNormal / 2 - width / 2);
+            _scaler.Height / 2 - height / 2,
+            _scaler.Width / 2 - width / 2);
 
         DynamicallyAllocatedArray<Block> blocks = [];
         char symbol;
@@ -146,7 +145,6 @@ public record ConsoleOutput : IOutput
         {
             y = i / width;
             x = i % width;
-
             symbol = content[i];
             if (symbol == SymbolNewLine)
             {
@@ -154,9 +152,34 @@ public record ConsoleOutput : IOutput
             }
 
             position = origin + _scaler.Root + new Position(y, x);
-
             color = (ConsoleColor)Random.Shared.Next(1, _colorsLength);
+            blocks.Add(CreateBlock(position, symbol, color));
+        }
 
+        Output(blocks);
+    }
+
+    public void ClearContent(string content, int height, int width, Block[,] map)
+    {
+        Position origin = new(
+            _scaler.Height / 2 - height / 2,
+            _scaler.Width / 2 - width / 2);
+
+        int length = height * width;
+        int y;
+        int x;
+        DynamicallyAllocatedArray<Block> blocks = [];
+        Position position;
+        char symbol;
+        ConsoleColor color;
+        Block block;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / width;
+            x = i % width;
+            block = map[origin.Y + y, origin.X + x];
+            (_, symbol, color) = block;
+            position = _scaler.Root + origin + new Position(y, x);
             blocks.Add(CreateBlock(position, symbol, color));
         }
 

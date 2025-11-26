@@ -5,9 +5,10 @@ namespace tetris.Core.State.Assets.Tetrominoes;
 
 public record TetrominoS : Tetromino
 {
+    // TODO: use player input from 1 to 4 and return the result to controller to handle
     // TODO: add reset game functionality with animation
     // TODO: add persistence local stored highscores preferably sqlite or json
-    
+
     // TODO: add pause menu and pause function
     // TODO: add restart game
     // TODO: add new game
@@ -81,7 +82,7 @@ public record TetrominoS : Tetromino
             }),
             (3, new Position[3][]
             {
-                [new(1, 1), new(2, 1)],
+                [new(0, 0), new(1, 1), new(2, 1)],
                 [new(2, 1), new(1, 0)],
                 [new(0, 0), new(1, 0), new(2, 1)],
             }));

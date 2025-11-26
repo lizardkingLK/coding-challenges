@@ -1,6 +1,5 @@
 using tetris.Core.Enums.Commands;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
-using tetris.Core.Players;
 using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 
@@ -8,7 +7,6 @@ namespace tetris.Core.Handlers;
 
 public abstract record GameManager
 {
-    public abstract Player? Player { get; set; }
     public abstract Block[,]? Map { get; set; }
     public abstract HashMap<int, int>? FilledTracker { get; set; }
     public abstract bool[,]? Availability { get; set; }
