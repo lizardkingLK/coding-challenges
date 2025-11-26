@@ -57,7 +57,7 @@ public record TetrominoZ : Tetromino
             (1, new Position[3][]
             {
                 [new(0, 2), new(1, 2), new(2, 1)],
-                [new(2, 1), new(0, 2)],
+                [new(2, 1), new(1, 2)],
                 [new(1, 1), new(2, 1), new(0, 2)],
             }),
             (2, new Position[3][]

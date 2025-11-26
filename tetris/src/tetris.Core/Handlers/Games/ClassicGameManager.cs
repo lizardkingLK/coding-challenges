@@ -29,11 +29,11 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private HashMap<CommandTypeEnum, Action?>? _commandActions;
     private int _yRoof = HeightNormal;
     private IOutput? _output;
+    private int _actionInterval;
+    private int _score;
     private bool _isPaused;
     private bool _isReset;
     private bool _isQuit;
-    private int _actionInterval;
-    private int _score;
 
     public override Block[,]? Map { get; set; }
     public override HashMap<int, int>? FilledTracker { get; set; }
