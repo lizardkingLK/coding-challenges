@@ -1,5 +1,4 @@
 using tetris.Core.Abstractions;
-using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
@@ -8,32 +7,23 @@ using tetris.Core.Shared;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
 using static tetris.Core.Shared.Constants;
+using static tetris.Core.Helpers.BlockHelper;
 
 namespace tetris.Core.Outputs.Document;
 
 public record DocumentOutput : IOutput
 {
-    // TODO: fix issue with document output double scaler
     public int Height { get; set; }
     public int Width { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
 
     public DocumentScaler _scaler;
 
-    public DocumentOutput(Arguments arguments)
+    public DocumentOutput(Arguments _)
     {
-        if (arguments.MapSize == MapSizeEnum.Normal)
-        {
-            Height = HeightNormal;
-            Width = WidthNormal;
-            _scaler = new NormalScaler();
-        }
-        else
-        {
-            Height = HeightScaled;
-            Width = WidthScaled;
-            _scaler = new DoubleScaler();
-        }
+        Height = HeightNormal;
+        Width = WidthNormal;
+        _scaler = new NormalScaler();
     }
 
     public void Clear()
@@ -92,14 +82,75 @@ public record DocumentOutput : IOutput
 
     public void Write(Block _, Block[,] map) => WriteAll(map);
 
-    public void Score(int score, Block[,] map)
+    public void WriteScore(int score, Block[,] map)
     {
-        throw new NotImplementedException();
+        Position position = _scaler.ScorePosition;
+        Position oneLeft = new(0, -1);
+        int length = 1 + (int)Math.Log10(score);
+        int tempScore = score;
+        char symbol;
+        DynamicallyAllocatedArray<Block> blocks = [];
+        Block block;
+        for (int i = 0; i < length; i++)
+        {
+            symbol = (char)((tempScore % 10) + '0');
+            block = CreateBlock(position, symbol, ColorWall);
+            blocks.Add(block);
+            map[position.Y, position.X] = block;
+            tempScore /= 10;
+            position += oneLeft;
+        }
+
+        Output(blocks);
     }
 
-    public void Pause()
+    public void WriteContent(string content, int height, int width)
     {
-        throw new NotImplementedException();
+        int length = content.Length;
+        Position origin = new(
+            _scaler.Height / 2 - height / 2,
+            _scaler.Width / 2 - width / 2);
+
+        DynamicallyAllocatedArray<Block> blocks = [];
+        char symbol;
+        Position position;
+        int y;
+        int x;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / width;
+            x = i % width;
+            symbol = content[i];
+            if (symbol == SymbolNewLine)
+            {
+                continue;
+            }
+
+            position = origin + _scaler.Root + new Position(y, x);
+            blocks.Add(CreateBlock(position, symbol, ColorSpace));
+        }
+
+        Output(blocks);
+    }
+
+    public void ClearScore(Block[,] map)
+    {
+        DynamicallyAllocatedArray<Block> blocks = [];
+        Position oneLeft = new(0, -1);
+        Position position = new(0, WidthNormal - 1);
+        Block block;
+        char symbol;
+        do
+        {
+            (_, symbol, _) = map[position.Y, position.X];
+            block = CreateBlock(position, SymbolWallBlock, ColorWall);
+            blocks.Add(block);
+            map[position.Y, position.X] = block;
+            position += oneLeft;
+        }
+        while (symbol != SymbolWallBlock);
+
+        Output(blocks);
     }
 
     private static void Output(DynamicallyAllocatedArray<Block> blocks)
@@ -128,15 +179,5 @@ public record DocumentOutput : IOutput
         }
 
         fileStream.Close();
-    }
-
-    public void WriteScore(int score, Block[,] map)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void WriteContent(string content, int heightm, int width)
-    {
-        throw new NotImplementedException();
     }
 }

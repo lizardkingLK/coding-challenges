@@ -13,6 +13,7 @@ public interface IOutput
 
     public Result<bool> Create();
     public void Clear();
+    public void ClearScore(Block[,] map);
     public void WriteAll(Block[,] map);
     public void Write(Block block, Block[,] map);
     public void WriteScore(int score, Block[,] map);

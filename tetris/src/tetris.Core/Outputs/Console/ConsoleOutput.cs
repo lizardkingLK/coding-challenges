@@ -159,6 +159,10 @@ public record ConsoleOutput : IOutput
         Output(blocks);
     }
 
+    public void ClearScore(Block[,] map)
+    {
+    }
+
     private static void Output(DynamicallyAllocatedArray<Block> blocks)
     {
         foreach (((int y, int x), char symbol, ConsoleColor color) in blocks)

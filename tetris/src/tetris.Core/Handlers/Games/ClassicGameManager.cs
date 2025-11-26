@@ -230,6 +230,9 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
 
         _output!.WriteAll(Map!);
+        Thread.Sleep(_actionInterval);
+
+        _output.ClearScore(Map!);
         SetFilledTracker();
 
         int length = HeightNormal * WidthNormal;

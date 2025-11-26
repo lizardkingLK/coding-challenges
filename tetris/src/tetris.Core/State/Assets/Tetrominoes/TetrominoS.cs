@@ -5,13 +5,12 @@ namespace tetris.Core.State.Assets.Tetrominoes;
 
 public record TetrominoS : Tetromino
 {
-    // TODO: use player input from 1 to 4 and return the result to controller to handle
-    // TODO: add reset game functionality with animation
+    // TODO: add diagonal moves
+
+    // TODO: add start game countdown sequence 
+
     // TODO: add persistence local stored highscores preferably sqlite or json
 
-    // TODO: add pause menu and pause function
-    // TODO: add New game
-    // TODO: add new game
     // TODO: add game over screen
 
     // TODO: add rebuild_tool.ps1 file and shell file
