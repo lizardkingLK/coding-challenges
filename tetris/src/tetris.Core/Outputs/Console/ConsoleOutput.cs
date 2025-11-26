@@ -1,4 +1,3 @@
-using tetris.Core.Abstractions;
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Cordinates;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
@@ -13,7 +12,7 @@ using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.Outputs.Console;
 
-public record ConsoleOutput : IOutput
+public record ConsoleOutput
 {
     private readonly int _colorsLength = Enum.GetValues<ConsoleColor>().Length;
 
@@ -56,9 +55,9 @@ public record ConsoleOutput : IOutput
             (DirectionEnum.Left, 0));
 
         System.Console.CancelKeyPress += (sender, _)
-        => IOutput.Toggle(isOn: false);
+        => Toggle(isOn: false);
 
-        IOutput.Toggle(isOn: true);
+        Toggle(isOn: true);
 
         return new(true);
     }
@@ -109,7 +108,7 @@ public record ConsoleOutput : IOutput
         Output(blocks);
     }
 
-    public void WriteScore(int score, Block[,] map)
+    public void WriteScore(int score)
     {
         Position position = _scaler.ScorePosition;
         Position oneLeft = new(0, -1);
@@ -159,15 +158,61 @@ public record ConsoleOutput : IOutput
         Output(blocks);
     }
 
-    public void ClearScore(Block[,] map)
+    public void Timeout()
     {
+        Position center = new(HeightNormal / 2, WidthNormal / 2);
+        DynamicallyAllocatedArray<Block> blocks = [];
+        (Position, ConsoleColor)[] values =
+        [
+            (center + new Position(0, -1), ConsoleColor.Red),
+            (center, ConsoleColor.Yellow),
+            (center + new Position(0, 1), ConsoleColor.Green),
+        ];
+
+        foreach ((Position position, ConsoleColor color) in values)
+        {
+            _scaler.Scale(
+                CreateBlock(
+                    position,
+                    SymbolTetrominoBlock,
+                    color),
+                    blocks);
+        }
+
+        Output(blocks);
+
+        int length = blocks.Size;
+        for (int i = 0; i < length; i++)
+        {
+            Thread.Sleep(_scaler.Timeout);
+            OutputBlock(CreateBlock(blocks[i].Position));
+        }
+    }
+
+    public static void Toggle(bool isOn)
+    {
+        System.Console.CursorVisible = !isOn;
+        System.Console.SetCursorPosition(0, 0);
+        System.Console.Clear();
     }
 
     private static void Output(DynamicallyAllocatedArray<Block> blocks)
     {
         foreach (((int y, int x), char symbol, ConsoleColor color) in blocks)
         {
-            WriteAt(symbol, y, x, color);
+            OutputBlock(symbol, y, x, color);
         }
+    }
+
+    private static void OutputBlock(Block block)
+    {
+        ((int y, int x), char symbol, ConsoleColor color) = block;
+
+        WriteAt(symbol, y, x, color);
+    }
+
+    private static void OutputBlock(char symbol, int y, int x, ConsoleColor color)
+    {
+        WriteAt(symbol, y, x, color);
     }
 }

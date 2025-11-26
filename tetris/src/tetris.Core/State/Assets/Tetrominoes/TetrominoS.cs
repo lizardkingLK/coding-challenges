@@ -7,8 +7,6 @@ public record TetrominoS : Tetromino
 {
     // TODO: add diagonal moves
 
-    // TODO: add start game countdown sequence 
-
     // TODO: add persistence local stored highscores preferably sqlite or json
 
     // TODO: add game over screen

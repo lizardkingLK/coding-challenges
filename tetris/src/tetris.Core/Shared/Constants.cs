@@ -8,6 +8,7 @@ public static class Constants
     public const int WidthScaled = 24;
     public const int BlockMoveInterval = 200;
     public const int BlockClearTimeout = 20;
+    public const int TimeoutInterval = 1000;
     public const char SymbolSpaceBlock = ' ';
     public const char SymbolWallBlock = '@';
     public const char SymbolTetrominoBlock = '#';

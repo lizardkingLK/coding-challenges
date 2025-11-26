@@ -1,4 +1,3 @@
-using tetris.Core.Abstractions;
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Commands;
 using tetris.Core.Enums.Cordinates;
@@ -6,7 +5,6 @@ using tetris.Core.Library.DataStructures.Linear.Queues.ArrayQueue;
 using tetris.Core.Library.DataStructures.Linear.Stacks.LinkedStack;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Outputs.Console;
-using tetris.Core.Outputs.Document;
 using tetris.Core.Shared;
 using tetris.Core.State.Assets;
 using tetris.Core.State.Cordinates;
@@ -24,11 +22,11 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
     private readonly PauseMenuView _pauseMenuView = new();
     private readonly Arguments _arguments = Arguments;
+    private readonly ConsoleOutput? _output = new(Arguments);
 
     private (Tetromino Tetromino, Block[,] Map, Position Position) _current;
     private HashMap<CommandTypeEnum, Action?>? _commandActions;
     private int _yRoof = HeightNormal;
-    private IOutput? _output;
     private int _actionInterval;
     private int _score;
     private bool _isPaused;
@@ -41,13 +39,6 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     public override Result<bool> Validate()
     {
-        Result<IOutput> outputCreationResult = SetOutput();
-        if (outputCreationResult.Errors != null)
-        {
-            return new(false, outputCreationResult.Errors);
-        }
-
-        _output = outputCreationResult!.Data;
         Result<int> actionIntervalResult = SetInterval();
         if (actionIntervalResult.Errors != null)
         {
@@ -76,6 +67,8 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
     public override Result<bool> Play()
     {
+        _output!.Timeout();
+
         while (!_isQuit)
         {
             if (!TryChooseTetromino() || !TryTravelTetromino())
@@ -218,7 +211,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         {
             _output!.WriteAll(Map!);
             Thread.Sleep(_actionInterval);
-            _output!.WriteScore(_score, Map!);
+            _output!.WriteScore(_score);
         }
     }
 
@@ -230,9 +223,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         }
 
         _output!.WriteAll(Map!);
-        Thread.Sleep(_actionInterval);
 
-        _output.ClearScore(Map!);
         SetFilledTracker();
 
         int length = HeightNormal * WidthNormal;
@@ -269,6 +260,8 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         _yRoof = HeightNormal;
         _isPaused = false;
         _isReset = true;
+
+        _output!.Timeout();
     }
 
     private void QuitGame()
@@ -601,7 +594,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
             _ => -1,
         };
 
-        _output!.WriteScore(_score, Map!);
+        _output!.WriteScore(_score);
     }
 
     private void SetFilledTracker()
@@ -619,14 +612,6 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         DifficultyLevelEnum.Medium => new(BlockMoveInterval),
         DifficultyLevelEnum.Hard => new(BlockMoveInterval / 2),
         _ => new(-1, "error. difficulty level not implemented"),
-    };
-
-    private Result<IOutput> SetOutput()
-    => _arguments.OutputType switch
-    {
-        OutputTypeEnum.Console => new(new ConsoleOutput(_arguments)),
-        OutputTypeEnum.Document => new(new DocumentOutput(_arguments)),
-        _ => new(null, "error. output type not implemented"),
     };
 
     private HashMap<CommandTypeEnum, Action?> SetCommandActions()
