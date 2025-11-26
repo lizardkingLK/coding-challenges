@@ -21,6 +21,7 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(tetrominoes.Count());
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
     private readonly PauseMenuView _pauseMenuView = new();
+    private readonly GameOverView _gameOverView = new();
     private readonly Arguments _arguments = Arguments;
     private readonly ConsoleOutput? _output = new(Arguments);
 
@@ -71,10 +72,14 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
 
         while (!_isQuit)
         {
-            if (!TryChooseTetromino() || !TryTravelTetromino())
+            if (TryChooseTetromino() && TryTravelTetromino())
             {
-                return new(false);
+                continue;
             }
+
+            EndGame();
+
+            return new(false);
         }
 
         return new(true);
@@ -276,6 +281,39 @@ public record ClassicGameManager(Arguments Arguments) : GameManager
         _isQuit = true;
 
         _output!.Clear();
+    }
+
+    private void EndGame()
+    {
+        int length = Random.Shared.Next(1, HeightNormal * WidthNormal);
+        Position position;
+        int y;
+        int x;
+        Block block;
+        char symbol;
+        for (int i = 0; i < length; i++)
+        {
+            y = Random.Shared.Next(0, HeightNormal);
+            x = Random.Shared.Next(0, WidthNormal);
+            block = Map![y, x];
+            position = block.Position;
+            symbol = ConsoleOutput.RandomSymbol();
+            _output!.Write(CreateBlock(
+                position,
+                symbol,
+                _output.RandomColor), Map);
+            Thread.Sleep(BlockClearTimeout / 2);
+        }
+
+        _output!.WriteContent(
+          _gameOverView.Message,
+          _gameOverView.Height,
+          _gameOverView.Width,
+          ConsoleColor.Red);
+
+        Thread.Sleep(TimeoutInterval * 3);
+
+        _output.Clear();
     }
 
     private bool HasLodged()

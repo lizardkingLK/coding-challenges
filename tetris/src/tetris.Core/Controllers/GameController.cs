@@ -44,6 +44,8 @@ public class GameController(Arguments arguments) : IController
             return gamePlayResult;
         }
 
+        _cancellation.Cancel();
+
         return new(true);
     }
 

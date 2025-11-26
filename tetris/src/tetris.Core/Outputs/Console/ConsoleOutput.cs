@@ -20,6 +20,8 @@ public record ConsoleOutput
     public int Width { get; set; }
     public HashMap<DirectionEnum, int>? Borders { get; set; }
 
+    public ConsoleColor RandomColor => (ConsoleColor)Random.Shared.Next(1, _colorsLength);
+
     public ConsoleScaler _scaler;
 
     public ConsoleOutput(Arguments arguments)
@@ -127,7 +129,11 @@ public record ConsoleOutput
         Output(blocks);
     }
 
-    public void WriteContent(string content, int height, int width)
+    public void WriteContent(
+        string content,
+        int height,
+        int width,
+        ConsoleColor? color = null)
     {
         int length = content.Length;
         Position origin = new(
@@ -139,7 +145,7 @@ public record ConsoleOutput
         Position position;
         int y;
         int x;
-        ConsoleColor color;
+        ConsoleColor assignedColor;
         for (int i = 0; i < length; i++)
         {
             y = i / width;
@@ -151,8 +157,16 @@ public record ConsoleOutput
             }
 
             position = origin + _scaler.Root + new Position(y, x);
-            color = (ConsoleColor)Random.Shared.Next(1, _colorsLength);
-            blocks.Add(CreateBlock(position, symbol, color));
+            if (color == null)
+            {
+                assignedColor = RandomColor;
+            }
+            else
+            {
+                assignedColor = (ConsoleColor)color;
+            }
+
+            blocks.Add(CreateBlock(position, symbol, assignedColor));
         }
 
         Output(blocks);
@@ -195,6 +209,11 @@ public record ConsoleOutput
         System.Console.SetCursorPosition(0, 0);
         System.Console.Clear();
     }
+
+    public static char RandomSymbol()
+    => Random.Shared.Next(2) % 2 == 0
+    ? SymbolWallBlock
+    : SymbolSpaceBlock;
 
     private static void Output(DynamicallyAllocatedArray<Block> blocks)
     {
