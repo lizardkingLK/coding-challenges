@@ -37,7 +37,6 @@ public record TetrominoJ : Tetromino
     public override int Side { get; }
     public override ConsoleColor Color { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
-
     protected override HashMap<int, Position[][]> Borders { get; }
 
     public TetrominoJ()
@@ -53,25 +52,25 @@ public record TetrominoJ : Tetromino
             {
                 [new(0, 2), new(1, 2)],
                 [new(1, 0), new(1, 1), new(1, 2)],
-                [new(1, 0)]
+                [new(1, 0), new(0, 2)]
             }),
             (1, new Position[3][]
             {
-                [new(2, 2)],
+                [new(2, 2), new(0, 1), new(1, 1)],
                 [new(2, 1), new(2, 2)],
                 [new(0, 1), new(1, 1), new(2, 1)]
             }),
             (2, new Position[3][]
             {
-                [new(1, 2)],
-                [new(2, 0)],
+                [new(1, 2), new(2, 0)],
+                [new(2, 0), new(1, 1), new(1, 2)],
                 [new(1, 0), new(2, 0)],
             }),
             (3, new Position[3][]
             {
                 [new(0, 1), new(1, 1), new(2, 1)],
-                [new(2, 1)],
-                [new(0, 0)],
+                [new(2, 1), new(0, 0)],
+                [new(0, 0), new(1, 1), new(2, 1)],
             }));
 
         Color = ConsoleColor.DarkYellow;

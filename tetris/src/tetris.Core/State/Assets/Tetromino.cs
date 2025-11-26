@@ -97,6 +97,11 @@ public abstract record Tetromino
         {
             y = i / Side;
             x = i % Side;
+            if (x + position.X < 0)
+            {
+                continue;
+            }
+
             if (variant[y, x] && !availability[y + yPosition, x + xPosition])
             {
                 return false;

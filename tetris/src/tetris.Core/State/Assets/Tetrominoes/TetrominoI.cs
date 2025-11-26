@@ -42,7 +42,7 @@ public record TetrominoI : Tetromino
     public override ConsoleColor Color { get; }
     protected override HashMap<int, bool[,]> Variants { get; }
     protected override HashMap<int, Position[][]> Borders { get; }
-
+    
     public TetrominoI()
     {
         Variants = new(

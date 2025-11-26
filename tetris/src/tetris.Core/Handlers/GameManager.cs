@@ -8,9 +8,9 @@ namespace tetris.Core.Handlers;
 public abstract record GameManager
 {
     public abstract Block[,]? Map { get; set; }
-    public abstract bool[,]? Availability { get; set; }
     public abstract HashMap<int, int>? FilledTracker { get; set; }
-
+    public abstract bool[,]? Availability { get; set; }
+    
     public abstract Result<bool> Validate();
     public abstract Result<bool> New();
     public abstract Result<bool> Play();

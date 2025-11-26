@@ -20,7 +20,9 @@ public static class Values
         new TetrominoZ());
 
     internal static readonly HashMap<ConsoleKey, CommandTypeEnum> keyAndInputs = new(
-        (ConsoleKey.Escape, CommandTypeEnum.PauseGame),
+        (ConsoleKey.Escape, CommandTypeEnum.ToggleGame),
+        (ConsoleKey.D1, CommandTypeEnum.NewGame),
+        (ConsoleKey.D2, CommandTypeEnum.QuitGame),
         (ConsoleKey.Z, CommandTypeEnum.RotateIt),
         (ConsoleKey.LeftArrow, CommandTypeEnum.GoLeft),
         (ConsoleKey.RightArrow, CommandTypeEnum.GoRight),
