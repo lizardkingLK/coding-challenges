@@ -4,6 +4,7 @@ public enum ArgumentTypeEnum
 {
     Help,
     Interactive,
+    Scores,
     DifficultyLevel,
     GameMode,
     MapSize,

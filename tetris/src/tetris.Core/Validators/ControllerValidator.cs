@@ -7,7 +7,7 @@ using tetris.Core.State.Misc;
 
 namespace tetris.Core.Validators;
 
-public class InteractiveValidator(
+public class ControllerValidator(
     Arguments Value,
     HashMap<ArgumentTypeEnum, string> Values,
     IValidator<ArgumentTypeEnum, Arguments>? Next = null)
@@ -21,9 +21,23 @@ public class InteractiveValidator(
 
     public Result<Arguments> Validate()
     {
-        if (Values.TryGetValue(ArgumentTypeEnum.Interactive, out _))
+        ControllerTypeEnum? controllerType = null;
+        if (Values.TryGetValue(ArgumentTypeEnum.Help, out _))
         {
-            Value.ControllerType = ControllerTypeEnum.Interactive;
+            controllerType = ControllerTypeEnum.Help;
+        }
+        else if (Values.TryGetValue(ArgumentTypeEnum.Scores, out _))
+        {
+            controllerType = ControllerTypeEnum.Scores;
+        }
+        else if (Values.TryGetValue(ArgumentTypeEnum.Interactive, out _))
+        {
+            controllerType = ControllerTypeEnum.Interactive;
+        }
+
+        if (controllerType != null)
+        {
+            Value.ControllerType = controllerType.Value;
             return new(Value);
         }
 

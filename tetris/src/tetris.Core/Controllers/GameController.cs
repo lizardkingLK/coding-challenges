@@ -44,6 +44,8 @@ public class GameController(Arguments arguments) : IController
             return gamePlayResult;
         }
 
+        Result<bool> scoreResult = _gameManager.Save();
+
         _cancellation.Cancel();
 
         return new(true);

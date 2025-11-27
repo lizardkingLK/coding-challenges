@@ -16,7 +16,7 @@ using static tetris.Core.Shared.Values;
 
 namespace tetris.Core.Handlers;
 
-public record GameManager(Arguments Arguments)
+public abstract record GameManager(Arguments Arguments)
 {
     private readonly ArrayQueue<(Tetromino, Block[,], Position)> _tetrominoQueue = new(tetrominoes.Count());
     private readonly LinkedStack<CommandTypeEnum> _actionStack = new();
@@ -29,11 +29,11 @@ public record GameManager(Arguments Arguments)
     private HashMap<CommandTypeEnum, Action?>? _commandActions;
     private int _yRoof = HeightNormal;
     private int _actionInterval;
-    private int _score;
     private bool _isPaused;
     private bool _isReset;
     private bool _isQuit;
 
+    protected int Points { get; set; }
     private Block[,]? Map { get; set; }
     private HashMap<int, int>? FilledTracker { get; set; }
     private bool[,]? Availability { get; set; }
@@ -85,8 +85,9 @@ public record GameManager(Arguments Arguments)
         return new(true);
     }
 
-    public void Input(CommandTypeEnum commandType)
-    => _actionStack.Push(commandType);
+    public void Input(CommandTypeEnum commandType) => _actionStack.Push(commandType);
+
+    public abstract Result<bool> Save();
 
     private bool TryTravelTetromino()
     {
@@ -216,7 +217,7 @@ public record GameManager(Arguments Arguments)
         {
             _output!.WriteAll(Map!);
             Thread.Sleep(_actionInterval);
-            _output!.WriteScore(_score);
+            _output!.WriteScore(Points);
         }
     }
 
@@ -260,7 +261,7 @@ public record GameManager(Arguments Arguments)
             }
         }
 
-        _score = 0;
+        Points = 0;
         _actionStack.Purge();
         _yRoof = HeightNormal;
         _isPaused = false;
@@ -627,7 +628,7 @@ public record GameManager(Arguments Arguments)
 
     private void Score(int points)
     {
-        _score += points * _arguments.DifficultyLevel switch
+        Points += points * _arguments.DifficultyLevel switch
         {
             DifficultyLevelEnum.Easy => 2,
             DifficultyLevelEnum.Medium => 3,
@@ -635,7 +636,7 @@ public record GameManager(Arguments Arguments)
             _ => -1,
         };
 
-        _output!.WriteScore(_score);
+        _output!.WriteScore(Points);
     }
 
     private void SetFilledTracker()

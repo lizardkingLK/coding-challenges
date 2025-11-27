@@ -7,6 +7,8 @@ public class InteractiveController : IController
 {
     public Result<bool> Execute()
     {
-        throw new NotImplementedException();
+        Console.WriteLine(nameof(InteractiveController));
+
+        return new(true);
     }
 }

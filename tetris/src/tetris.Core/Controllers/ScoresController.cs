@@ -3,11 +3,11 @@ using tetris.Core.Shared;
 
 namespace tetris.Core.Controllers;
 
-public class HelpController : IController
+public class ScoresController : IController
 {
     public Result<bool> Execute()
     {
-        Console.WriteLine(nameof(HelpController));
+        Console.WriteLine(nameof(ScoresController));
 
         return new(true);
     }

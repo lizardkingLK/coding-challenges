@@ -1,16 +1,14 @@
+using tetris.Core.Shared;
 using tetris.Core.State.Misc;
 
 namespace tetris.Core.Handlers.Games;
 
 public record ClassicGame(Arguments Arguments) : GameManager(Arguments)
 {
-    public void Start()
+    public override Result<bool> Save()
     {
+        var xd = Points;
         
-    }
-
-    public void Save()
-    {
-        
+        return new(true);
     }
 }

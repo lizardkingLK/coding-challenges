@@ -1,15 +1,10 @@
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
-using tetris.Core.State.Cordinates;
 
 namespace tetris.Core.State.Assets.Tetrominoes;
 
 public record TetrominoS : Tetromino
 {
-    // TODO: add diagonal moves
-
     // TODO: add persistence local stored highscores preferably sqlite or json
-
-    // TODO: add game over screen
 
     // TODO: add rebuild_tool.ps1 file and shell file
     // TODO: add README.md file
