@@ -11,5 +11,6 @@ public enum CommandTypeEnum
     GoRight,
     GoLeft,
     GoDown,
+    KeyDown,
     SlamDown,
 }

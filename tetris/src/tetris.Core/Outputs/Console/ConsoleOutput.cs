@@ -174,7 +174,7 @@ public record ConsoleOutput
 
     public void Timeout()
     {
-        Position center = new(HeightNormal / 2, WidthNormal / 2);
+        Position center = new(HeightNormal / 2 - 1, WidthNormal / 2);
         DynamicallyAllocatedArray<Block> blocks = [];
         (Position, ConsoleColor)[] values =
         [

@@ -6,7 +6,6 @@ public enum ArgumentTypeEnum
     Interactive,
     DifficultyLevel,
     GameMode,
-    OutputType,
     MapSize,
-    AnimationToggle,
+    PlayMode,
 }

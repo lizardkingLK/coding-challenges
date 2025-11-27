@@ -26,7 +26,7 @@ public static class Values
         (ConsoleKey.Z, CommandTypeEnum.RotateIt),
         (ConsoleKey.LeftArrow, CommandTypeEnum.GoLeft),
         (ConsoleKey.RightArrow, CommandTypeEnum.GoRight),
-        (ConsoleKey.DownArrow, CommandTypeEnum.GoDown),
+        (ConsoleKey.DownArrow, CommandTypeEnum.KeyDown),
         (ConsoleKey.Spacebar, CommandTypeEnum.SlamDown));
 
     internal static readonly Position[,] scaledBlockPositions =

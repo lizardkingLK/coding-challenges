@@ -8,4 +8,5 @@ public record Arguments
     public DifficultyLevelEnum DifficultyLevel { get; set; }
     public GameModeEnum GameMode { get; set; }
     public MapSizeEnum MapSize { get; set; }
+    public PlayModeEnum PlayMode { get; set; }
 }

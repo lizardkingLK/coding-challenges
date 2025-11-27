@@ -2,7 +2,6 @@ using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.State.Cordinates;
 using static tetris.Core.Shared.Constants;
 using static tetris.Core.Helpers.BlockHelper;
-using tetris.Core.Enums.Cordinates;
 
 namespace tetris.Core.State.Assets;
 
@@ -12,7 +11,6 @@ public abstract record Tetromino
     public abstract int Side { get; }
     public abstract ConsoleColor Color { get; }
     protected abstract HashMap<int, bool[,]> Variants { get; }
-    protected abstract HashMap<int, Position[][]> Borders { get; }
     protected int Index { get; private set; }
 
     public Block[,] Get(int index)
@@ -50,30 +48,22 @@ public abstract record Tetromino
 
     public bool CanMove(
         bool[,] availability,
-        (Position, Position) positions,
-        DirectionEnum direction)
+        (Position, Position) positions)
     {
-        Position[]? border = null;
-        if (direction == DirectionEnum.Right)
-        {
-            border = Borders[Index]![0];
-        }
-        else if (direction == DirectionEnum.Down)
-        {
-            border = Borders[Index]![1];
-        }
-        else if (direction == DirectionEnum.Left)
-        {
-            border = Borders[Index]![2];
-        }
-
         (Position position, Position change) = positions;
         int y;
         int x;
-        int length = border!.Length;
+        int length = Side * Side;
         for (int i = 0; i < length; i++)
         {
-            (y, x) = position + border![i] + change;
+            y = i / Side;
+            x = i % Side;
+            if (!Variants[Index]![y, x])
+            {
+                continue;
+            }
+
+            (y, x) = position + change + new Position(y, x);
             if (!availability[y, x])
             {
                 return false;
@@ -102,7 +92,8 @@ public abstract record Tetromino
                 continue;
             }
 
-            if (variant[y, x] && !availability[y + yPosition, x + xPosition])
+            if (variant[y, x]
+            && !availability[y + yPosition, x + xPosition])
             {
                 return false;
             }

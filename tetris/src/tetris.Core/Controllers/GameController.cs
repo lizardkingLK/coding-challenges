@@ -15,8 +15,8 @@ public class GameController(Arguments arguments) : IController
 
     private readonly GameManager _gameManager = arguments.GameMode switch
     {
-        GameModeEnum.Classic => new ClassicGameManager(arguments),
-        GameModeEnum.Timed => throw new NotImplementedException(),
+        GameModeEnum.Classic => new ClassicGame(arguments),
+        GameModeEnum.Timed => new TimedGame(arguments),
         GameModeEnum.Points => throw new NotImplementedException(),
         _ => throw new NotImplementedException(
             "error. game mode not implemented"),
