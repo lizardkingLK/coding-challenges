@@ -33,6 +33,7 @@ public abstract record GameManager(Arguments Arguments)
     private bool _isReset;
     private bool _isQuit;
 
+    protected DateTime StartedAt { get; set; }
     protected int Points { get; set; }
     private Block[,]? Map { get; set; }
     private HashMap<int, int>? FilledTracker { get; set; }
@@ -261,11 +262,13 @@ public abstract record GameManager(Arguments Arguments)
             }
         }
 
-        Points = 0;
         _actionStack.Purge();
         _yRoof = HeightNormal;
         _isPaused = false;
         _isReset = true;
+
+        Points = 0;
+        StartedAt = DateTime.UtcNow;
 
         _output!.Timeout();
     }
@@ -663,7 +666,6 @@ public abstract record GameManager(Arguments Arguments)
             (CommandTypeEnum.NewGame, NewGame),
             (CommandTypeEnum.QuitGame, QuitGame),
             (CommandTypeEnum.SpawnIt, SpawnIt),
-            (CommandTypeEnum.RotateIt, RotateIt),
             (CommandTypeEnum.SlamDown, SlamDown),
             (CommandTypeEnum.StoreIt, StoreIt),
             (CommandTypeEnum.KeyDown, () =>
@@ -676,6 +678,10 @@ public abstract record GameManager(Arguments Arguments)
         if (Arguments.PlayMode == PlayModeEnum.Drop)
         {
             commandActions.AddRange([
+                (CommandTypeEnum.RotateIt, () => {
+                    RotateIt();
+                    Move(new(1, 0));
+                }),
                 (CommandTypeEnum.GoRight, () =>
                 {
                     Move(new(0, 1));
@@ -691,6 +697,7 @@ public abstract record GameManager(Arguments Arguments)
         else if (Arguments.PlayMode == PlayModeEnum.Float)
         {
             commandActions.AddRange([
+                (CommandTypeEnum.RotateIt, RotateIt),
                 (CommandTypeEnum.GoRight, () => Move(new(0, 1))),
                 (CommandTypeEnum.GoDown, () => Move(new(1, 0))),
                 (CommandTypeEnum.GoLeft, () => Move(new(0, -1)))]);

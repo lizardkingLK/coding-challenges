@@ -12,7 +12,11 @@ public static class Constants
     public const char SymbolSpaceBlock = ' ';
     public const char SymbolWallBlock = '@';
     public const char SymbolTetrominoBlock = '#';
+    public const char SymbolZero = '0';
     public const char SymbolNewLine = '\n';
+    public const char SymbolPlus = '+';
+    public const char SymbolMinus = '-';
+    public const char SymbolPipe = '|';
     public const ConsoleColor ColorWall = ConsoleColor.Gray;
     public const ConsoleColor ColorSpace = ConsoleColor.White;
 }

@@ -45,6 +45,10 @@ public class GameController(Arguments arguments) : IController
         }
 
         Result<bool> scoreResult = _gameManager.Save();
+        if (gamePlayResult.Errors != null)
+        {
+            return gamePlayResult;
+        }
 
         _cancellation.Cancel();
 

@@ -1,14 +1,18 @@
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
+using static tetris.Core.Helpers.ScoresHelper;
 
 namespace tetris.Core.Handlers.Games;
 
-public record ClassicGame(Arguments Arguments) : GameManager(Arguments)
+public record ClassicGame : GameManager
 {
-    public override Result<bool> Save()
+    public ClassicGame(Arguments arguments) : base(arguments)
     {
-        var xd = Points;
-        
-        return new(true);
+        StartedAt = DateTime.UtcNow;
     }
+
+    public override Result<bool> Save() => Insert(
+        Arguments,
+        (int)(DateTime.UtcNow - StartedAt).TotalMilliseconds,
+        Points);
 }

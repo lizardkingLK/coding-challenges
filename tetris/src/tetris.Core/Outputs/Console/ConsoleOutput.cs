@@ -120,7 +120,7 @@ public record ConsoleOutput
         DynamicallyAllocatedArray<Block> blocks = [];
         for (int i = 0; i < length; i++)
         {
-            symbol = (char)((tempScore % 10) + '0');
+            symbol = (char)((tempScore % 10) + SymbolZero);
             blocks.Add(CreateBlock(position, symbol, ColorWall));
             tempScore /= 10;
             position += oneLeft;
