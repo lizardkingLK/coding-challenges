@@ -32,12 +32,11 @@ public static class ValidationHelper
     {
         Arguments value = new();
 
-        IValidator<ArgumentTypeEnum, Arguments> mapSizeValidator = new MapSizeValidator(value, values);
-        IValidator<ArgumentTypeEnum, Arguments> gameplayTypeValidator = new OutputTypeValidator(value, values, mapSizeValidator);
-        IValidator<ArgumentTypeEnum, Arguments> difficultyValidator = new DifficultyValidator(value, values, gameplayTypeValidator);
+        IValidator<ArgumentTypeEnum, Arguments> playModeValidator = new PlayModeValidator(value, values);
+        IValidator<ArgumentTypeEnum, Arguments> mapSizeValidator = new MapSizeValidator(value, values, playModeValidator);
+        IValidator<ArgumentTypeEnum, Arguments> difficultyValidator = new DifficultyValidator(value, values, mapSizeValidator);
         IValidator<ArgumentTypeEnum, Arguments> gameModeValidator = new GameModeValidator(value, values, difficultyValidator);
-        IValidator<ArgumentTypeEnum, Arguments> interactiveValidator = new InteractiveValidator(value, values, gameModeValidator);
-        IValidator<ArgumentTypeEnum, Arguments> helpValidator = new HelpValidator(value, values, interactiveValidator);
+        IValidator<ArgumentTypeEnum, Arguments> helpValidator = new ControllerValidator(value, values, gameModeValidator);
 
         return helpValidator;
     }

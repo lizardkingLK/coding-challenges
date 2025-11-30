@@ -12,8 +12,9 @@ public static class ControllerHelper
     {
         return arguments.ControllerType switch
         {
-            ControllerTypeEnum.Help => new(new HelpController()),
             ControllerTypeEnum.Game => new(new GameController(arguments)),
+            ControllerTypeEnum.Help => new(new HelpController()),
+            ControllerTypeEnum.Scores => new(new ScoresController()),
             ControllerTypeEnum.Interactive => new(new InteractiveController()),
             _ => new(null, "error. cannot get controller. invalid type"),
         };

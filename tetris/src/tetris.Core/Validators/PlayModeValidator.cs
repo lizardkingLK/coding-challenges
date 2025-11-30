@@ -7,7 +7,7 @@ using tetris.Core.State.Misc;
 
 namespace tetris.Core.Validators;
 
-public class HelpValidator(
+public class PlayModeValidator(
     Arguments Value,
     HashMap<ArgumentTypeEnum, string> Values,
     IValidator<ArgumentTypeEnum, Arguments>? Next = null)
@@ -21,11 +21,17 @@ public class HelpValidator(
 
     public Result<Arguments> Validate()
     {
-        if (Values.TryGetValue(ArgumentTypeEnum.Help, out _))
+        if (!Values.TryGetValue(ArgumentTypeEnum.PlayMode, out string? input))
         {
-            Value.ControllerType = ControllerTypeEnum.Help;
-            return new(Value);
+            return Next?.Validate() ?? new(Value);
         }
+
+        if (!Enum.TryParse(input, out PlayModeEnum value) || !Enum.IsDefined(value))
+        {
+            return new(null, $"error. invalid play mode value provided: {input}");
+        }
+
+        Value.PlayMode = value;
 
         return Next?.Validate() ?? new(Value);
     }

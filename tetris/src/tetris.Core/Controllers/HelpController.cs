@@ -7,6 +7,8 @@ public class HelpController : IController
 {
     public Result<bool> Execute()
     {
-        throw new NotImplementedException();
+        Console.WriteLine(nameof(HelpController));
+
+        return new(true);
     }
 }

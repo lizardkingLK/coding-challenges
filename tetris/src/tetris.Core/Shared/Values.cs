@@ -19,14 +19,15 @@ public static class Values
         new TetrominoT(),
         new TetrominoZ());
 
-    internal static readonly HashMap<ConsoleKey, CommandTypeEnum> keyAndInputs = new(
+    internal static readonly HashMap<ConsoleKey, CommandTypeEnum> keyAndInputs
+    = new(
         (ConsoleKey.Escape, CommandTypeEnum.ToggleGame),
         (ConsoleKey.D1, CommandTypeEnum.NewGame),
         (ConsoleKey.D2, CommandTypeEnum.QuitGame),
         (ConsoleKey.Z, CommandTypeEnum.RotateIt),
         (ConsoleKey.LeftArrow, CommandTypeEnum.GoLeft),
         (ConsoleKey.RightArrow, CommandTypeEnum.GoRight),
-        (ConsoleKey.DownArrow, CommandTypeEnum.GoDown),
+        (ConsoleKey.DownArrow, CommandTypeEnum.KeyDown),
         (ConsoleKey.Spacebar, CommandTypeEnum.SlamDown));
 
     internal static readonly Position[,] scaledBlockPositions =
@@ -34,4 +35,7 @@ public static class Values
         { new(0, 0), new(0, 1) },
         { new(1, 0), new(1, 1) },
     };
+
+    internal static readonly DynamicallyAllocatedArray<string> scoreHeaders
+    = new("Username", "GameMode", "PlayMode", "Time", "Score");
 }

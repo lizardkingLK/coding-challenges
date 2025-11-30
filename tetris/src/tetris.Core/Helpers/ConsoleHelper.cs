@@ -15,4 +15,15 @@ public static class ConsoleHelper
         WriteLine(content);
         ResetColor();
     }
+
+    public static void Write(
+        object content,
+        ConsoleColor color)
+    {
+        ForegroundColor = color;
+        WriteLine(content);
+        ResetColor();
+    }
+
+    public static void ClearConsole() => Clear();
 }

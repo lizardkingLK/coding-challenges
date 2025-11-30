@@ -15,11 +15,9 @@ public class GameController(Arguments arguments) : IController
 
     private readonly GameManager _gameManager = arguments.GameMode switch
     {
-        GameModeEnum.Classic => new ClassicGameManager(arguments),
-        GameModeEnum.Timed => throw new NotImplementedException(),
-        GameModeEnum.Points => throw new NotImplementedException(),
-        _ => throw new NotImplementedException(
-            "error. game mode not implemented"),
+        GameModeEnum.Classic => new ClassicGame(arguments),
+        GameModeEnum.Timed => new TimedGame(arguments),
+        _ => throw new NotImplementedException("error. game mode not implemented"),
     };
 
     public Result<bool> Execute()
@@ -43,6 +41,14 @@ public class GameController(Arguments arguments) : IController
         {
             return gamePlayResult;
         }
+
+        Result<bool> scoreResult = _gameManager.Save();
+        if (gamePlayResult.Errors != null)
+        {
+            return gamePlayResult;
+        }
+
+        _cancellation.Cancel();
 
         return new(true);
     }

@@ -8,11 +8,20 @@ public static class Constants
     public const int WidthScaled = 24;
     public const int BlockMoveInterval = 200;
     public const int BlockClearTimeout = 20;
+    public const int TimeoutInterval = 1000;
     public const char SymbolSpaceBlock = ' ';
     public const char SymbolWallBlock = '@';
     public const char SymbolTetrominoBlock = '#';
+    public const char SymbolZero = '0';
     public const char SymbolNewLine = '\n';
-    public const string FileName = "tetris.txt";
+    public const char SymbolPlus = '+';
+    public const char SymbolMinus = '-';
+    public const char SymbolPipe = '|';
+    public const char SymbolHours = 'h';
+    public const char SymbolMinutes = 'm';
+    public const char SymbolSeconds = 's';
+    public const string SymbolMilliseconds = "ms";
     public const ConsoleColor ColorWall = ConsoleColor.Gray;
     public const ConsoleColor ColorSpace = ConsoleColor.White;
+    public const ConsoleColor ColorInfo = ConsoleColor.Green;
 }
