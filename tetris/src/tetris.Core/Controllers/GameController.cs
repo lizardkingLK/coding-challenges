@@ -17,9 +17,7 @@ public class GameController(Arguments arguments) : IController
     {
         GameModeEnum.Classic => new ClassicGame(arguments),
         GameModeEnum.Timed => new TimedGame(arguments),
-        GameModeEnum.Points => throw new NotImplementedException(),
-        _ => throw new NotImplementedException(
-            "error. game mode not implemented"),
+        _ => throw new NotImplementedException("error. game mode not implemented"),
     };
 
     public Result<bool> Execute()

@@ -1,8 +1,10 @@
+using System.Text;
 using Microsoft.Data.Sqlite;
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
+using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.Helpers;
 
@@ -11,6 +13,7 @@ public static class ScoresHelper
     private const string DBFileName = "tetris.data";
     private const string ConnectionStringFormat = "Data Source={0}";
     private const string DatabaseNotAvailable = "error. database not available";
+    private const double MillisecondsToHour = 3.6e6;
 
     private const string CreateScoresQuery = """
     CREATE TABLE IF NOT EXISTS Scores (
@@ -40,7 +43,7 @@ public static class ScoresHelper
     private const string SelectTopScoresQuery = """
     SELECT * 
     FROM Scores
-    ORDER BY Score
+    ORDER BY Score DESC, GameMode
     LIMIT 10;
     """;
 
@@ -69,7 +72,7 @@ public static class ScoresHelper
         }
     }
 
-    public static Result<bool> Insert(Arguments arguments, int time, int score)
+    public static Result<bool> Insert(Arguments arguments, long time, int score)
     {
         if (!_isAvailable)
         {
@@ -98,7 +101,7 @@ public static class ScoresHelper
         }
     }
 
-    public static Result<DynamicallyAllocatedArray<GameScore>> Select()
+    public static Result<DynamicallyAllocatedArray<DynamicallyAllocatedArray<string>>> Select()
     {
         try
         {
@@ -108,18 +111,17 @@ public static class ScoresHelper
             using SqliteCommand command = new(SelectTopScoresQuery, connection);
             SqliteDataReader reader = command.ExecuteReader();
 
-            DynamicallyAllocatedArray<GameScore> scores = [];
+            DynamicallyAllocatedArray<DynamicallyAllocatedArray<string>> scores = [];
             while (reader.Read())
             {
-                scores.Add(new GameScore
-                {
-                    Id = reader.GetGuid(0),
-                    Username = reader.GetString(1),
-                    GameMode = ((GameModeEnum)reader.GetInt32(2)).ToString(),
-                    PlayMode = ((PlayModeEnum)reader.GetInt32(3)).ToString(),
-                    Time = (reader.GetInt32(4) / 1e3).ToString(),
-                    Score = reader.GetInt32(5),
-                });
+                scores.AddRange(new DynamicallyAllocatedArray<string>
+                (
+                    reader.GetString(1),
+                    ((GameModeEnum)reader.GetInt32(2)).ToString(),
+                    ((PlayModeEnum)reader.GetInt32(3)).ToString(),
+                    GetDurationString(reader.GetInt64(4)),
+                    reader.GetInt32(5).ToString()
+                ));
             }
 
             return new(scores);
@@ -128,6 +130,55 @@ public static class ScoresHelper
         {
             throw;
         }
+    }
+
+    private static string GetDurationString(long totalMilliseconds)
+    {
+        double millisecondsPerUnit = MillisecondsToHour;
+        StringBuilder timeBuilder = new();
+
+        double hours = totalMilliseconds / millisecondsPerUnit;
+        double remainder = totalMilliseconds % millisecondsPerUnit;
+        if (hours >= 1)
+        {
+            timeBuilder
+            .Append((int)hours)
+            .Append(SymbolHours);
+        }
+
+        millisecondsPerUnit /= 60;
+        double minutes = remainder / millisecondsPerUnit;
+        remainder %= millisecondsPerUnit;
+        if (minutes >= 1)
+        {
+            timeBuilder
+            .Append(SymbolSpaceBlock)
+            .Append((int)minutes)
+            .Append(SymbolMinutes);
+        }
+
+        millisecondsPerUnit /= 60;
+        double seconds = remainder / millisecondsPerUnit;
+        remainder %= millisecondsPerUnit;
+        if (seconds >= 1)
+        {
+            timeBuilder
+            .Append(SymbolSpaceBlock)
+            .Append((int)seconds)
+            .Append(SymbolSeconds);
+        }
+
+        millisecondsPerUnit /= 1000;
+        double milliseconds = remainder / millisecondsPerUnit;
+        if (milliseconds >= 1)
+        {
+            timeBuilder
+            .Append(SymbolSpaceBlock)
+            .Append((int)milliseconds)
+            .Append(SymbolMilliseconds);
+        }
+
+        return timeBuilder.ToString();
     }
 
     private static void CreateTable()

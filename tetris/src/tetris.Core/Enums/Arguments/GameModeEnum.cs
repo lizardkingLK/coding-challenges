@@ -8,5 +8,4 @@ public enum GameModeEnum
 {
     Classic,
     Timed,
-    Points,
 }

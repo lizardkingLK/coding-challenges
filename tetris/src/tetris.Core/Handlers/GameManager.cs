@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Commands;
 using tetris.Core.Enums.Cordinates;
@@ -33,8 +34,8 @@ public abstract record GameManager(Arguments Arguments)
     private bool _isReset;
     private bool _isQuit;
 
-    protected DateTime StartedAt { get; set; }
     protected int Points { get; set; }
+    protected Stopwatch? Timer { get; set; }
     private Block[,]? Map { get; set; }
     private HashMap<int, int>? FilledTracker { get; set; }
     private bool[,]? Availability { get; set; }
@@ -213,12 +214,14 @@ public abstract record GameManager(Arguments Arguments)
                 _pauseMenuView.Message,
                 _pauseMenuView.Height,
                 _pauseMenuView.Width);
+            Timer!.Stop();
         }
         else
         {
             _output!.WriteAll(Map!);
             Thread.Sleep(_actionInterval);
             _output!.WriteScore(Points);
+            Timer!.Start();
         }
     }
 
@@ -268,7 +271,7 @@ public abstract record GameManager(Arguments Arguments)
         _isReset = true;
 
         Points = 0;
-        StartedAt = DateTime.UtcNow;
+        Timer = Stopwatch.StartNew();
 
         _output!.Timeout();
     }
@@ -289,6 +292,8 @@ public abstract record GameManager(Arguments Arguments)
 
     private void EndGame()
     {
+        Timer!.Stop();
+
         int length = Random.Shared.Next(1, HeightNormal * WidthNormal);
         Position position;
         int y;
@@ -630,17 +635,7 @@ public abstract record GameManager(Arguments Arguments)
     }
 
     private void Score(int points)
-    {
-        Points += points * _arguments.DifficultyLevel switch
-        {
-            DifficultyLevelEnum.Easy => 2,
-            DifficultyLevelEnum.Medium => 3,
-            DifficultyLevelEnum.Hard => 4,
-            _ => -1,
-        };
-
-        _output!.WriteScore(Points);
-    }
+    => _output!.WriteScore(Points += points);
 
     private void SetFilledTracker()
     {

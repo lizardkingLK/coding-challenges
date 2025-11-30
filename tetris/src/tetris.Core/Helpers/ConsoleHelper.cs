@@ -24,4 +24,6 @@ public static class ConsoleHelper
         WriteLine(content);
         ResetColor();
     }
+
+    public static void ClearConsole() => Clear();
 }

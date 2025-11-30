@@ -17,6 +17,11 @@ public static class Constants
     public const char SymbolPlus = '+';
     public const char SymbolMinus = '-';
     public const char SymbolPipe = '|';
+    public const char SymbolHours = 'h';
+    public const char SymbolMinutes = 'm';
+    public const char SymbolSeconds = 's';
+    public const string SymbolMilliseconds = "ms";
     public const ConsoleColor ColorWall = ConsoleColor.Gray;
     public const ConsoleColor ColorSpace = ConsoleColor.White;
+    public const ConsoleColor ColorInfo = ConsoleColor.Green;
 }
