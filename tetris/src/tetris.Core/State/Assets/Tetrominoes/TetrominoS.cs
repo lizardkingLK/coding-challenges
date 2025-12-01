@@ -4,11 +4,6 @@ namespace tetris.Core.State.Assets.Tetrominoes;
 
 public record TetrominoS : Tetromino
 {
-    // TODO: add rebuild_tool.ps1 file and shell file
-    // TODO: add README.md file
-
-    // TODO: add help screens
-    // TODO: add interactive game creation mode
     private readonly bool[,] _variantA = new bool[,]
     {
         { false, true, true },

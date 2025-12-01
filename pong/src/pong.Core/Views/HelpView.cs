@@ -6,21 +6,21 @@ public class HelpView : View
 {
     public override string? Data => """
 
-    ------------------
+    +----------------+
     |      PONG      |
-    ------------------
+    +----------------+
 
-    USAGE       = pong [OPTIONS] 
+    USAGE           = pong [OPTIONS] 
 
     OPTIONS
     
-    help          = -h    | --help
-    interactive   = -it   | --interactive
+    help            = -h    | --help
+    interactive     = -it   | --interactive
 
-    game-mode     = [-gm  | --game-mode]     <Game-Mode>
-    difficulty    = [-d   | --difficulty]    <Difficulty-Level>
-    player-side   = [-ps  | --player-side]   <Player-Side>
-    points-to-win = [-ptw | --points-to-win] <Points-To-Win>
+    game-mode       = [-gm  | --game-mode]     <Game-Mode>
+    difficulty      = [-d   | --difficulty]    <Difficulty-Level>
+    player-side     = [-ps  | --player-side]   <Player-Side>
+    points-to-win   = [-ptw | --points-to-win] <Points-To-Win>
     
 
     Game Modes

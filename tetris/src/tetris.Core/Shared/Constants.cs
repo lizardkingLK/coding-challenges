@@ -23,5 +23,8 @@ public static class Constants
     public const string SymbolMilliseconds = "ms";
     public const ConsoleColor ColorWall = ConsoleColor.Gray;
     public const ConsoleColor ColorSpace = ConsoleColor.White;
-    public const ConsoleColor ColorInfo = ConsoleColor.Green;
+    public const ConsoleColor ColorInfo = ConsoleColor.Cyan;
+    public const ConsoleColor ColorSuccess = ConsoleColor.Green;
+    public const ConsoleColor ColorWarn = ConsoleColor.Yellow;
+    public const ConsoleColor ColorError = ConsoleColor.Red;
 }

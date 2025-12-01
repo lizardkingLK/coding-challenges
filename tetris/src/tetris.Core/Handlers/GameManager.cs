@@ -10,7 +10,7 @@ using tetris.Core.Shared;
 using tetris.Core.State.Assets;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
-using tetris.Core.Views;
+using tetris.Core.Views.Game;
 using static tetris.Core.Helpers.BlockHelper;
 using static tetris.Core.Shared.Constants;
 using static tetris.Core.Shared.Values;
@@ -122,8 +122,8 @@ public abstract record GameManager(Arguments Arguments)
         }
 
         _current = _tetrominoQueue.Dequeue();
-        (_, _, Position origin) = _current;
-        if (_yRoof == origin.Y)
+        (Tetromino? tetromino, _, Position origin) = _current;
+        if (!tetromino.CanSpawn(Availability!, origin))
         {
             return false;
         }
@@ -171,7 +171,7 @@ public abstract record GameManager(Arguments Arguments)
     {
         tetrominoes.Shuffle();
         Block[,] map;
-        int length;
+        int side;
         Position position;
         foreach (Tetromino? tetromino in tetrominoes.Values)
         {
@@ -181,8 +181,8 @@ public abstract record GameManager(Arguments Arguments)
             }
 
             map = tetromino.Get();
-            length = tetromino.Side;
-            position = new(1, WidthNormal / 2 - length / 2);
+            side = tetromino.Side;
+            position = new(1, WidthNormal / 2 - side / 2);
             _tetrominoQueue.Enqueue((tetromino, map, position));
         }
     }
@@ -287,7 +287,7 @@ public abstract record GameManager(Arguments Arguments)
         _isPaused = false;
         _isQuit = true;
 
-        _output!.Clear();
+        ConsoleOutput.Clear();
     }
 
     private void EndGame()
@@ -318,11 +318,11 @@ public abstract record GameManager(Arguments Arguments)
           _gameOverView.Message,
           _gameOverView.Height,
           _gameOverView.Width,
-          ConsoleColor.Red);
+          ColorError);
 
         Thread.Sleep(TimeoutInterval * 3);
 
-        _output.Clear();
+        ConsoleOutput.Clear();
     }
 
     private bool HasLodged()

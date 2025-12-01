@@ -43,9 +43,9 @@ public class ScoresController : IController
         int size = scores.Size;
         if (size == 0)
         {
-            WriteAt(SymbolPipe, 3, 0, ColorInfo);
-            WriteAt(noScoresMessage, 3, totalWidth / 2 - noScoresMessage.Length / 2, ConsoleColor.Yellow);
-            WriteAt(SymbolPipe, 3, totalWidth - 1, ColorInfo);
+            WriteAt(SymbolPipe, 3, 0, ColorSuccess);
+            WriteAt(noScoresMessage, 3, totalWidth / 2 - noScoresMessage.Length / 2, ColorWarn);
+            WriteAt(SymbolPipe, 3, totalWidth - 1, ColorSuccess);
             WriteSeparator(scoresBuilder, totalWidth, headerSize);
             return;
         }
@@ -150,7 +150,7 @@ public class ScoresController : IController
 
     private static void WriteAndClear(StringBuilder scoresBuilder)
     {
-        Write(scoresBuilder.ToString(), ColorInfo);
+        WriteLine(scoresBuilder.ToString(), ColorSuccess);
         _ = scoresBuilder.Clear();
     }
 }

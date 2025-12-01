@@ -35,4 +35,10 @@ public class GameModeValidator(
 
         return Next?.Validate() ?? new(Value);
     }
+
+    public static bool TryValidate(
+        string? value,
+        out GameModeEnum gameMode)
+        => Enum.TryParse(value, out gameMode)
+        && Enum.IsDefined(gameMode);
 }

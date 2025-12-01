@@ -35,4 +35,10 @@ public class MapSizeValidator(
 
         return Next?.Validate() ?? new(Value);
     }
+
+    public static bool TryValidate(
+        string? value,
+        out MapSizeEnum mapSize)
+        => Enum.TryParse(value, out mapSize)
+        && Enum.IsDefined(mapSize);
 }

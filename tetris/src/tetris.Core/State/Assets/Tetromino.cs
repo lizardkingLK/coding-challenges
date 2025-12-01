@@ -46,6 +46,30 @@ public abstract record Tetromino
         return transformed;
     }
 
+    public bool CanSpawn(bool[,] availability, Position origin)
+    {
+        int y;
+        int x;
+        int length = Side * Side;
+        for (int i = 0; i < length; i++)
+        {
+            y = i / Side;
+            x = i % Side;
+            if (!Variants[Index]![y, x])
+            {
+                continue;
+            }
+
+            (y, x) = origin + new Position(y, x);
+            if (!availability[y, x])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public bool CanMove(
         bool[,] availability,
         (Position, Position) positions)

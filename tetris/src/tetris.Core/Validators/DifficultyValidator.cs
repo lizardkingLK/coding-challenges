@@ -35,4 +35,10 @@ public class DifficultyValidator(
 
         return Next?.Validate() ?? new(Value);
     }
+
+    public static bool TryValidate(
+        string? value,
+        out DifficultyLevelEnum difficulty)
+        => Enum.TryParse(value, out difficulty)
+        && Enum.IsDefined(difficulty);
 }

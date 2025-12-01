@@ -19,7 +19,7 @@ public record PlayerSideInteraction : Interaction
     => _arguments = arguments;
 
     public override void Display()
-    => WriteInformation(_view.Message!);
+    => WriteInformation(_view.Message);
 
     public override void Prompt()
     {
@@ -34,7 +34,7 @@ public record PlayerSideInteraction : Interaction
                 break;
             }
 
-            WriteError(_view.Error!);
+            WriteError(_view.Error);
             Display();
         }
     }

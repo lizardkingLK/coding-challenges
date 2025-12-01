@@ -1,6 +1,6 @@
 # Pong
 
-A pong game built into controller line made with dotnet.
+A pong game built into command line. Made with dotnet.
 
 For publish and installation steps below, set the location to pong.Program directory as the root before execution.
 
