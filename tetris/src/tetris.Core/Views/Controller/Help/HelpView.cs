@@ -6,13 +6,17 @@ public class HelpView : IView
 {
     public string Message => """
 
+
     +----------------+
     |    TETRIS      |
     +----------------+
 
+
     USAGE           = tetris [OPTIONS] 
 
+
     OPTIONS
+
     
     help           = -h    | --help
     scores         = -s    | --scores
@@ -50,6 +54,18 @@ public class HelpView : IView
 
     0  - Drop (Tetrominoes drops down with input)
     1  - Float (Tetrominoes waits for the input)
+    
+
+    Controls
+
+    Right/Down/Left Keys
+    - Moves Tetromino by one cordinate at respective direction
+
+    Z Key
+    - Rotates Tetromino according to super rotation system
+
+    Space Key
+    - Slams Tetromino down to the lowest possible place
     
     """;
 

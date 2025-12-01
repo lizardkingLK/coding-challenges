@@ -65,6 +65,17 @@ play-mode      = [-pm  | --play-mode]  <Play-Mode>
 1  - Float (Tetrominoes waits for the input)
 ```
 
+### Controls
+
+Right/Down/Left Keys
+- Moves Tetromino by one cordinate at respective direction
+
+Z Key
+- Rotates Tetromino according to super rotation system
+
+Space Key
+- Slams Tetromino down to the lowest possible place
+
 ### Inside Dev Environment
 
 ```
