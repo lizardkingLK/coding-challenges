@@ -178,9 +178,9 @@ public record ConsoleOutput
         DynamicallyAllocatedArray<Block> blocks = [];
         (Position, ConsoleColor)[] values =
         [
-            (center + new Position(0, -1), ConsoleColor.Red),
-            (center, ConsoleColor.Yellow),
-            (center + new Position(0, 1), ConsoleColor.Green),
+            (center + new Position(0, -1), ColorError),
+            (center, ColorWarn),
+            (center + new Position(0, 1), ColorSuccess),
         ];
 
         foreach ((Position position, ConsoleColor color) in values)

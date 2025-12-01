@@ -1,7 +1,8 @@
 using tetris.Core.Abstractions;
 using tetris.Core.Shared;
-using tetris.Core.Views;
+using tetris.Core.Views.Controller.Help;
 using static tetris.Core.Helpers.ConsoleHelper;
+using static tetris.Core.Shared.Constants;
 
 namespace tetris.Core.Controllers;
 
@@ -11,7 +12,7 @@ public class HelpController : IController
 
     public Result<bool> Execute()
     {
-        Write(_helpView.Message, ConsoleColor.Cyan);
+        WriteLine(_helpView.Message, ColorSuccess);
 
         return new(true);
     }

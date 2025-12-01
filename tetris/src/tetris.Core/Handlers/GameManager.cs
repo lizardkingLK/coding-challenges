@@ -10,7 +10,7 @@ using tetris.Core.Shared;
 using tetris.Core.State.Assets;
 using tetris.Core.State.Cordinates;
 using tetris.Core.State.Misc;
-using tetris.Core.Views;
+using tetris.Core.Views.Game;
 using static tetris.Core.Helpers.BlockHelper;
 using static tetris.Core.Shared.Constants;
 using static tetris.Core.Shared.Values;
@@ -318,7 +318,7 @@ public abstract record GameManager(Arguments Arguments)
           _gameOverView.Message,
           _gameOverView.Height,
           _gameOverView.Width,
-          ConsoleColor.Red);
+          ColorError);
 
         Thread.Sleep(TimeoutInterval * 3);
 

@@ -35,4 +35,10 @@ public class PlayModeValidator(
 
         return Next?.Validate() ?? new(Value);
     }
+
+    public static bool TryValidate(
+        string? value,
+        out PlayModeEnum playMode)
+        => Enum.TryParse(value, out playMode)
+        && Enum.IsDefined(playMode);
 }

@@ -1,6 +1,6 @@
 using tetris.Core.Abstractions;
 
-namespace tetris.Core.Views;
+namespace tetris.Core.Views.Controller.Help;
 
 public class HelpView : IView
 {
@@ -53,7 +53,7 @@ public class HelpView : IView
     
     """;
 
+    public string Verbose => string.Empty;
     public string Data => string.Empty;
-
     public string Error => string.Empty;
 }
