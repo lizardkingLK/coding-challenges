@@ -35,9 +35,9 @@ public static class ConsoleHelper
     public static void Toggle(bool isOn, bool shouldClear = true)
     {
         CursorVisible = !isOn;
-        SetCursorPosition(0, 0);
         if (shouldClear)
         {
+            SetCursorPosition(0, 0);
             Clear();
         }
     }

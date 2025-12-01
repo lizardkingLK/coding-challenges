@@ -86,7 +86,6 @@ public class ScoresController : IController
         int totalWidth,
         int headerSize)
     {
-        WriteAt(SymbolNewLine, 0, 0, ColorSpace);
         WriteSeparator(scoresBuilder, totalWidth, headerSize);
         WriteHeader(scoresBuilder, totalWidth, headerSize);
         WriteSeparator(scoresBuilder, totalWidth, headerSize);

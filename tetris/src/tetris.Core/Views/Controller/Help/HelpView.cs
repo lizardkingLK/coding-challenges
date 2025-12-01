@@ -6,13 +6,17 @@ public class HelpView : IView
 {
     public string Message => """
 
+
     +----------------+
     |    TETRIS      |
     +----------------+
 
+
     USAGE           = tetris [OPTIONS] 
 
+
     OPTIONS
+
     
     help           = -h    | --help
     scores         = -s    | --scores
