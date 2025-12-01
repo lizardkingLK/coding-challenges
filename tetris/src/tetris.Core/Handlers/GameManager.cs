@@ -122,8 +122,8 @@ public abstract record GameManager(Arguments Arguments)
         }
 
         _current = _tetrominoQueue.Dequeue();
-        (_, _, Position origin) = _current;
-        if (_yRoof == origin.Y)
+        (Tetromino? tetromino, _, Position origin) = _current;
+        if (!tetromino.CanSpawn(Availability!, origin))
         {
             return false;
         }
@@ -171,7 +171,7 @@ public abstract record GameManager(Arguments Arguments)
     {
         tetrominoes.Shuffle();
         Block[,] map;
-        int length;
+        int side;
         Position position;
         foreach (Tetromino? tetromino in tetrominoes.Values)
         {
@@ -181,8 +181,8 @@ public abstract record GameManager(Arguments Arguments)
             }
 
             map = tetromino.Get();
-            length = tetromino.Side;
-            position = new(1, WidthNormal / 2 - length / 2);
+            side = tetromino.Side;
+            position = new(1, WidthNormal / 2 - side / 2);
             _tetrominoQueue.Enqueue((tetromino, map, position));
         }
     }
