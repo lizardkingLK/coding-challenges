@@ -2,7 +2,6 @@ using System.Text;
 using tetris.Core.Abstractions;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Shared;
-using tetris.Core.State.Misc;
 using static tetris.Core.Helpers.ConsoleHelper;
 using static tetris.Core.Helpers.ScoresHelper;
 using static tetris.Core.Shared.Constants;
@@ -87,6 +86,7 @@ public class ScoresController : IController
         int totalWidth,
         int headerSize)
     {
+        WriteAt(SymbolNewLine, 0, 0, ColorSpace);
         WriteSeparator(scoresBuilder, totalWidth, headerSize);
         WriteHeader(scoresBuilder, totalWidth, headerSize);
         WriteSeparator(scoresBuilder, totalWidth, headerSize);
