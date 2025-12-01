@@ -287,7 +287,7 @@ public abstract record GameManager(Arguments Arguments)
         _isPaused = false;
         _isQuit = true;
 
-        _output!.Clear();
+        ConsoleOutput.Clear();
     }
 
     private void EndGame()
@@ -322,7 +322,7 @@ public abstract record GameManager(Arguments Arguments)
 
         Thread.Sleep(TimeoutInterval * 3);
 
-        _output.Clear();
+        ConsoleOutput.Clear();
     }
 
     private bool HasLodged()

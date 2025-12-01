@@ -2,6 +2,7 @@
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
 using static tetris.Core.Helpers.CommandHelper;
+using static tetris.Core.Helpers.ConsoleHelper;
 using static tetris.Core.Helpers.ControllerHelper;
 using static tetris.Core.Helpers.ValidationHelper;
 
@@ -28,5 +29,7 @@ public static class Tetris
         {
             HandleError(executionResult.Errors!);
         }
+
+        Toggle(isOn: false);
     }
 }

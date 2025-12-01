@@ -8,12 +8,7 @@ public static class CommandHelper
     public static void HandleError(string content)
     {
         WriteAt(content, 0, 0, ColorError);
+        Toggle(isOn: false);
         Environment.Exit(1);
-    }
-
-    public static void HandleSuccess(string content)
-    {
-        WriteAt(content, 0, 0, ColorSuccess);
-        Environment.Exit(0);
     }
 }

@@ -1,5 +1,6 @@
 using tetris.Core.Enums.Arguments;
 using tetris.Core.Enums.Cordinates;
+using tetris.Core.Helpers;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
 using tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 using tetris.Core.Outputs.Console.Scalers;
@@ -39,8 +40,6 @@ public record ConsoleOutput
             _scaler = new DoubleScaler();
         }
     }
-
-    public void Clear() => System.Console.Clear();
 
     public Result<bool> Create()
     {
@@ -204,11 +203,10 @@ public record ConsoleOutput
     }
 
     public static void Toggle(bool isOn)
-    {
-        System.Console.CursorVisible = !isOn;
-        System.Console.SetCursorPosition(0, 0);
-        System.Console.Clear();
-    }
+    => ConsoleHelper.Toggle(isOn);
+
+    public static void Clear()
+    => ClearConsole();
 
     public static char RandomSymbol()
     => Random.Shared.Next(2) % 2 == 0
