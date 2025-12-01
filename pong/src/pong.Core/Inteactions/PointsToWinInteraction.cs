@@ -18,7 +18,7 @@ public record PointsToWinInteraction : Interaction
     => _arguments = arguments;
 
     public override void Display()
-    => WriteInformation(_view.Message!);
+    => WriteInformation(_view.Message);
 
     public override void Prompt()
     {
@@ -33,7 +33,7 @@ public record PointsToWinInteraction : Interaction
                 break;
             }
 
-            WriteError(_view.Error!);
+            WriteError(_view.Error);
             Display();
         }
     }
