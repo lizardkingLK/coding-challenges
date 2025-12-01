@@ -32,11 +32,14 @@ public static class ConsoleHelper
 
     public static void WritePrompt() => Continue("> ", ColorWall);
 
-    public static void Toggle(bool isOn)
+    public static void Toggle(bool isOn, bool shouldClear = true)
     {
         CursorVisible = !isOn;
         SetCursorPosition(0, 0);
-        Clear();
+        if (shouldClear)
+        {
+            Clear();
+        }
     }
 
     private static void Continue(

@@ -30,6 +30,6 @@ public static class Tetris
             HandleError(executionResult.Errors!);
         }
 
-        Toggle(isOn: false);
+        Toggle(isOn: false, shouldClear: false);
     }
 }

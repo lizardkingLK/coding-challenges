@@ -7,8 +7,7 @@ public static class CommandHelper
 {
     public static void HandleError(string content)
     {
-        WriteAt(content, 0, 0, ColorError);
-        Toggle(isOn: false);
+        WriteLine(content, ColorError);
         Environment.Exit(1);
     }
 }
