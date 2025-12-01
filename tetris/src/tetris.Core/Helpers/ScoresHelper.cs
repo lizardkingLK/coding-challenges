@@ -55,7 +55,7 @@ public static class ScoresHelper
         _connectionString = string.Format(
             ConnectionStringFormat,
             Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                 DBFileName));
         try
         {
