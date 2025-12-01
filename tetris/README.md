@@ -33,14 +33,7 @@ interactive    = -it   | --interactive
 difficulty     = [-d   | --difficulty] <Difficulty-Level>
 game-mode      = [-gm  | --game-mode]  <Game-Mode>
 map-size       = [-ms  | --map-size]   <Map-Size>
-play-mode      = [-pm  | --play-mode]  <Points-To-Win>
-```
-
-#### Game Modes
-
-```
-0  - Classic
-1  - Timed
+play-mode      = [-pm  | --play-mode]  <Play-Mode>
 ```
 
 #### Difficulty Levels
@@ -49,6 +42,27 @@ play-mode      = [-pm  | --play-mode]  <Points-To-Win>
 -1 - Easy
 0  - Medium
 1  - Hard
+```
+
+#### Game Modes
+
+```
+0  - Classic (Score multiplier on difficulty)
+1  - Timed (Score multiplier on difficulty and time elapsed)
+```
+
+#### Map Size
+
+```
+0  - Normal (Normal Map Size)
+1  - Scaled (Doubled Map Size)
+```
+
+#### Play Mode
+
+```
+0  - Drop (Tetrominoes drops down with input)
+1  - Float (Tetrominoes waits for the input)
 ```
 
 ### Inside Dev Environment
@@ -66,7 +80,7 @@ tetris [above_options]
 ### Example
 
 ```
-pong -ptw 10 -gm 0 -d -1 -ps 1
+tetris -d -1 -gm 0 -ms 0 -pm 0
 ```
 
 ```
@@ -99,3 +113,7 @@ pong -ptw 10 -gm 0 -d -1 -ps 1
 ```
 dotnet tool uninstall -g tetris.Program
 ```
+
+## Issues
+
+Send your issues at my [GitHub](https://github.com/lizardkinglk/coding-challenges)
