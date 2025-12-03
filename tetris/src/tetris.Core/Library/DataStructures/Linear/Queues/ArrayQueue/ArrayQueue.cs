@@ -85,17 +85,17 @@ public class ArrayQueue<T> : IEnumerable<T>
                 break;
             }
 
-            i = (i + 1) % _capacity;            
+            i = (i + 1) % _capacity;
         }
         while (true);
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 
     private bool IsEmpty() => _size == 0;
 
     private bool IsFull() => _size == _capacity;
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }

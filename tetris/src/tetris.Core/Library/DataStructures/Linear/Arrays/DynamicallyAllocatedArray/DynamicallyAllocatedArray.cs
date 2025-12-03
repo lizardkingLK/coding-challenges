@@ -50,7 +50,7 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
         _values[Size++] = value;
     }
 
-    public void Add(T? value, int index)
+    public T Add(T? value, int index)
     {
         if (IsInvalidIndex(index))
         {
@@ -61,6 +61,8 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
 
         _values[index] = value;
         Size++;
+
+        return value!;
     }
 
     public bool TryAdd(T? value, int index)
@@ -185,7 +187,7 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
 
         value = _values[index];
 
-        return true;
+        return value is not null;
     }
 
     public void Shuffle()
@@ -234,7 +236,7 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T?>
 
     private IEnumerable<T?> GetValues()
     {
-        for (int i = 0; i < Size; i++)
+        for (int i = 0; i < _capacity; i++)
         {
             yield return _values[i];
         }

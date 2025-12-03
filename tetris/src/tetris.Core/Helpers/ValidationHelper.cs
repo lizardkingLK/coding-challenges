@@ -61,7 +61,7 @@ public static class ValidationHelper
             }
 
             (ArgumentTypeEnum argumentType, bool isSwitch) = argumentTypeValue;
-            if (!argumentsMap.TryAdd(argumentType, argumentValue))
+            if (!argumentsMap.TryAdd(argumentType, argumentValue!))
             {
                 return new(null, $"error. duplicate arguments were given: {argumentKey}");
             }
@@ -93,7 +93,7 @@ public static class ValidationHelper
         bool isSwitch;
         foreach (Type item in declarations)
         {
-            IEnumerable<ArgumentAttribute> attributes = item.GetCustomAttributes<ArgumentAttribute>()!;
+            IEnumerable<ArgumentAttribute> attributes = item.GetCustomAttributes<ArgumentAttribute>();
             foreach (ArgumentAttribute attribute in attributes)
             {
                 prefix = attribute.Prefix;

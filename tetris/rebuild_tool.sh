@@ -9,13 +9,9 @@ currentDirectory=$(pwd)
 # set tool name
 toolName='tetris.Program'
 
-# if tool contains in the system
-toolList=$(dotnet tool list --global $toolName)
-
-# uninstall if installed
-contains=${toolList[@]} | grep -q "$toolName"
-if printf "%s\n" "${toolList[@]}" | grep -q "$toolName"; then
-  $(dotnet tool uninstall --global $toolName)
+# uninstall if tool contains in the system
+if dotnet tool list --global $toolName | grep -q "$toolName"; then
+  installPlease=$(dotnet tool uninstall --global $toolName)
 fi
 
 # go to cli root

@@ -1,190 +1,185 @@
 using System.Collections;
 using tetris.Core.Library.DataStructures.Linear.Arrays.DynamicallyAllocatedArray;
+using tetris.Core.Library.DataStructures.Linear.Lists;
+using tetris.Core.Library.DataStructures.NonLinear.HashMaps.State;
 using static tetris.Core.Library.DataStructures.NonLinear.HashMaps.Shared.Constants;
 
 namespace tetris.Core.Library.DataStructures.NonLinear.HashMaps;
 
-public class HashMap<K, V> : IEnumerable<KeyValuePair<K, V>> where K : notnull
+public class HashMap<K, V> : IEnumerable<V?> where K : notnull
 {
-    private record HashNode(K Key, V? Value, bool IsActive = true)
-    {
-        public K Key { get; set; } = Key;
-        public V? Value { get; set; } = Value;
-        public bool IsActive { get; set; } = IsActive;
-    }
+    private DynamicallyAllocatedArray<DoublyLinkedList<HashNode<K, V>>> _buckets = [];
 
-    private DynamicallyAllocatedArray<HashNode> _buckets;
+    private readonly float _loadFactor = GrowthFactor;
 
-    private readonly float _growthFactor;
+    public int Capacity { get; private set; } = InitialCapacity;
 
     public int Size { get; private set; }
 
-    public int Capacity { get; private set; }
-
-    public V? this[K key]
+    public V this[K key]
     {
-        get => GetValue(key);
+        get => Get(key);
         set => Update(key, value);
     }
 
-    public HashMap(float growthFactor = GrowthFactor)
+    public HashMap(params (K key, V? value)[] values)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(growthFactor);
-
-        Capacity = InitialCapacity;
-        _growthFactor = growthFactor;
-        _buckets = new DynamicallyAllocatedArray<HashNode>(Capacity);
+        AddRange(values);
     }
 
-    public HashMap(params KeyValuePair<K, V>[] keyValues) : this() => AddRange(keyValues);
-
-    public HashMap(params (K, V?)[] keyValues) : this() => AddRange(keyValues);
-
-    public void AddRange(KeyValuePair<K, V>[] keyValues)
+    public void Add(K key, V value)
     {
-        foreach ((K key, V value) in keyValues)
+        if (ContainsKey(key, out DoublyLinkedList<HashNode<K, V>>? bucket, out _))
         {
-            Add(key, value);
-        }
-    }
-
-    public void AddRange((K, V?)[] keyValues)
-    {
-        foreach ((K key, V? value) in keyValues)
-        {
-            Add(key, value);
-        }
-    }
-
-    public void Add(K key, V? value)
-    {
-        if (ContainsKey(key, out int index, out _))
-        {
-            throw new ApplicationException("error. cannot add. key already contains");
+            throw new Exception("error. cannot add value. key already contain");
         }
 
-        _buckets.Add(new(key, value), index);
+        bucket!.AddToTail(new(key, value));
         Size++;
 
-        RehashIfSatisfies();
+        ReHashIfSatisfies();
     }
 
-    public bool TryAdd(K key, V? value)
+    public bool TryAdd(K key, V value)
     {
-        if (ContainsKey(key, out int index, out _))
+        if (ContainsKey(key, out DoublyLinkedList<HashNode<K, V>>? bucket, out _))
         {
             return false;
         }
 
-        _buckets.Add(new(key, value), index);
+        bucket!.AddToTail(new(key, value));
         Size++;
 
-        RehashIfSatisfies();
+        ReHashIfSatisfies();
 
         return true;
     }
 
-    public void Update(K key, V? value)
+    public void AddRange(params (K key, V? value)[] values)
     {
-        if (!ContainsKey(key, out _, out HashNode? bucket))
+        foreach ((K key, V? value) in values)
         {
-            throw new ApplicationException("error. cannot update. bucket does not exist");
+            Add(key, value!);
         }
-
-        bucket!.Value = value;
     }
 
-    public bool TryUpdate(K key, V? value)
+    public void Update(K key, V value)
     {
-        if (!ContainsKey(key, out _, out HashNode? bucket))
+        if (!ContainsKey(key, out _, out HashNode<K, V>? hashNode))
+        {
+            throw new Exception("error. cannot update value. key does not contain");
+        }
+
+        hashNode!.Value = value;
+    }
+
+    public bool TryUpdate(K key, V value)
+    {
+        if (!ContainsKey(key, out _, out HashNode<K, V>? hashNode))
         {
             return false;
         }
 
-        bucket!.Value = value;
+        hashNode!.Value = value;
 
         return true;
     }
 
-    public void TryAddOrUpdate(K key, V? value)
+    public bool TryAddOrUpdate(K key, V value)
     {
-        if (ContainsKey(key, out _, out HashNode? bucket))
+        if (ContainsKey(key, out _, out HashNode<K, V>? hashNode))
         {
-            bucket!.Value = value;
+            hashNode!.Value = value;
         }
         else
         {
             Add(key, value);
         }
-    }
-
-    public KeyValuePair<K, V> Remove(K key)
-    {
-        if (!ContainsKey(key, out _, out HashNode? bucket))
-        {
-            throw new ApplicationException("error. cannot remove. bucket does not exist");
-        }
-
-        bucket!.IsActive = false;
-
-        return new(bucket.Key, bucket.Value!);
-    }
-
-    public bool TryRemove(K key, out KeyValuePair<K, V>? removed)
-    {
-        removed = default;
-
-        if (!ContainsKey(key, out _, out HashNode? bucket))
-        {
-            return false;
-        }
-
-        bucket!.IsActive = false;
-        removed = new(bucket.Key, bucket.Value!);
 
         return true;
     }
 
-    public V? GetValue(K key)
+    public IEnumerable<HashNode<K, V>> GetHashNodes()
     {
-        if (!ContainsKey(key, out _, out HashNode? bucket))
+        foreach (DoublyLinkedList<HashNode<K, V>>? bucket in _buckets.Values)
         {
-            throw new ApplicationException("error. cannot find. bucket does not exist");
+            if (bucket is null)
+            {
+                continue;
+            }
+
+            foreach (HashNode<K, V> hashNode in bucket.ValuesHeadToTail)
+            {
+                yield return hashNode;
+            }
+        }
+    }
+
+    public IEnumerable<KeyValuePair<K, V>> GetKeyValues()
+    {
+        foreach ((K key, V value) in GetHashNodes())
+        {
+            yield return new(key, value);
+        }
+    }
+
+    public V Get(K key)
+    {
+        if (!ContainsKey(key, out _, out HashNode<K, V>? hashNode))
+        {
+            throw new Exception("error. cannot get value. key does not contain");
         }
 
-        return bucket!.Value;
+        return hashNode!.Value;
     }
 
     public bool TryGetValue(K key, out V? value)
     {
         value = default;
 
-        if (!ContainsKey(key, out _, out HashNode? bucket))
+        if (!ContainsKey(key, out _, out HashNode<K, V>? hashNode))
         {
             return false;
         }
 
-        value = bucket!.Value;
+        value = hashNode!.Value;
 
         return true;
     }
 
-    public IEnumerable<KeyValuePair<K, V>> GetKeyValues()
+    public V Remove(K key)
     {
-        foreach (HashNode? bucket in _buckets)
+        if (!ContainsKey(key, out DoublyLinkedList<HashNode<K, V>>? bucket, out HashNode<K, V>? hashNode))
         {
-            if (bucket is { IsActive: true })
-            {
-                yield return new(bucket.Key, bucket.Value!);
-            }
+            throw new Exception("error. cannot remove value. key does not contain");
         }
+
+        bucket!.Remove(hashNode!);
+
+        return hashNode!.Value;
     }
 
-    public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+    public bool TryRemove(K key, out V? value)
     {
-        foreach (KeyValuePair<K, V> keyValue in GetKeyValues())
+        value = default;
+
+        if (!ContainsKey(key, out DoublyLinkedList<HashNode<K, V>>? bucket, out HashNode<K, V>? hashNode))
         {
-            yield return keyValue;
+            return false;
+        }
+
+        bucket!.Remove(hashNode!);
+
+        value = hashNode!.Value;
+
+        return true;
+    }
+
+    public IEnumerator<V?> GetEnumerator()
+    {
+        foreach ((_, V? value) in GetKeyValues())
+        {
+            yield return value;
         }
     }
 
@@ -195,64 +190,66 @@ public class HashMap<K, V> : IEnumerable<KeyValuePair<K, V>> where K : notnull
 
     private bool ContainsKey(
         K key,
-        out int validIndex,
-        out HashNode? bucket,
-        Func<int>? getNextIndex = null)
+        out DoublyLinkedList<HashNode<K, V>>? bucket,
+        out HashNode<K, V>? value)
     {
-        getNextIndex ??= GetQuadraticProbing(key);
+        value = default;
 
-        validIndex = getNextIndex.Invoke();
-        bool containsBucket = _buckets.TryGetValue(validIndex, out bucket);
-        if (containsBucket && bucket is { IsActive: true } && bucket.Key.Equals(key))
+        int index = HashMap<K, V>.GetBucketIndex(key, Capacity);
+        bool doesBucketContain = _buckets.TryGetValue(index, out bucket);
+        bool containsKey = false;
+        if (doesBucketContain)
         {
-            return true;
+            containsKey = bucket!.TryGetValue(value => value.Key!.Equals(key), out value);
         }
-        else if (bucket is null)
+        else
         {
-            return false;
+            bucket = _buckets.Add(new(), index);
         }
 
-        return ContainsKey(key, out validIndex, out bucket, getNextIndex);
+        return containsKey;
     }
 
-    private Func<int> GetQuadraticProbing(K key)
+    private void ReHashIfSatisfies()
     {
-        int index = GetBucketIndex(key);
-        int iteration = 0;
-
-        return () => (index + (iteration + iteration * iteration++) / 2) % Capacity;
-    }
-
-    private void RehashIfSatisfies()
-    {
-        if ((float)Size / Capacity < _growthFactor)
+        if ((float)Size / Capacity < _loadFactor)
         {
             return;
         }
 
         Capacity *= 2;
-        DynamicallyAllocatedArray<HashNode> newBuckets = new(Capacity);
+        DynamicallyAllocatedArray<DoublyLinkedList<HashNode<K, V>>> tempBuckets = new(Capacity);
         int index;
-        foreach ((K key, V value) in GetKeyValues())
+        foreach ((K key, V value) in GetHashNodes())
         {
-            index = GetBucketIndex(key);
-            while (newBuckets.TryGetValue(index, out HashNode? bucket) && bucket is not null)
+            index = HashMap<K, V>.GetBucketIndex(key, Capacity);
+            if (!tempBuckets.TryGetValue(index, out DoublyLinkedList<HashNode<K, V>>? bucket))
             {
-                index = (index + 1) % Capacity;
+                bucket = tempBuckets.Add(new(), index);
             }
 
-            newBuckets.Add(new(key, value), index);
+            bucket!.AddToTail(new(key, value));
         }
 
-        _buckets = newBuckets;
+        _buckets = tempBuckets;
     }
 
-    private int GetBucketIndex(K key)
+    private static int GetBucketIndex(K key, int capacity)
     {
-        int hashCode = key.GetHashCode();
-        int hashCodeMask = hashCode >> 31;
-        hashCode = (hashCode ^ hashCodeMask) - hashCodeMask;
+        if (key is null)
+        {
+            throw new Exception("error. cannot call hash code. invalid key");
+        }
 
-        return hashCode % Capacity;
+        return GetAbsoluteValue(key.GetHashCode()) % capacity;
+    }
+
+    private static int GetAbsoluteValue(int value)
+    {
+        int signBitMask = value >> 31;
+
+        value = (value ^ signBitMask) - signBitMask;
+
+        return value;
     }
 }

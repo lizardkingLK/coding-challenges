@@ -20,8 +20,12 @@ public class InteractiveController : IController
     {
         foreach (IInteraction? interaction in _interactions.Values)
         {
-            interaction!.Arguments = _arguments;
+            if (interaction == null)
+            {
+                continue;
+            }
 
+            interaction.Arguments = _arguments;
             interaction.Display();
             interaction.Prompt();
             interaction.Process();
