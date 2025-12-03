@@ -66,6 +66,9 @@ public class HelpView : IView
 
     Space Key
     - Slams Tetromino down to the lowest possible place
+
+    Escape Key
+    - Pause Game
     
     """;
 

@@ -76,6 +76,9 @@ Z Key
 Space Key
 - Slams Tetromino down to the lowest possible place
 
+Escape Key
+- Pause Game
+
 ### Inside Dev Environment
 
 ```
