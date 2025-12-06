@@ -1,0 +1,38 @@
+using pong.Core.Abstractions;
+using pong.Core.Enums;
+using pong.Core.Library.DataStructures.NonLinear.HashMaps;
+using pong.Core.State.Common;
+using pong.Core.State.Misc;
+using static pong.Core.Shared.Errors;
+
+namespace pong.Core.Validators;
+
+public record DifficultyValidator(
+    HashMap<ArgumentTypeEnum, string?> ArgumentsMap,
+    Arguments Arguments,
+    Validator<HashMap<ArgumentTypeEnum, string?>, Arguments>? Next)
+    : Validator<HashMap<ArgumentTypeEnum, string?>, Arguments>(ArgumentsMap, Arguments, Next)
+{
+    public override Result<Arguments> Validate()
+    {
+        if (!ArgumentsMap.TryGet(ArgumentTypeEnum.DifficultyLevel, out string? value))
+        {
+            return Next?.Validate() ?? new(Arguments);
+        }
+
+        if (!Enum.TryParse(value, out DifficultyLevelEnum difficultyLevel) || !Enum.IsDefined(difficultyLevel))
+        {
+            return new(null, ErrorInvalidDifficulty());
+        }
+
+        Arguments.DifficultyLevel = difficultyLevel;
+
+        return Next?.Validate() ?? new(Arguments);
+    }
+
+    public static bool TryValidate(
+        string? value,
+        out DifficultyLevelEnum difficultyLevel)
+        => Enum.TryParse(value, out difficultyLevel)
+        && Enum.IsDefined(difficultyLevel);
+}

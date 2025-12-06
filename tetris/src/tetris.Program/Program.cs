@@ -1,9 +1,8 @@
-﻿namespace tetris.Program;
+﻿using tetris.Core;
+
+namespace tetris.Program;
 
 class Program
 {
-    static void Main(string[] args)
-    {
-        Console.WriteLine("Hello, World!");
-    }
+    static void Main(string[] args) => Tetris.Play(args);
 }

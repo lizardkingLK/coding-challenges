@@ -2,7 +2,7 @@
 $currentDirectory = $PWD
 
 # set tool name
-$toolName = 'snakegame.program'
+$toolName = 'snakeGame.Program'
 
 # if tool contains in the system
 $toolList = (& dotnet tool list --global $toolName)
@@ -14,7 +14,7 @@ if ($containsTool) {
 }
 
 # go to cli root
-Set-Location ".\src\$toolName"
+Set-Location "./src/$toolName"
 
 # package the solution
 & dotnet pack
