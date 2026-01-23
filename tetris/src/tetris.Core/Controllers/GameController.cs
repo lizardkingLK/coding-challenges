@@ -5,6 +5,7 @@ using tetris.Core.Handlers;
 using tetris.Core.Handlers.Games;
 using tetris.Core.Shared;
 using tetris.Core.State.Misc;
+using static tetris.Core.Shared.Constants;
 using static tetris.Core.Shared.Values;
 
 namespace tetris.Core.Controllers;
@@ -62,6 +63,8 @@ public class GameController(Arguments arguments) : IController
             {
                 _gameManager.Input(commandType);
             }
+
+            Thread.Sleep(BlockClearTimeout / 10);
         }
     }
 }
