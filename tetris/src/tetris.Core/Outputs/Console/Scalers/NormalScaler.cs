@@ -10,7 +10,7 @@ public record NormalScaler : ConsoleScaler
     public override Position ScorePosition
     => Root + new Position(0, WidthNormal - 1);
 
-    public override int Timeout => TimeoutInterval;
+    public override int Timeout => WaitTimeout;
 
     public override void Scale(
         Block block,

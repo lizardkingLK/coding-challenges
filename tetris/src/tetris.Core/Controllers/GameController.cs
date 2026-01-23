@@ -64,7 +64,7 @@ public class GameController(Arguments arguments) : IController
                 _gameManager.Input(commandType);
             }
 
-            Thread.Sleep(BlockClearTimeout / 10);
+            Thread.Sleep(InputWaitTimeout);
         }
     }
 }

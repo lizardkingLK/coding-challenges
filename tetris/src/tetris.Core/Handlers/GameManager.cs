@@ -87,7 +87,10 @@ public abstract record GameManager(Arguments Arguments)
         return new(true);
     }
 
-    public void Input(CommandTypeEnum commandType) => _actionStack.Push(commandType);
+    public void Input(CommandTypeEnum commandType)
+    {
+        _actionStack.Push(commandType);
+    }
 
     public abstract Result<bool> Save();
 
@@ -114,6 +117,7 @@ public abstract record GameManager(Arguments Arguments)
     private bool TryChooseTetromino()
     {
         _actionStack.Purge();
+
         _isReset = false;
 
         if (!_tetrominoQueue.TryPeek(out _current))
@@ -266,6 +270,7 @@ public abstract record GameManager(Arguments Arguments)
         }
 
         _actionStack.Purge();
+
         _yRoof = HeightNormal;
         _isPaused = false;
         _isReset = true;
@@ -320,7 +325,7 @@ public abstract record GameManager(Arguments Arguments)
           _gameOverView.Width,
           ColorError);
 
-        Thread.Sleep(TimeoutInterval * 3);
+        Thread.Sleep(WaitTimeout * 3);
 
         ConsoleOutput.Clear();
     }

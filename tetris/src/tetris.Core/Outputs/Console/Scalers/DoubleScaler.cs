@@ -11,7 +11,7 @@ public record DoubleScaler : ConsoleScaler
     public override Position ScorePosition
     => Root + new Position(0, WidthScaled - 1);
 
-    public override int Timeout { get; } = TimeoutInterval / 4;
+    public override int Timeout { get; } = WaitTimeout / 4;
 
     public override void Scale(
         Block block,

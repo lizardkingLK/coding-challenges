@@ -27,92 +27,110 @@ public class LinkedStack<T>
 
     public void Push(T value)
     {
-        if (_head == null)
+        lock (this)
         {
-            _head = new(value);
-            Size++;
-            return;
-        }
+            if (_head == null)
+            {
+                _head = new(value);
+                Size++;
+                return;
+            }
 
-        LinkNode newNode = new(value);
-        _head.Previous = newNode;
-        newNode.Next = _head;
-        _head = newNode;
-        Size++;
+            LinkNode newNode = new(value);
+            _head.Previous = newNode;
+            newNode.Next = _head;
+            _head = newNode;
+            Size++;
+        }
     }
 
     public T Pop()
     {
-        if (_head == null)
+        lock (this)
         {
-            throw new ApplicationException("error. cannot pop. stack is empty");
+            if (_head == null)
+            {
+                throw new ApplicationException("error. cannot pop. stack is empty");
+            }
+
+            LinkNode popped = _head;
+            LinkNode? next = _head.Next;
+            if (next != null)
+            {
+                next.Previous = null;
+            }
+
+            _head = next;
+            popped.Next = null;
+            Size--;
+
+            return popped.Value;
         }
-
-        LinkNode popped = _head;
-        LinkNode? next = _head.Next;
-        if (next != null)
-        {
-            next.Previous = null;
-        }
-
-        _head = next;
-        popped.Next = null;
-        Size--;
-
-        return popped.Value;
     }
 
     public bool TryPop(out T? value)
     {
-        value = default;
-
-        if (_head == null)
+        lock (this)
         {
-            return false;
+            value = default;
+
+            if (_head == null)
+            {
+                return false;
+            }
+
+            LinkNode popped = _head;
+            LinkNode? next = _head.Next;
+            if (next != null)
+            {
+                next.Previous = null;
+            }
+
+            _head = next;
+            popped.Next = null;
+            Size--;
+
+            value = popped.Value;
+
+            return true;
         }
-
-        LinkNode popped = _head;
-        LinkNode? next = _head.Next;
-        if (next != null)
-        {
-            next.Previous = null;
-        }
-
-        _head = next;
-        popped.Next = null;
-        Size--;
-
-        value = popped.Value;
-
-        return true;
     }
 
     public T Peek()
     {
-        if (_head == null)
+        lock (this)
         {
-            throw new ApplicationException("error. cannot peek. stack is empty");
-        }
+            if (_head == null)
+            {
+                throw new ApplicationException("error. cannot peek. stack is empty");
+            }
 
-        return _head.Value;
+            return _head.Value;
+        }
     }
 
     public bool TryPeek(out T? value)
     {
-        value = default;
-
-        if (_head == null)
+        lock (this)
         {
-            return false;
+            value = default;
+
+            if (_head == null)
+            {
+                return false;
+            }
+
+            value = _head.Value;
+
+            return true;
         }
-
-        value = _head.Value;
-
-        return true;
     }
 
     public void Purge()
     {
-        while (TryPop(out _)) { }
+        lock (this)
+        {
+            while (TryPop(out _)) { }
+        }
     }
 }
