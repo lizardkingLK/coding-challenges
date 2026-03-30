@@ -176,4 +176,88 @@ public class TestsDoublyLinkedList
             Assert.Equal(values[i], outputs[i]);
         }
     }
+
+    [Theory]
+    [InlineData(1, true, 1, 2, 3)]
+    [InlineData(false, true, true, false, true)]
+    [InlineData("!", true, "Hello", " ", "World", "!")]
+    [InlineData(2.3f, true, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    [InlineData(-1, false, 1, 2, 3)]
+    [InlineData(false, false, true, true, true)]
+    [InlineData("Bye", false, "Hello", " ", "World", "!")]
+    [InlineData(-2.4f, false, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    [InlineData(null, false, 1, 2, 3)]
+    [InlineData(null, false, true, true, true)]
+    [InlineData(null, false, "Hello", " ", "World", "!")]
+    [InlineData(null, false, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    public void Should_Exists_DoublyLinkedList(object? target, bool expected, params object[] values)
+    {
+        // Arrange
+        DoublyLinkedList<object?> list = new();
+
+        // Act
+        foreach (object value in values)
+        {
+            list.AddToRear(value);
+        }
+
+        // Assert
+        Assert.Equal(expected, list.Exists(item => item is null || item.Equals(target)));
+    }
+
+    [Theory]
+    [InlineData(1, true, 1, 2, 3)]
+    [InlineData(false, true, true, false, true)]
+    [InlineData("!", true, "Hello", " ", "World", "!")]
+    [InlineData(2.3f, true, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    [InlineData(null, false, 1, 2, 3)]
+    [InlineData(null, false, true, true, true)]
+    [InlineData(null, false, "Hello", " ", "World", "!")]
+    [InlineData(null, false, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    public void Should_TryGetValue_DoublyLinkedList(object? target, bool expected, params object[] values)
+    {
+        // Arrange
+        DoublyLinkedList<object?> list = new();
+
+        // Act
+        foreach (object value in values)
+        {
+            list.AddToRear(value);
+        }
+
+        bool isAvailable = list.TryGetValue(
+            item => item is null || item.Equals(target),
+            out object? got);
+
+        // Assert
+        Assert.Equal(expected, isAvailable);
+        Assert.Equal(target, got);
+    }
+
+    [Theory]
+    [InlineData(1, 10, 1, 2, 3)]
+    [InlineData(false, true, true, false, true)]
+    // [InlineData("!", "#", "Hello", " ", "World", "!")]
+    // [InlineData(2.3f, 6.7f, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    public void Should_Update_DoublyLinkedList(object? target, object? newValue, params object[] values)
+    {
+        // Arrange
+        DoublyLinkedList<object?> list = new();
+
+        // Act
+        foreach (object value in values)
+        {
+            list.AddToRear(value);
+        }
+
+        list.Update((item) => item != null && item.Equals(target), newValue);
+
+        bool isAvailable = list.TryGetValue(
+            item => item is not null && item.Equals(newValue),
+            out object? got);
+
+        // Assert
+        Assert.True(isAvailable);
+        Assert.Equal(newValue, got);
+    }
 }

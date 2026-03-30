@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using ccct.Core.Library.Linear.Arrays;
 using ccct.Core.Library.Linear.Lists;
 using static ccct.Core.Shared.Errors;
@@ -9,6 +10,8 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 {
     private record HashNode(K Key, V? Value)
     {
+        public V? Value { get; set; } = Value;
+
         public static implicit operator (K, V?)(HashNode hashNode)
         {
             return (hashNode.Key, hashNode.Value);
@@ -26,7 +29,11 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 
     public int Capacity { get; private set; }
 
-    // public V?   this[int index] { get => Find(); set; }
+    public V? this[K key]
+    {
+        get => Search(key);
+        set => Update(key, value);
+    }
 
     public HashMap(int capacity = INITIAL_SIZE)
     {
@@ -47,7 +54,7 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 
     public void Add(K key, V value)
     {
-        if (ContainsKey(key, out DoublyLinkedList<HashNode>? bucket))
+        if (ContainsKey(key, out DoublyLinkedList<HashNode>? bucket, out _))
         {
             throw new ApplicationException(ErrorHashMapKeyAlreadyExist);
         }
@@ -103,8 +110,35 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
         return GetEnumerator();
     }
 
-    private bool ContainsKey(K key, out DoublyLinkedList<HashNode>? bucket)
+    private V? Search(K key)
     {
+        if (!ContainsKey(key, out _, out HashNode? hashNode))
+        {
+            throw new ApplicationException(ErrorHashMapKeyNotFound);
+        }
+
+        return hashNode.Value;
+    }
+
+    private void Update(K key, V? value)
+    {
+        if (!ContainsKey(key, out DoublyLinkedList<HashNode>? bucket, out _))
+        {
+            throw new ApplicationException(ErrorHashMapKeyNotFound);
+        }
+
+        bucket!.Update(
+            item => item != null && item.Key.Equals(key),
+            new(key, value));
+    }
+
+    private bool ContainsKey(
+        K key,
+        out DoublyLinkedList<HashNode>? bucket,
+        [NotNullWhen(true)] out HashNode? value)
+    {
+        value = null;
+
         int index = GetIndex(key, Capacity);
         if (_buckets[index] == null)
         {
@@ -115,8 +149,10 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 
         bucket = _buckets[index];
 
-        return bucket.Exists(hashNode =>
-        hashNode.Key != null && hashNode.Key.Equals(key));
+        bool IsNonNullValue(HashNode hashNode) =>
+        hashNode.Key != null && hashNode.Key.Equals(key);
+
+        return bucket.TryGetValue(IsNonNullValue, out value);
     }
 
     private static int GetIndex(K key, int capacity)

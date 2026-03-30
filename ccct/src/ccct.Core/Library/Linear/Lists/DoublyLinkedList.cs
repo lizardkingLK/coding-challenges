@@ -7,12 +7,15 @@ public class DoublyLinkedList<T> : IEnumerable<T>
 {
     public record LinkNode(T Value)
     {
+        public T Value { get; set; } = Value;
         public LinkNode? Previous { get; set; }
         public LinkNode? Next { get; set; }
     }
 
     private LinkNode? _head;
     private LinkNode? _tail;
+
+    public IEnumerable<LinkNode> Nodes => GetNodes();
 
     public IEnumerable<T> Values => GetValues();
 
@@ -72,7 +75,7 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         {
             _tail = null;
         }
-        
+
         _head = next;
         removed.Next = null;
 
@@ -93,7 +96,7 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         {
             _head = null;
         }
-        
+
         _tail = previous;
         removed.Previous = null;
 
@@ -111,6 +114,34 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         }
 
         return false;
+    }
+
+    public bool TryGetValue(Func<T, bool> filter, out T? target)
+    {
+        target = default;
+
+        foreach (T value in Values)
+        {
+            if (filter.Invoke(value))
+            {
+                target = value;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void Update(Predicate<T> condition, T newValue)
+    {
+        foreach (LinkNode node in Nodes)
+        {
+            if (condition.Invoke(node.Value))
+            {
+                node.Value = newValue;
+                break;
+            }
+        }
     }
 
     public IEnumerator<T> GetEnumerator()
@@ -132,6 +163,17 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         while (current != null)
         {
             yield return current.Value;
+
+            current = current.Next;
+        }
+    }
+
+    private IEnumerable<LinkNode> GetNodes()
+    {
+        LinkNode? current = _head;
+        while (current != null)
+        {
+            yield return current;
 
             current = current.Next;
         }
