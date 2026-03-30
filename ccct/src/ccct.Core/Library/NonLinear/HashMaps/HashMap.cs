@@ -49,7 +49,7 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
     {
         if (ContainsKey(key, out DoublyLinkedList<HashNode>? bucket))
         {
-            throw new ApplicationException("error. cannot add. key already exist");
+            throw new ApplicationException(ErrorHashMapKeyAlreadyExist);
         }
 
         bucket!.AddToRear(new(key, value));
@@ -66,12 +66,13 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 
         int newCapacity = Capacity * 2;
         DynamicallyAllocatedArray<DoublyLinkedList<HashNode>> newBuckets = new(newCapacity);
+        DoublyLinkedList<HashNode>? newBucket;
         foreach (DoublyLinkedList<HashNode> bucket in _buckets)
         {
             foreach ((K key, V? value) in bucket)
             {
                 int newIndex = GetIndex(key, newCapacity);
-                DoublyLinkedList<HashNode>? newBucket = newBuckets[newIndex];
+                newBucket = newBuckets[newIndex];
                 if (newBucket == null)
                 {
                     newBucket = new();
