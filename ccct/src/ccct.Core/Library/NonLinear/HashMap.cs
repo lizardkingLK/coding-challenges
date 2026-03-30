@@ -5,9 +5,17 @@ using static ccct.Core.Helpers.ApplicationHelper;
 
 namespace ccct.Core.Library.NonLinear;
 
-public class HashMap<K, V> : IEnumerable<(K, V)> where K : notnull
+public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 {
-    private DynamicallyAllocatedArray<DoublyLinkedList<(K Key, V Value)>> _buckets;
+    private record HashNode(K Key, V? Value)
+    {
+        public static implicit operator (K, V?)(HashNode hashNode)
+        {
+            return (hashNode.Key, hashNode.Value);
+        }
+    };
+
+    private DynamicallyAllocatedArray<DoublyLinkedList<HashNode>> _buckets;
 
     private const float LOAD_FACTOR = .7f;
     private const int INITIAL_SIZE = 2;
@@ -18,7 +26,7 @@ public class HashMap<K, V> : IEnumerable<(K, V)> where K : notnull
 
     public int Capacity { get; private set; }
 
-    // TO add indexer here
+    // public V?   this[int index] { get => Find(); set; }
 
     private HashMap(float loadFactor, int capacity)
     {
@@ -43,21 +51,52 @@ public class HashMap<K, V> : IEnumerable<(K, V)> where K : notnull
 
     public void Add(K key, V value)
     {
-        if (ContainsKey(key, out _))
+        if (ContainsKey(key, out DoublyLinkedList<HashNode>? bucket))
         {
-            throw new ApplicationException("error. cannot add. key already exist");
+            HandleError("error. cannot add. key already exist");
         }
 
-
+        bucket!.AddToRear(new(key, value));
+        Size++;
+        RehashIfSatisfies();
     }
 
-    public IEnumerator<(K, V)> GetEnumerator()
+    private void RehashIfSatisfies()
     {
-        foreach (DoublyLinkedList<(K Key, V Value)> bucket in _buckets)
+        if ((float)Size / Capacity < _loadFactor)
         {
-            foreach ((K, V) item in bucket)
+            return;
+        }
+
+        int newCapacity = Capacity * 2;
+        DynamicallyAllocatedArray<DoublyLinkedList<HashNode>> newBuckets = new(newCapacity);
+        foreach (DoublyLinkedList<HashNode> bucket in _buckets)
+        {
+            foreach ((K key, V? value) in bucket)
             {
-                yield return item;
+                int newIndex = GetIndex(key, newCapacity);
+                DoublyLinkedList<HashNode>? newBucket = newBuckets[newIndex];
+                if (newBucket == null)
+                {
+                    newBucket = new();
+                    _buckets[newIndex] = newBucket;
+                }
+
+                newBucket.AddToRear(new(key, value));
+            }
+        }
+
+        _buckets = newBuckets;
+        Capacity = newCapacity;
+    }
+
+    public IEnumerator<(K, V?)> GetEnumerator()
+    {
+        foreach (DoublyLinkedList<HashNode> bucket in _buckets)
+        {
+            foreach ((K, V?) node in bucket)
+            {
+                yield return node;
             }
         }
     }
@@ -67,9 +106,9 @@ public class HashMap<K, V> : IEnumerable<(K, V)> where K : notnull
         return GetEnumerator();
     }
 
-    private bool ContainsKey(K key, out DoublyLinkedList<(K, V)>? bucket)
+    private bool ContainsKey(K key, out DoublyLinkedList<HashNode>? bucket)
     {
-        int index = HashMap<K, V>.GetAbsolute(key.GetHashCode()) % Capacity;
+        int index = GetIndex(key, Capacity);
         if (_buckets[index] == null)
         {
             bucket = new();
@@ -79,8 +118,13 @@ public class HashMap<K, V> : IEnumerable<(K, V)> where K : notnull
 
         bucket = _buckets[index];
 
-        return bucket.Exists(((K Key, V) item) =>
-        item.Key != null && item.Key.Equals(key));
+        return bucket.Exists(hashNode =>
+        hashNode.Key != null && hashNode.Key.Equals(key));
+    }
+
+    private static int GetIndex(K key, int capacity)
+    {
+        return HashMap<K, V?>.GetAbsolute(key.GetHashCode()) % capacity;
     }
 
     private static int GetAbsolute(int value)

@@ -56,13 +56,15 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T>
             return;
         }
 
-        T[] values = new T[Capacity * 2];
+        int newCapacity = Capacity * 2;
+        T[] values = new T[newCapacity];
         for (int i = 0; i < Capacity; i++)
         {
             values[i] = _values[i];
         }
 
-        Capacity *= 2;
+        _values = values;
+        Capacity = newCapacity;
     }
 
     public IEnumerator<T> GetEnumerator()

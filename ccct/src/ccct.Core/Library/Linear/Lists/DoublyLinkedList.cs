@@ -13,6 +13,8 @@ public class DoublyLinkedList<T> : IEnumerable<T>
     private LinkNode? _head;
     private LinkNode? _tail;
 
+    public IEnumerable<T> Values => GetValues();
+
     public LinkNode AddToFront(T value)
     {
         LinkNode newNode = new(value);
@@ -34,23 +36,54 @@ public class DoublyLinkedList<T> : IEnumerable<T>
         return newNode;
     }
 
+    public LinkNode AddToRear(T value)
+    {
+        LinkNode newNode = new(value);
+        if (_tail == null)
+        {
+            _tail = newNode;
+            if (_head == null)
+            {
+                _head = newNode;
+            }
+
+            return newNode;
+        }
+
+        newNode.Previous = _tail;
+        _tail.Next = newNode;
+        _tail = newNode;
+
+        return newNode;
+    }
+
     public bool Exists(Predicate<T> check)
     {
-        LinkNode? current = _head;
-        while (current != null)
+        foreach (T value in Values)
         {
-            if (check.Invoke(current.Value))
+            if (check.Invoke(value))
             {
                 return true;
             }
-
-            current = current.Next;
         }
 
         return false;
     }
 
     public IEnumerator<T> GetEnumerator()
+    {
+        foreach (T value in Values)
+        {
+            yield return value;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    private IEnumerable<T> GetValues()
     {
         LinkNode? current = _head;
         while (current != null)
@@ -59,10 +92,5 @@ public class DoublyLinkedList<T> : IEnumerable<T>
 
             current = current.Next;
         }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }
