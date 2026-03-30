@@ -3,7 +3,7 @@ using ccct.Core.Library.Linear.Arrays;
 using ccct.Core.Library.Linear.Lists;
 using static ccct.Core.Shared.Errors;
 
-namespace ccct.Core.Library.NonLinear;
+namespace ccct.Core.Library.NonLinear.HashMaps;
 
 public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 {
