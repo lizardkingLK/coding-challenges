@@ -104,9 +104,6 @@ public class TestsDoublyLinkedList
         Assert.Equal(ErrorDoublyLinkedListCannotRemoveFromFront, exception.Message);
     }
 
-
-    ///////////////////////////////////////////
-    /// 
     [Theory]
     [InlineData(1, 2, 3)]
     [InlineData(true, false, true)]
@@ -154,5 +151,29 @@ public class TestsDoublyLinkedList
 
         // Assert
         Assert.Equal(ErrorDoublyLinkedListCannotRemoveFromRear, exception.Message);
+    }
+
+    [Theory]
+    [InlineData(1, 2, 3)]
+    [InlineData(true, false, true)]
+    [InlineData("Hello", " ", "World", "!")]
+    [InlineData(1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    public void Should_GetValues_DoublyLinkedList(params object[] values)
+    {
+        // Arrange
+        DoublyLinkedList<object> list = new();
+        foreach (object value in values)
+        {
+            list.AddToRear(value);
+        }
+
+        // Act
+        DynamicallyAllocatedArray<object> outputs = [.. list.Values];
+
+        // Assert
+        for (int i = 0; i < outputs.Size; i++)
+        {
+            Assert.Equal(values[i], outputs[i]);
+        }
     }
 }
