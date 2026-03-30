@@ -12,7 +12,7 @@ public static class CT
         Result<Arguments> argumentResult = ValidateArguments(arguments);
         if (argumentResult.HasErrors)
         {
-            HandleError(argumentResult.Errors);
+            throw new ApplicationException(argumentResult.Errors);
         }
 
 

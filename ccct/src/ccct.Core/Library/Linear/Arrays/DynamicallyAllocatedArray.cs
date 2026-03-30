@@ -1,5 +1,5 @@
 using System.Collections;
-using static ccct.Core.Helpers.ApplicationHelper;
+using static ccct.Core.Shared.Errors;
 
 namespace ccct.Core.Library.Linear.Arrays;
 
@@ -8,7 +8,7 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T>
     private const float GROWTH_FACTOR = .5f;
     private const int INITIAL_SIZE = 2;
 
-    private float _growthFactor;
+    private readonly float _growthFactor;
     private T[] _values;
 
     public int Size { get; private set; }
@@ -21,18 +21,11 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T>
         set => _values[index] = value;
     }
 
-    private DynamicallyAllocatedArray(float growthFactor, int capacity)
-    {
-        _growthFactor = growthFactor;
-        _values = new T[capacity];
-    }
-
     public DynamicallyAllocatedArray(int capacity = INITIAL_SIZE)
-    : this(GROWTH_FACTOR, capacity)
     {
         if (capacity < 0 || capacity >= Array.MaxLength)
         {
-            HandleError("error. invalid capacity value was given");
+            throw new ApplicationException(ErrorDynamicallyAllocatedArrayInvalidCapacity);
         }
 
         if (capacity == 0)
@@ -41,6 +34,8 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T>
         }
 
         Capacity = capacity;
+        _growthFactor = GROWTH_FACTOR;
+        _values = new T[capacity];
     }
 
     public void Add(T value)
@@ -51,7 +46,7 @@ public class DynamicallyAllocatedArray<T> : IEnumerable<T>
 
     private void ResizeIfSatisfies()
     {
-        if ((float)Size / Capacity < _growthFactor)
+        if ((float)Size / Capacity <= _growthFactor)
         {
             return;
         }

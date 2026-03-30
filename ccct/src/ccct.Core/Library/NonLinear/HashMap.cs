@@ -1,7 +1,7 @@
 using System.Collections;
 using ccct.Core.Library.Linear.Arrays;
 using ccct.Core.Library.Linear.Lists;
-using static ccct.Core.Helpers.ApplicationHelper;
+using static ccct.Core.Shared.Errors;
 
 namespace ccct.Core.Library.NonLinear;
 
@@ -20,7 +20,7 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
     private const float LOAD_FACTOR = .7f;
     private const int INITIAL_SIZE = 2;
 
-    private float _loadFactor;
+    private readonly float _loadFactor;
 
     public int Size { get; private set; }
 
@@ -28,17 +28,11 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 
     // public V?   this[int index] { get => Find(); set; }
 
-    private HashMap(float loadFactor, int capacity)
-    {
-        _loadFactor = loadFactor;
-        _buckets = new(capacity);
-    }
-
-    public HashMap(int capacity = INITIAL_SIZE) : this(LOAD_FACTOR, capacity)
+    public HashMap(int capacity = INITIAL_SIZE)
     {
         if (capacity < 0 || capacity >= Array.MaxLength)
         {
-            HandleError("error. invalid capacity value was given");
+            throw new ApplicationException(ErrorHashMapInvalidCapacity);
         }
 
         if (capacity == 0)
@@ -47,13 +41,15 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
         }
 
         Capacity = capacity;
+        _loadFactor = LOAD_FACTOR;
+        _buckets = new(capacity);
     }
 
     public void Add(K key, V value)
     {
         if (ContainsKey(key, out DoublyLinkedList<HashNode>? bucket))
         {
-            HandleError("error. cannot add. key already exist");
+            throw new ApplicationException("error. cannot add. key already exist");
         }
 
         bucket!.AddToRear(new(key, value));
@@ -63,7 +59,7 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
 
     private void RehashIfSatisfies()
     {
-        if ((float)Size / Capacity < _loadFactor)
+        if ((float)Size / Capacity <= _loadFactor)
         {
             return;
         }
