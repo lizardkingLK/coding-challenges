@@ -237,8 +237,8 @@ public class TestsDoublyLinkedList
     [Theory]
     [InlineData(1, 10, 1, 2, 3)]
     [InlineData(false, true, true, false, true)]
-    // [InlineData("!", "#", "Hello", " ", "World", "!")]
-    // [InlineData(2.3f, 6.7f, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    [InlineData("!", "#", "Hello", " ", "World", "!")]
+    [InlineData(2.3f, 6.7f, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
     public void Should_Update_DoublyLinkedList(object? target, object? newValue, params object[] values)
     {
         // Arrange
@@ -259,5 +259,72 @@ public class TestsDoublyLinkedList
         // Assert
         Assert.True(isAvailable);
         Assert.Equal(newValue, got);
+    }
+
+    [Theory]
+    [InlineData(1, 1, 2, 3)]
+    [InlineData(true, true, false, false)]
+    [InlineData("Hello", "Hello", " ", "World", "!")]
+    [InlineData(1f, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+
+    [InlineData(2, 1, 2, 3)]
+    [InlineData(true, false, true, false)]
+    [InlineData("World", "Hello", " ", "World", "!")]
+    [InlineData(2f, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+
+    [InlineData(3, 1, 2, 3)]
+    [InlineData(true, false, false, true)]
+    [InlineData("!", "Hello", " ", "World", "!")]
+    [InlineData(3.4f, 1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    public void Should_Remove_DoublyLinkedList(object? target, params object[] values)
+    {
+        // Arrange
+        DoublyLinkedList<object?> list = new();
+
+        // Act
+        foreach (object value in values)
+        {
+            list.AddToRear(value);
+        }
+
+        list.Remove((item) => item != null && item.Equals(target));
+
+        bool isAvailable = list.TryGetValue(item =>
+        item != null &&
+        item.Equals(target),
+        out object? got);
+
+        // Assert
+        Assert.False(isAvailable);
+        Assert.Null(got);
+    }
+
+    [Theory]
+    [InlineData(1, 1, 2)]
+    [InlineData(true, false, true)]
+    [InlineData("Hello", " ", "World", "!")]
+    [InlineData(1f, 2f, 3f, 1.2f, 2.3f, 3.4f)]
+    public void Should_Remove_DoublyLinkedList_Special(params object[] values)
+    {
+        // Arrange
+        DoublyLinkedList<object?> list = new();
+
+        // Act
+        foreach (object value in values)
+        {
+            list.AddToRear(value);
+        }
+
+        foreach (object value in values)
+        {
+            list.Remove((item) => item != null && item.Equals(value));
+        }
+
+        object? newHead = list.Head?.Value;
+        object? newTail = list.Tail?.Value;
+
+        // Assert
+        Assert.Null(newHead);
+        Assert.Null(newTail);
     }
 }

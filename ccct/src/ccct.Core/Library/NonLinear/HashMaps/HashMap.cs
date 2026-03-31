@@ -132,6 +132,17 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
             new(key, value));
     }
 
+    private void Remove(K key)
+    {
+        if (!ContainsKey(key, out DoublyLinkedList<HashNode>? bucket, out _))
+        {
+            throw new ApplicationException(ErrorHashMapKeyNotFound);
+        }
+
+        bucket!.Remove(
+            item => item != null && item.Key.Equals(key));
+    }
+
     private bool ContainsKey(
         K key,
         out DoublyLinkedList<HashNode>? bucket,

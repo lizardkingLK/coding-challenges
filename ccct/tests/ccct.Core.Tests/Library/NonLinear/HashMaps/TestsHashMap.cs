@@ -58,4 +58,47 @@ public class TestsHashMap
         Assert.Equal(1, hashMap.Size);
         Assert.Equal(2, hashMap.Capacity);
     }
+
+    [Theory]
+    [InlineData(-1, 0)]
+    [InlineData(0, 1)]
+    [InlineData(1, 2)]
+    public void Should_Add_HashMap_Exceptions(int value1, int value2)
+    {
+        // Arrange
+        HashMap<int, int> hashMap = [];
+        hashMap.Add(value1, value2);
+
+        // Act
+        void act()
+        {
+            hashMap.Add(value1, value2);
+        }
+
+        // Assert
+        ApplicationException exception = Assert.Throws<ApplicationException>(act);
+        Assert.Equal(ErrorHashMapKeyAlreadyExist, exception.Message);
+    }
+
+    [Theory]
+    [InlineData(-1, 0, 5)]
+    [InlineData(0, 1, 6)]
+    [InlineData(1, 2, 7)]
+    public void Should_Update_HashMap(int value1, int value2, int value3)
+    {
+        // Arrange
+        HashMap<int, int> hashMap = [];
+        hashMap.Add(value1, value2);
+
+        // Act
+        int previous = hashMap[value1];
+        hashMap[value1] = value3;
+        int current = hashMap[value1];
+
+        // Assert
+        Assert.Equal(value2, previous);
+        Assert.Equal(1, hashMap.Size);
+        Assert.Equal(2, hashMap.Capacity);
+        Assert.Equal(value3, current);
+    }
 }

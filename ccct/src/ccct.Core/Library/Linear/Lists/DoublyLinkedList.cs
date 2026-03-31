@@ -15,6 +15,9 @@ public class DoublyLinkedList<T> : IEnumerable<T>
     private LinkNode? _head;
     private LinkNode? _tail;
 
+    public LinkNode? Head { get => _head; }
+    public LinkNode? Tail { get => _tail; }
+
     public IEnumerable<LinkNode> Nodes => GetNodes();
 
     public IEnumerable<T> Values => GetValues();
@@ -142,6 +145,51 @@ public class DoublyLinkedList<T> : IEnumerable<T>
                 break;
             }
         }
+    }
+
+    public bool Remove(Predicate<T> condition)
+    {
+        LinkNode? previous = null;
+        LinkNode? current = null;
+        bool isFound = false;
+        foreach (LinkNode node in Nodes)
+        {
+            if (condition.Invoke(node.Value))
+            {
+                current = node;
+                isFound = true;
+                break;
+            }
+
+            previous = node;
+        }
+
+        if (!isFound)
+        {
+            return false;
+        }
+
+        if (previous == null)
+        {
+            LinkNode? next = _head?.Next;
+            next?.Previous = null;
+            _head = next;
+        }
+        else
+        {
+            current!.Previous = null;
+            current.Next = null;
+            LinkNode? temp = current.Next;
+            temp?.Previous = previous;
+            previous.Next = temp;
+        }
+
+        if (_head == null || _head == _tail)
+        {
+            _tail = _head;
+        }
+
+        return true;
     }
 
     public IEnumerator<T> GetEnumerator()
