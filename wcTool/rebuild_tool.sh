@@ -24,4 +24,4 @@ packaged=$(dotnet pack)
 installed=$(dotnet tool install --global --add-source ./nupkg $toolName)
 
 # set current directory as location
-cd $currentDirector
+cd $currentDirectory

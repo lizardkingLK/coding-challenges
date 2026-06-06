@@ -92,10 +92,10 @@ public class FileBasedWordCount
         HandleArguments(arguments, actions, paths, errors);
         HandleResponses(actions, paths, errors, results);
         HandleResults(results.Where(result => result.Data.Item1 != null), actions);
-        HandleConstants(errors.Where(error => error.Error != null));
+        HandleErrors(errors.Where(error => error.Error != null));
     }
 
-    private static void HandleConstants(IEnumerable<Result<List<string>>> errors)
+    private static void HandleErrors(IEnumerable<Result<List<string>>> errors)
     {
         foreach (Result<List<string>> result in errors)
         {
@@ -201,7 +201,7 @@ public class FileBasedWordCount
         foreach (Delegate action in actions)
         {
             resultMap.Add(action.Method.Name, null);
-            
+
             result = (Result<long?>?)action.DynamicInvoke(path);
             if (result == null)
             {
