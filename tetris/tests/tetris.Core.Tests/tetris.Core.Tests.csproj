@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\snakeGame.Core\snakeGame.Core.csproj" />
+    <ProjectReference Include="..\..\src\tetris.Core\tetris.Core.csproj" />
   </ItemGroup>
 
 </Project>
