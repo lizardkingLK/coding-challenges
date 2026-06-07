@@ -64,6 +64,20 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
         RehashIfSatisfies();
     }
 
+    public bool TryAdd(K key, V value)
+    {
+        if (ContainsKey(key, out DoublyLinkedList<HashNode>? bucket, out _))
+        {
+            return false;
+        }
+
+        bucket!.AddToRear(new(key, value));
+        Size++;
+        RehashIfSatisfies();
+
+        return true;
+    }
+
     private void RehashIfSatisfies()
     {
         if ((float)Size / Capacity <= _loadFactor)
@@ -76,6 +90,11 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
         DoublyLinkedList<HashNode>? newBucket;
         foreach (DoublyLinkedList<HashNode> bucket in _buckets)
         {
+            if (bucket == null)
+            {
+                continue;
+            }
+
             foreach ((K key, V? value) in bucket)
             {
                 int newIndex = GetIndex(key, newCapacity);
@@ -83,7 +102,7 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
                 if (newBucket == null)
                 {
                     newBucket = new();
-                    _buckets[newIndex] = newBucket;
+                    newBuckets[newIndex] = newBucket;
                 }
 
                 newBucket.AddToRear(new(key, value));
@@ -98,6 +117,11 @@ public class HashMap<K, V> : IEnumerable<(K, V?)> where K : notnull
     {
         foreach (DoublyLinkedList<HashNode> bucket in _buckets)
         {
+            if (bucket == null)
+            {
+                continue;
+            }
+
             foreach ((K, V?) node in bucket)
             {
                 yield return node;

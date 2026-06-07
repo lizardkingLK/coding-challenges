@@ -2,5 +2,5 @@ namespace ccct.Core.State.Console;
 
 public class Arguments
 {
-    public string? InputFile { get; set; }
+    public required string InputFile { get; init; }
 }

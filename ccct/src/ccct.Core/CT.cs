@@ -2,6 +2,9 @@
 using ccct.Core.State.Console;
 using static ccct.Core.Helpers.ArgumentsHelper;
 using static ccct.Core.Helpers.ApplicationHelper;
+using static ccct.Core.Helpers.CompressionHelper;
+using ccct.Core.Helpers;
+using ccct.Core.Library.NonLinear.HashMaps;
 
 namespace ccct.Core;
 
@@ -12,11 +15,23 @@ public static class CT
         Result<Arguments> argumentResult = ValidateArguments(arguments);
         if (argumentResult.HasErrors)
         {
-            throw new ApplicationException(argumentResult.Errors);
+            HandleError(argumentResult.Errors);
         }
 
+        Result<HashMap<char, long>> countsResult = TrackFrequency(argumentResult.Data.InputFile);
+        if (countsResult.HasErrors)
+        {
+            HandleError(countsResult.Errors);
+        }
 
+        using StreamWriter streamWriter = new(@"/home/lizardkinglk/github.com/lizardkinglk/coding-challenges/ccct/output.txt");
+        foreach ((char, long) item in countsResult.Data)
+        {
+            streamWriter.WriteLine(item.ToString());
+        }
 
-        return "";
+        streamWriter.Flush();
+
+        return string.Empty;
     }
 }
