@@ -1,10 +1,9 @@
-﻿using ccct.Core.State.Common;
+﻿using ccct.Core.Library.NonLinear.HashMaps;
+using ccct.Core.State.Common;
 using ccct.Core.State.Console;
-using static ccct.Core.Helpers.ArgumentsHelper;
 using static ccct.Core.Helpers.ApplicationHelper;
+using static ccct.Core.Helpers.ArgumentsHelper;
 using static ccct.Core.Helpers.CompressionHelper;
-using ccct.Core.Helpers;
-using ccct.Core.Library.NonLinear.HashMaps;
 
 namespace ccct.Core;
 
@@ -24,13 +23,7 @@ public static class CT
             HandleError(countsResult.Errors);
         }
 
-        using StreamWriter streamWriter = new(@"/home/lizardkinglk/github.com/lizardkinglk/coding-challenges/ccct/output.txt");
-        foreach ((char, long) item in countsResult.Data)
-        {
-            streamWriter.WriteLine(item.ToString());
-        }
-
-        streamWriter.Flush();
+        OutputResult(countsResult.Data);
 
         return string.Empty;
     }

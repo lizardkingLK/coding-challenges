@@ -12,4 +12,9 @@ public class FileHelper
             yield return (char)read;
         }
     }
+
+    public static void WriteAllText(string inputFile)
+    {
+        
+    }
 }

@@ -19,4 +19,19 @@ public class CompressionHelper
 
         return new(values);
     }
+
+    public static void OutputResult(HashMap<char, long> data)
+    {
+        using StreamWriter streamWriter = new(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                @"../../../../../output.txt"));
+
+        foreach ((char, long) item in data)
+        {
+            streamWriter.WriteLine("(" + "'" + item.Item1 + "', " + item.Item2 + "),");
+        }
+
+        streamWriter.Flush();
+    }
 }
