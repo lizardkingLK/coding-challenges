@@ -25,7 +25,8 @@ public class CompressionHelper
         using StreamWriter streamWriter = new(
             Path.Combine(
                 AppContext.BaseDirectory,
-                @"../../../../../output.txt"));
+                // @"../../../../../output.txt"));
+                @"output.txt"));
 
         foreach ((char, long) item in data)
         {
