@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/cscalc.Core/cscalc.Core.csproj" />
+    <Project Path="src/cscalc.Program/cscalc.Program.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/cscalc.Core.Tests/cscalc.Core.Tests.csproj" />
+  </Folder>
+</Solution>
